@@ -545,3 +545,5 @@ def loggedin(user, masterpass):
         loggedin(user, masterpass)
 if __name__ == "__main__":
     startprogram()
+    
+print('test')
