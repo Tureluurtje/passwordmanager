@@ -18,9 +18,11 @@ import curses
 import os
 import random
 import pyperclip
+
 os.system('cls')
+ConfigLocation = 'database~2024-05-18~arthu.ini'
 config = configparser.ConfigParser()
-config.read(r'C:\1Coding\1python\Projects\smallProjects\passwordmanager\data\database.ini')
+config.read(ConfigLocation)
 mydb = mysql.connector.connect(
     host=config.get('dblogin', 'host'),
     user=config.get('dblogin', 'user'),
@@ -276,7 +278,7 @@ def login_with_face(face_image_bytes):
         known_face_encoding = face_recognition.face_encodings(known_image)[0]
 
         # Calculate the face distance between known and unknown face encodings
-        face_distance = face_recognition.face_distance([known_face_encoding], unknown_face_encoding)
+        face_distance = face_recognition.face_distance([known_face_encoding], unknown_face_encoding) #ERROR
 
         # Convert face distance to similarity percentage (smaller distance = higher similarity)
         max_distance = 1.0
@@ -300,8 +302,8 @@ def startprogram():
         except TypeError:
             logged = False
         if logged:
-            face_image_bytes = capture_face_image()
-            login_with_face(face_image_bytes)
+            #face_image_bytes = capture_face_image() #TODO 
+            #login_with_face(face_image_bytes)
             verify = 1
             log(userName, verify, logReason)
             loggedin(userName.lower(), masterpassword)
@@ -545,5 +547,3 @@ def loggedin(user, masterpass):
         loggedin(user, masterpass)
 if __name__ == "__main__":
     startprogram()
-    
-print('test')   
