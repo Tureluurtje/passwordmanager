@@ -1,3 +1,1 @@
-from .database import somefunc
-
-__all__ = ['somefunc']
+from .logup import login, register, log

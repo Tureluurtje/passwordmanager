@@ -1,4 +1,3 @@
-import face_recognition
 import cv2
 import configparser
 import io
@@ -20,15 +19,20 @@ import random
 import pyperclip
 import pyotp
 os.system('cls')
-ConfigLocation = 'database~2024-05-18~arthu.ini'
+ConfigLocation = 'config.ini'
 config = configparser.ConfigParser()
 config.read(ConfigLocation)
-mydb = mysql.connector.connect(
-    host=config.get('dblogin', 'host'),
-    user=config.get('dblogin', 'user'),
-    password=config.get('dblogin', 'password'),
-    database=config.get('dblogin', 'db')
-)
+try:
+    mydb = mysql.connector.connect(
+        host=config.get('database', 'host'),
+        user=config.get('database', 'user'),
+        password=config.get('database', 'password'),
+        database=config.get('database', 'db')
+    )
+    if mydb.is_connected():
+        print("Connection successful!")
+except Exception as e:
+    print(f"Error: {e}")
 mycursor = mydb.cursor()
 class terminal:
     def print_text(stdscr, text):
@@ -271,103 +275,13 @@ class logup:
         
 
     def register(username, password):
-        face_image_bytes = logup.capture_face_image()
+        face_image_bytes = 'hihi'
         sql_query = "INSERT INTO users (username, password, face_image) VALUES (%s, %s, %s)"
         values = (username, password, face_image_bytes)
         mycursor.execute(sql_query, values)
         mydb.commit()
         print("Registered")
-    def capture_face_image():
-        # Capture image from the camera
-        cap = cv2.VideoCapture(0)
-        ret, frame = cap.read()
-
-        # Convert the frame to RGB (face_recognition library expects RGB images)
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        # Release the camera
-        cap.release()
-        cv2.destroyAllWindows()
-
-        # Convert the RGB frame to a byte stream
-        _, encoded_image = cv2.imencode('.jpg', rgb_frame)
-        face_image_bytes = encoded_image.tobytes()
-
-        return face_image_bytes
-    def compare_faces(known_face_image_path, unknown_face_image_path):
-        # Load the known face image and encode it
-        known_image = face_recognition.load_image_file(known_face_image_path)
-        known_face_encoding = face_recognition.face_encodings(known_image)[0]
-
-        # Load the unknown face image and encode it
-        unknown_image = face_recognition.load_image_file(unknown_face_image_path)
-        unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
-
-        # Calculate the face distance between known and unknown face encodings
-        face_distance = face_recognition.face_distance([known_face_encoding], unknown_face_encoding)
-
-        # Convert face distance to similarity percentage (smaller distance = higher similarity)
-        max_distance = 1.0
-        similarity_percent = (max_distance - face_distance[0]) * 100.0 / max_distance
-
-        return similarity_percent
-    def capture_and_compare(known_face_image_path):
-        # Capture image from the camera
-        cap = cv2.VideoCapture(0)
-        ret, frame = cap.read()
-
-        # Convert the frame to RGB (face_recognition library expects RGB images)
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        # Convert the RGB frame to a byte stream
-        _, encoded_image = cv2.imencode('.jpg', rgb_frame)
-        unknown_image_bytes = io.BytesIO(encoded_image)
-
-        # Compare faces
-        similarity_percent = logup.compare_faces(known_face_image_path, unknown_image_bytes)
-
-        # Release the camera
-        cap.release()
-        cv2.destroyAllWindows()
-
-        return similarity_percent
-    def facereg(imagepath=None):
-        if imagepath is None:
-            return print("No image path provided")
-        similarity_percent = logup.capture_and_compare(imagepath)
-        return similarity_percent
-    def login_with_face(face_image_bytes):
-        # Load the user's face image and encode it
-        unknown_image = face_recognition.load_image_file(io.BytesIO(face_image_bytes))
-        unknown_face_encodings = face_recognition.face_encodings(unknown_image)
-        if len(unknown_face_encodings) > 0:
-            unknown_face_encoding = unknown_face_encodings[0]
-        else:
-            print("No face detected in the image.")
-        # Retrieve the stored face encodings from the database
-        mycursor.execute("SELECT username, face_image FROM users")
-        users = mycursor.fetchall()
-
-        for user in users:
-            username, stored_face_image_bytes = user
-
-            # Load the known face image and encode it
-            known_image = face_recognition.load_image_file(io.BytesIO(stored_face_image_bytes))
-            known_face_encoding = face_recognition.face_encodings(known_image)[0]
-
-            # Calculate the face distance between known and unknown face encodings
-            face_distance = face_recognition.face_distance([known_face_encoding], unknown_face_encoding) #ERROR
-
-            # Convert face distance to similarity percentage (smaller distance = higher similarity)
-            max_distance = 1.0
-            similarity_percent = (max_distance - face_distance[0]) * 100.0 / max_distance
-
-            # If the similarity is above the threshold, log in the user
-            if similarity_percent >= 60.0:
-                print(f"Logged in as {username}")
-                return
-
-        print("Face not recognized")
+    
    
 class managepasswords:
 
