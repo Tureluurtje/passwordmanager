@@ -1,27 +1,27 @@
 from core import logup
 
 class Main:
-    def __init__(self, account_owner, username, password, code):
+    def start(account_owner, username, password, code):
         if account_owner:
-            self.login(username, password, code)
+            return Main.login(username, password, code)
         else: 
-            self.register(username, password)
+            return Main.register(username, password, code)
 
-    def login(self, username, password, code):
+    def login(username, password, code):
         loggedIn, masterPassword, log = logup.login(username, password, code)
-        if log:
+        if log == True:
             if loggedIn:
                 logup.log(username, 1, "login")
-                print("Logged in!")
+                return 'logged in'
             else: 
                 logup.log(username, 0, "login")
+                return 'wrong username, authentication code or password'
         else:
-            pass
+            return log
 
-    def register(self, username, password):
+    def register(account_owner, username, password, code):
         logup.register(username, password)
-        self.login(username, password)
+        return Main.login(username, password, code)
 
-
-if __name__ == "__main__":
-     Main(account_owner=True, username="tureluurtje", password="Tuinhek12!", code="118309")
+def startAuthenticate(account_owner, username, password, code):
+    return Main.start(account_owner, username, password, code)
