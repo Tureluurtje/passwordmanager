@@ -41,7 +41,7 @@ def login(username, password, code):
         myCursor.execute(f"SELECT TIME_FORMAT(TIMEDIFF((DATE_SUB(NOW(6), INTERVAL 10 MINUTE)), (SELECT date from log WHERE user='{username}' AND verify='0' ORDER BY date DESC LIMIT 1)), '%i:%s') AS TIME_DIFFERENCE;")
         logAttempt = False
         time_difference = myCursor.fetchone()[0]
-        print(f"Too many failed login attempts. Please try again in {time_difference[1:]}.")
+        logAttempt = (f"Too many failed login attempts. Please try again in {time_difference[1:]}.")
     else:
         verify_totp = verifyTotp(username, code)
         masterPassword = hashlib.sha256(username.encode() + password.encode()).hexdigest()  # hashed username + password
