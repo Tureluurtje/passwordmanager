@@ -28,7 +28,7 @@ def authenticate():
     code_totp = request.args.get('code')
     if username and password and code_totp:
         result = startAuthenticate(account_owner, username, password, code_totp)
-        pattern = r'Too many failed login attempts. Please try again in \d{2}:\d{2}\.'
+        pattern = r'Too many failed login attempts. Please try again in \d{2}:\d{2}\ '
         if result == 'logged in':
             return jsonify({"message": "Authentication successful"})
         elif result == 'wrong username, authentication code or password':
