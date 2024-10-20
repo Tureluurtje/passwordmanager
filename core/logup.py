@@ -11,7 +11,7 @@ from tkinter import Tk, Label
 
 def connectToDatabase():
     root_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(root_dir, '..', 'config.ini')
+    config_path = os.path.join(root_dir, '..', 'config/config.ini')
     config = configparser.ConfigParser()
     config.read(config_path)
     mydb = mysql.connector.connect(
@@ -41,7 +41,7 @@ def login(username, password, code):
         myCursor.execute(f"SELECT TIME_FORMAT(TIMEDIFF((DATE_SUB(NOW(6), INTERVAL 10 MINUTE)), (SELECT date from log WHERE user='{username}' AND verify='0' ORDER BY date DESC LIMIT 1)), '%i:%s') AS TIME_DIFFERENCE;")
         logAttempt = False
         time_difference = myCursor.fetchone()[0]
-        logAttempt = (f"Too many failed login attempts. Please try again in {time_difference[1:]}.")
+        logAttempt = (f"Too many failed login attempts. Please try again in {time_difference[1:]} ")
     else:
         verify_totp = verifyTotp(username, code)
         masterPassword = hashlib.sha256(username.encode() + password.encode()).hexdigest()  # hashed username + password
@@ -101,8 +101,11 @@ def verifyTotp(username, code):
     myCursor.execute(query, (username,))  # Execute the query with parameterized input
     result = myCursor.fetchone() # Fetch the result and handle if no secret is found
     is_verified = False
-    secret = result[0]  # Get the TOTP secret from the result
-    totp = pyotp.TOTP(secret) # Generate the TOTP object using the secret
-    is_verified = totp.verify(code) # Verify the code and return the result
+    try:
+        secret = result[0]  # Get the TOTP secret from the result
+        totp = pyotp.TOTP(secret) # Generate the TOTP object using the secret
+        is_verified = totp.verify(code) # Verify the code and return the result
+    except:
+        pass
     conn.close() # Close the connection and return the result
     return is_verified

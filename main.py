@@ -12,10 +12,10 @@ class Main:
         if log == True:
             if loggedIn:
                 logup.log(username, 1, "login")
-                return 'logged in'
+                return '600'
             else: 
                 logup.log(username, 0, "login")
-                return 'wrong username, authentication code or password'
+                return '700'
         else:
             return log
 
@@ -24,4 +24,7 @@ class Main:
         return Main.login(username, password, code)
 
 def startAuthenticate(account_owner, username, password, code):
-    return Main.start(account_owner, username, password, code)
+    return Main.start(account_owner, username, password, int(code))
+if __name__ == '__main__':
+    x = startAuthenticate("True", "username", "password", "000000")
+    print(x)
