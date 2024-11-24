@@ -3,6 +3,7 @@ import sys
 import os
 import re
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Add the parent directory to the system path
+from main import start
 
 
 app = Flask(__name__)
@@ -11,23 +12,28 @@ app = Flask(__name__)
 def home():
     return jsonify({'message': 'Hello, World!'})
 
-@app.route('/api/data', methods=['GET'])
+@app.route('/api/', methods=['GET'])
 def handle_data():
     method = request.args.get('method')
     
     if method == 'authenticate':
         return authenticate()
+    elif method == 'password':
+        return password()
     
     return jsonify({"error": "Invalid method"}), 400
 
 def authenticate():
-    from main import start
-    account_owner = request.args.get('account_owner')
+    try:
+        account_owner = request.args.get('account_owner')
+        if account_owner:
+            account_owner = True
+    except:
+        account_owner = False
     username = request.args.get('username')
     password = request.args.get('password')
-    code_totp = request.args.get('code')
-    if username and password and code_totp:
-        result = start("authenticate", account_owner, username, password, code_totp)
+    if username and password:
+        result = start("authenticate", account_owner, username, password)
         pattern = r'Too many failed login attempts. Please try again in \d{2}:\d{2}\ '
         if result == 'Logged in':
             return jsonify({"message": "Authentication successful"})
@@ -39,7 +45,27 @@ def authenticate():
             return jsonify({"error": "Internal server error"}), 500
     return jsonify({"error": "missing arguments"}), 400
 def password():
-    from main import start
+    password_method = request.args.get('passwordmethod')
+    username = request.args.get('username')
+    password = request.args.get('password')
+    account_name = request.args.get('account_name')
+    account_password = request.args.get('account_password')
+    if password_method and username and password:
+        pass
+    else:
+        return jsonify({"error": "missing arguments"}), 400
+    if password_method == 'add':
+        if account_name and account_password :
+            pass
+        else:
+            return jsonify({"error": "missing arguments"}), 400
+        result = start("password", password_method, username, password, account_name, account_password)
+        if result == '200':
+            return jsonify({"message": "Password added successfully"})
+        elif result == '500':
+            return jsonify({"error": "Internal server error"})
+        elif result == '700':
+            return jsonify({"error": "Authentication failed"}), 401
     
 def start_server():
     app.run(debug=True)

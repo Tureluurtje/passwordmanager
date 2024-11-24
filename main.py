@@ -1,9 +1,8 @@
 from core import logup, verifyArgs, passwordmanage
-from api import start_server
 class Main:
-    def startLogup(account_owner, username, password, code):
-        def login(username, password, code, masterpass=False):
-            loggedIn, masterPassword, log = logup.login(username, password, code)
+    def startLogup(account_owner, username, password, masterpass=False):
+        def login(username, password, masterpass=False):
+            loggedIn, masterPassword, log = logup.login(username, password)
             if log == True:
                 if loggedIn:
                     logup.log(username, 1, "login")
@@ -20,19 +19,26 @@ class Main:
             else:
                 return log
 
-        def register(username, password, code):
+        def register(username, password, code, masterpass=False):
             logup.register(username, password)
             return login(username, password, code)
 
         if account_owner:
-            return login(username, password, code)
+            return login(username, password)
         else: 
-            return register(username, password, code)
-    def startPassword(method, username, password, code, accountname='', accountpassword=''):
-        Verify, masterpassword, code = Main.startLogup.login(username, password, code, masterpass=True)
+            return register(username, password, masterpass=True, account_owner=True)
+    def startPassword(method, username, password, accountname='', accountpassword=''):
+        Verify, masterpassword, code = Main.startLogup(account_owner=True, username=username, password=password)
+
         if method == "add":
             if code == "600":
-                passwordmanage.addpass(username, masterpassword, accountname, accountpassword)
+                result = passwordmanage.addpass(username, masterpassword, accountname, accountpassword)
+                if result == True:
+                    return (True, '200')
+                else:
+                    return (False, '500')
+            else:
+                return (False, '700')
         elif method == "get":
             return logup.getpass(username, password, code)
         elif method == "delete":
@@ -41,13 +47,12 @@ class Main:
             return logup.updatepass(username, password, code)
         else:
             return "Invalid method"
-def start(method, account_owner, username, password, code):
+def start(method, account_owner, username, password, accountname='', accountpassword=''):
     if method == "authenticate":
-        args = Main.startLogup(account_owner, username, password, int(code))
+        args = Main.startLogup(account_owner, username, password)
         translated_args = verifyArgs('return', args)
         return translated_args
     elif method == "password":
-        args = Main.startPassword(method, username, password, code)
-
-if __name__ == '__main__':
-    start_server()
+        args = Main.startPassword(method, username, password, accountname, accountpassword)
+        translated_args = verifyArgs('return', args)
+        return translated_args
