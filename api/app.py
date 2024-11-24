@@ -20,7 +20,7 @@ def handle_data():
         return authenticate()
     elif method == 'password':
         return password()
-    
+        
     return jsonify({"error": "Invalid method"}), 400
 
 def authenticate():
