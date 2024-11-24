@@ -1,5 +1,4 @@
 import configparser
-import mysql.connector
 import hashlib
 import datetime
 import os
@@ -8,23 +7,27 @@ import qrcode
 from io import BytesIO
 from PIL import Image, ImageTk
 from tkinter import Tk, Label
+import mysql.connector
 
 def connectToDatabase():
-    root_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(root_dir, '..', 'config/config.ini')
-    config = configparser.ConfigParser()
-    config.read(config_path)
-    mydb = mysql.connector.connect(
-    host=config['database']['host'],
-    user=config['database']['user'],
-    password=config['database']['password'],
-    database=config['database']['db']
-    ) # creates connection to database using a config file
-    return mydb 
-def login(username, password, code):
+    try:
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(root_dir, '..', 'config/config.ini')
+        config = configparser.ConfigParser()
+        config.read(config_path)
+        mydb = mysql.connector.connect(
+        host=config['database']['host'],
+        user=config['database']['user'],
+        password=config['database']['password'],
+        database=config['database']['db']
+        ) # creates connection to database using a config file
+        return mydb 
+    except mysql.connector.Error as e:
+        test = e
+        return
+def login(username, password):
     logAttempt = True
     login_succes = False
-    code_verify = False
     conn = connectToDatabase()
     myCursor = conn.cursor()  # creates cursor object
     query_failed_attempts = """
@@ -43,7 +46,6 @@ def login(username, password, code):
         time_difference = myCursor.fetchone()[0]
         logAttempt = (f"Too many failed login attempts. Please try again in {time_difference[1:]} ")
     else:
-        verify_totp = verifyTotp(username, code)
         masterPassword = hashlib.sha256(username.encode() + password.encode()).hexdigest()  # hashed username + password
         hashedPassword = hashlib.sha256(password.encode()).hexdigest() # hashed password only
         query_login = """
@@ -54,16 +56,14 @@ def login(username, password, code):
         """
         myCursor.execute(query_login, (username.lower(), hashedPassword)) # Check if the username and hashed password exist in the database
         result = myCursor.fetchone()
-        code_verify = True if verify_totp else False
         login_succes = result[0] > 0 if result is not None else False  # Check if match found
     conn.close() # Close the connection
-    return (True, masterPassword, logAttempt) if login_succes and code_verify else (False, None, logAttempt) # Return the result: True if successful login, False otherwise
+    return (True, masterPassword, logAttempt) if login_succes else (False, None, logAttempt) # Return the result: True if successful login, False otherwise
 def register(username, password) -> None:
     try:
-        secret = generateTotp(username)
         conn = connectToDatabase()
         myCursor = conn.cursor() # creates cursor object
-        myCursor.execute(f"INSERT INTO users(username, password, totpSecret) VALUES('{username}', '{hashlib.sha256(password.encode()).hexdigest()}', '{secret}')") # inserts username, password and totp secret into database
+        myCursor.execute(f"INSERT INTO users(username, password) VALUES('{username}', '{hashlib.sha256(password.encode()).hexdigest()}')") # inserts username, password and totp secret into database
         conn.commit()  # Commit on the same connection
         myCursor.close()  # Close cursor
         conn.close()  # Close connection
@@ -78,34 +78,3 @@ def log(username, verify, logReason) -> None:
     myCursor.close()  # Close cursor
     conn.close()  # Close connection
     return
-def generateTotp(username):
-    secret = pyotp.random_base32() # generates a secret key
-    totp = pyotp.TOTP(secret) # create TOTP
-    provisioningUrl = totp.provisioning_uri(username, issuer_name="Password Manager") # generate provisioning URL
-    qr = qrcode.make(provisioningUrl) # Generates QR code and keeps in memory
-    imgBytes = BytesIO()
-    qr.save(imgBytes, format="PNG") # save QR code to memory
-    imgBytes.seek(0)
-    root = Tk() # create Tkinter object
-    root.title("Please scan this code with your authenticator app") # sets title for window
-    image = Image.open(imgBytes) # opens image from memory
-    tkImage = ImageTk.PhotoImage(image) # covert QR code to image Tkinter can display
-    label = Label(root, image=tkImage) # craetes Label widget in Tkinter to hold the QR code
-    label.pack()
-    root.mainloop() # runs tkinter event loop
-    return secret # returns secret key
-def verifyTotp(username, code):
-    conn = connectToDatabase()
-    myCursor = conn.cursor()  # Create cursor object
-    query = "SELECT totpSecret FROM users WHERE username = %s"
-    myCursor.execute(query, (username,))  # Execute the query with parameterized input
-    result = myCursor.fetchone() # Fetch the result and handle if no secret is found
-    is_verified = False
-    try:
-        secret = result[0]  # Get the TOTP secret from the result
-        totp = pyotp.TOTP(secret) # Generate the TOTP object using the secret
-        is_verified = totp.verify(code) # Verify the code and return the result
-    except:
-        pass
-    conn.close() # Close the connection and return the result
-    return is_verified
