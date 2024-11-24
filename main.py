@@ -26,7 +26,8 @@ class Main:
         if account_owner:
             return login(username, password)
         else: 
-            return register(username, password, masterpass=True, account_owner=True)
+            account_owner = True
+            return register(username, password, account_owner, masterpass=True)
     def startPassword(method, username, password, accountname='', accountpassword=''):
         Verify, masterpassword, code = Main.startLogup(account_owner=True, username=username, password=password)
 
@@ -50,8 +51,9 @@ class Main:
 def start(method, account_owner, username, password, accountname='', accountpassword=''):
     if method == "authenticate":
         args = Main.startLogup(account_owner, username, password)
-        translated_args = verifyArgs('return', args)
-        return translated_args
+        if isinstance(args, tuple):
+            return verifyArgs('http', args)
+        return args
     elif method == "password":
         args = Main.startPassword(method, username, password, accountname, accountpassword)
         translated_args = verifyArgs('return', args)

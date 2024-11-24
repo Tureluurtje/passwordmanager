@@ -1,5 +1,6 @@
 import json
 import os
+import re
 root_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(root_dir, '..', 'config/config.json')
 codes = json.load(open(config_path))
@@ -13,7 +14,7 @@ def verifyArgs(method, arg):
         if arg == None:
             code = ''
         else:
-            code = respondHttp(arg)
+            code = respondHttp(arg[1])
         return code
     if method == 'return':
         if arg == None:
