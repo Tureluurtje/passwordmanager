@@ -36,7 +36,7 @@ def authenticate():
         result = start("authenticate", account_owner, username, password)
         pattern = r'Too many failed login attempts. Please try again in \d{2}:\d{2}\ '
         if result == 'Logged in':
-            return jsonify({"message": "Authentication successful"})
+            return jsonify({"message": "Authentication successful"}), 200
         elif result == 'Wrong credentials':
             return jsonify({"error": "Authentication failed"}), 401
         elif re.match(pattern, result):
@@ -61,9 +61,9 @@ def password():
             return jsonify({"error": "missing arguments"}), 400
         result = start("password", password_method, username, password, account_name, account_password)
         if result == '200':
-            return jsonify({"message": "Password added successfully"})
+            return jsonify({"message": "Password added successfully"}), 200
         elif result == '500':
-            return jsonify({"error": "Internal server error"})
+            return jsonify({"error": "Internal server error"}), 500
         elif result == '700':
             return jsonify({"error": "Authentication failed"}), 401
     
