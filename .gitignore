@@ -1,3 +1,2 @@
-config/*
-site/config/
+*.ini
 venv/
