@@ -1,0 +1,4 @@
+config/*
+site/config/
+venv/
+**/config.ini
