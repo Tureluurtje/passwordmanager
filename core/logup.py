@@ -9,22 +9,42 @@ from PIL import Image, ImageTk
 from tkinter import Tk, Label
 import mysql.connector
 
-def connectToDatabase():
+import os
+import configparser
+import mysql.connector
+import sqlite3
+
+def connectToDatabase(db_type="sqlite"):
+    """
+    Connect to the database, supporting both MySQL and SQLite.
+    
+    :param db_type: Type of the database ("mysql" or "sqlite").
+    :return: Database connection object or error.
+    """
     try:
         root_dir = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(root_dir, '..', 'config/config.ini')
         config = configparser.ConfigParser()
         config.read(config_path)
-        mydb = mysql.connector.connect(
-        host=config['database']['host'],
-        user=config['database']['user'],
-        password=config['database']['password'],
-        database=config['database']['db']
-        ) # creates connection to database using a config file
-        return mydb 
-    except mysql.connector.Error as e:
-        test = e
-        return
+        
+        if db_type == "mysql":
+            # MySQL connection
+            return mysql.connector.connect(
+                host=config['mysql']['host'],
+                user=config['mysql']['user'],
+                password=config['mysql']['password'],
+                database=config['mysql']['db']
+            )
+        elif db_type == "sqlite":
+            # SQLite connection
+            db_path = config['sqlite']['path'].replace("__dir__", root_dir)
+            return sqlite3.connect(db_path)
+        else:
+            raise ValueError(f"Unsupported database type: {db_type}")
+    except (mysql.connector.Error, sqlite3.Error) as e:
+        print(f"Database connection error: {e}")
+        return None
+
 def login(username, password):
     logAttempt = True
     login_succes = False
