@@ -5,13 +5,14 @@ import re
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Add the parent directory to the system path
 from main import start
 
-
 app = Flask(__name__)
 
 @app.route('/')
 def home():
     return jsonify({'message': 'Hello, World!'})
-
+@app.route('/ping/')
+def ping():
+    return jsonify('pong')
 @app.route('/api/', methods=['GET'])
 def handle_data():
     method = request.args.get('method')
@@ -44,6 +45,7 @@ def authenticate():
         else:
             return jsonify({"error": "Internal server error"}), 500
     return jsonify({"error": "missing arguments"}), 400
+
 def password():
     password_method = request.args.get('passwordmethod')
     username = request.args.get('username')
@@ -55,7 +57,7 @@ def password():
     else:
         return jsonify({"error": "missing arguments"}), 400
     if password_method == 'add':
-        if account_name and account_password :
+        if account_name and account_password:
             pass
         else:
             return jsonify({"error": "missing arguments"}), 400
@@ -66,9 +68,13 @@ def password():
             return jsonify({"error": "Internal server error"}), 500
         elif result == '700':
             return jsonify({"error": "Authentication failed"}), 401
-    
+        else:
+            return jsonify({"error": "Internal server error"}), 500
+    else:
+        return jsonify({"error": "Invalid password method"}), 400
+
 def start_server():
     app.run(debug=True)
 
 if __name__ == '__main__':
-    start_server()
+    app.run(host='127.0.0.1', port=5000)

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: your_password
+      MYSQL_DATABASE: your_database_name
+      MYSQL_USER: your_username
+      MYSQL_PASSWORD: your_password
+    ports:
+      - "3306:3306"  # Expose MySQL port for external access
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  python_app:
+    build: .
+    container_name: passwordmanager_app
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      CONFIG_FILE: config/config.ini
+    volumes:
+      - .:/app/passwordmanager
+
+volumes:
+  mysql_data:
