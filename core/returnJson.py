@@ -14,7 +14,7 @@ def verifyArgs(method, arg):
         if arg == None:
             code = ''
         else:
-            code = respondHttp(arg[1])
+            code = respondHttp(arg)
         return code
     if method == 'return':
         if arg == None:
