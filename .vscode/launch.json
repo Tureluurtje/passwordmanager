@@ -1,26 +1,19 @@
+// File "launch.json"
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
       {
-          "name": "Python Debugger: Flask",
+          "name": "Flask",
           "type": "debugpy",
           "request": "launch",
-          "module": "flask",
+          "stopOnEntry": false,
+          "program": "${workspaceRoot}/main.py",
           "env": {
-              "FLASK_APP": "api\\app.py",
-              "FLASK_ENV": "development",
-              "FLASK_DEBUG": "1"
+              "FLASK_APP": "${workspaceRoot}/api/app.py"
           },
           "args": [
-              "run",
-              "--no-debugger",
-              "--no-reload"
-          ],
-          "jinja": true,
-          "autoStartBrowser": false
+              "run"
+          ]
       }
   ]
 }

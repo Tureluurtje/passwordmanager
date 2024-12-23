@@ -1,3 +1,2 @@
 from .logup import login, register, log
-from .returnJson import verifyArgs
-from .passwordmanage import addpass
+from .passwordmanage import add_password, get_password, delete_password, update_password
