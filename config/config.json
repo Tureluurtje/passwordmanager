@@ -71,14 +71,6 @@
     "507": "Insufficient Storage",
     "508": "Loop Detected",
     "510": "Not Extended",
-    "511": "Network Authentication Required",
-    "_comment": "From here onwards, the status codes are specific to our special implemtation",
-    "600": "Logged in",
-    "700": "Wrong credentials",
-    "701": "Too many failed login attempts. Please try again in {time_difference[1:}",
-    "702": "Invalid method"
-  },
-  "returnCodes": {
-    "authenticate": "isAuthenticated, information"
+    "511": "Network Authentication Required"
   }
 }

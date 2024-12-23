@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import configparser
@@ -5,7 +6,6 @@ import mysql.connector
 from flask import Flask, jsonify, request
 from core import logup, passwordmanage
 from core.returnJson import verifyArgs
-
 app = Flask(__name__)
 
 @app.route('/')
@@ -66,14 +66,11 @@ def manage_password():
         else:
             return jsonify({"error": "missing arguments"}), 400
         result = handle_request("password", True, username, password, password_method, account_name, account_username, account_password)
-        if result == '200':
-            return jsonify({"message": "Password added successfully"}), 200
-        elif result == '500':
-            return jsonify({"error": "Internal server error"}), 500
-        elif result == '700':
-            return jsonify({"error": "Authentication failed"}), 401
-        else:
-            return jsonify({"error": "Internal server error"}), 500
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(root_dir, 'config/config.json')
+        codes = json.load(open(config_path))
+        returncode = codes["httpCodes"].get(result, 'Invalid code')
+        return jsonify({"message": returncode}), 200
     else:
         return jsonify({"error": "Invalid password method"}), 400
 
@@ -131,7 +128,6 @@ def handle_request(method, account_owner, username, password, password_method=''
         return args
     elif method == "password":
         args = Main.manage_password(password_method, username, password, account_name, account_username, account_password)
-        translated_args = verifyArgs('http', args[1])
         return args[1]
 
 def connect_to_database():
