@@ -2,11 +2,6 @@ import configparser
 import hashlib
 import datetime
 import os
-import pyotp
-import qrcode
-from io import BytesIO
-from PIL import Image, ImageTk
-from tkinter import Tk, Label
 import mysql.connector
 
 def connectToDatabase():

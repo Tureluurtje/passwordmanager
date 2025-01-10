@@ -1,6 +1,5 @@
 import json
 import os
-import re
 import configparser
 import mysql.connector
 from flask import Flask, jsonify, request
@@ -38,13 +37,8 @@ def authenticate():
     password = request.args.get('password')
     if username and password:
         result = handle_request("authenticate", account_owner, username, password)
-        pattern = r'Too many failed login attempts. Please try again in \d{2}:\d{2}\ '
-        if result == 'Logged in':
-            return jsonify({"message": "Authentication successful"}), 200
-        elif result == 'Wrong credentials':
-            return jsonify({"error": "Authentication failed"}), 401
-        elif re.match(pattern, result):
-            return jsonify({"error": result}), 401
+        if result:
+            return jsonify({"message": result}), 200
         else:
             return jsonify({"error": "Internal server error"}), 500
     return jsonify({"error": "missing arguments"}), 400
