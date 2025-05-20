@@ -128,7 +128,7 @@ def add_password(username, master_password, account_name, account_username, acco
             account_password = generatepassword()
         encrypted_password = encrypt_password(account_password, master_password)
         query = "INSERT INTO passwords(username, account_name, account_username, account_password) VALUES(%s, %s, %s, %s)"
-        values = (username, account_name, account_username, account_password,)
+        values = (username, account_name, account_username, encrypted_password,)
         mycursor.execute(query, values)
         db.commit()
         log = True
@@ -139,7 +139,12 @@ def add_password(username, master_password, account_name, account_username, acco
         return False, log
 
 def get_password(user, master_password, account_name):
-    # Implement the logic to get the password
+    try:
+        db = connect_to_database()
+        mycursor = db.cursor()
+        query = "SELECT account_password FROM passwords WHERE username = %s AND account_name = %s"
+    except:
+        pass
     pass
 
 def delete_password(user, master_password, account_name):

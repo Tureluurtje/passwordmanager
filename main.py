@@ -9,16 +9,20 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
+    #Default return
     return jsonify({'message': 'Hello, World!'})
 
 @app.route('/ping/')
 def ping():
+    #Server ping
     return jsonify('pong')
 
 @app.route('/api/', methods=['GET'])
 def handle_data():
+    #First step in request handling
     method = request.args.get('method')
     
+    #Redirect to prefered function
     if method == 'authenticate':
         return authenticate()
     elif method == 'password':
@@ -26,47 +30,58 @@ def handle_data():
         
     return jsonify({"error": "Invalid method"}), 400
 
+def send_response(result):
+    #Translate returncodes and returns to user
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(root_dir, 'config/config.json')
+    with open(config_path) as f:
+        codes = json.load(f)
+    returncode = codes["httpCodes"].get(result, 'Invalid code')
+    return jsonify({"message": result}), 200
+
 def authenticate():
-    try:
-        account_owner = request.args.get('account_owner')
-        if account_owner:
-            account_owner = True
-    except:
-        account_owner = False
+    #Collects possible args 
+    account_owner = request.args.get('account_owner', False)
     username = request.args.get('username')
     password = request.args.get('password')
-    if username and password:
-        result = handle_request("authenticate", account_owner, username, password)
-        if result:
-            return jsonify({"message": result}), 200
-        else:
-            return jsonify({"error": "Internal server error"}), 500
-    return jsonify({"error": "missing arguments"}), 400
+    #Double check for data
+    if not all([username, password]):
+        return jsonify({"error": "Missing arguments"}), 400
+    result = handle_request("authenticate", account_owner, username, password)
+    if not result:
+        return jsonify({"error": "Internal server error"}), 500
+    return send_response(result)
+
+        
 
 def manage_password():
+    #Collects possible args 
     password_method = request.args.get('password_method')
     username = request.args.get('username')
     password = request.args.get('password')
     account_name = request.args.get('account_name')
     account_username = request.args.get('account_username')
     account_password = request.args.get('account_password')
-    if password_method and username and password:
-        pass
-    else:
-        return jsonify({"error": "missing arguments"}), 400
-    if password_method == 'add':
-        if account_name and account_password:
+    if not all([password_method, username, password, account_name]):
+        return jsonify({"error": "Missing arguments"}), 400
+    
+    code, master_password = Main.authenticate_user(True, username, password)
+
+    match password_method.lower:
+        case 'add':  
+            if not all([account_username, account_password]):
+                return jsonify({"error": "Missing arguments"}), 400
+            result = handle_request("password", True, username, password, password_method, account_name, account_username, account_password)
+            return jsonify(result)
+        case 'read':
             pass
-        else:
-            return jsonify({"error": "missing arguments"}), 400
-        result = handle_request("password", True, username, password, password_method, account_name, account_username, account_password)
-        root_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(root_dir, 'config/config.json')
-        codes = json.load(open(config_path))
-        returncode = codes["httpCodes"].get(result, 'Invalid code')
-        return jsonify({"message": returncode}), 200
-    else:
-        return jsonify({"error": "Invalid password method"}), 400
+        case 'edit':
+            pass
+        case 'remove':
+            pass
+        case '_':
+            return jsonify({"error": "Invalid password method"}), 400
+    
 
 class Main:
     @staticmethod
@@ -76,10 +91,10 @@ class Main:
             if log_attempt:
                 if is_logged_in:
                     logup.log(username, 1, "login")
-                    return (True, '600', master_password)
+                    return ('200', master_password)
                 else:
                     logup.log(username, 0, "login")
-                    return (False, '700', master_password)
+                    return ('401', master_password)
             else:
                 return log_attempt
 
@@ -94,17 +109,17 @@ class Main:
 
     @staticmethod
     def manage_password(method, username, password, account_name='', account_username='', account_password=''):
-        is_authenticated, code, master_password = Main.authenticate_user(True, username, password)
+        code, master_password = Main.authenticate_user(True, username, password)
 
         if method == "add":
-            if code == "600":
+            if code == "200":
                 result = passwordmanage.add_password(username, master_password, account_name, account_username, account_password)
                 if result:
                     return (True, '200')
                 else:
                     return (False, '500')
             else:
-                return (False, '700')
+                return (False, '401')
         elif method == "get":
             return passwordmanage.get_password(username, master_password, account_name)
         elif method == "delete":
@@ -117,9 +132,7 @@ class Main:
 def handle_request(method, account_owner, username, password, password_method='', account_name='', account_username='', account_password=''):
     if method == "authenticate":
         args = Main.authenticate_user(account_owner, username, password)
-        if isinstance(args, tuple):
-            return verifyArgs('http', args)
-        return args
+        return args[1]
     elif method == "password":
         args = Main.manage_password(password_method, username, password, account_name, account_username, account_password)
         return args[1]
@@ -136,7 +149,7 @@ def connect_to_database():
         database=config['database']['db']
     )
     return mydb
+return
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
-
+    app.run(host='127.0.0.1' , port=5000)
