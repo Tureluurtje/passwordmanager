@@ -149,7 +149,6 @@ def connect_to_database():
         database=config['database']['db']
     )
     return mydb
-return
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1' , port=5000)
