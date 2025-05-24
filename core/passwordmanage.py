@@ -26,7 +26,7 @@ def connect_to_database():
         )
         return mydb 
     except mysql.connector.Error as e:
-        return None
+        return e
 
 def login(username, password):
     conn = connect_to_database()
