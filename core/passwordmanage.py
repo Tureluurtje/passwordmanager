@@ -12,7 +12,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 import base64
 
-def connect_to_database():
+def connect_to_database() -> object:
     try:
         root_dir = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(root_dir, '..', 'config/config.ini')

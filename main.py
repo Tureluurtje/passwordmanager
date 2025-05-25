@@ -4,7 +4,6 @@ import configparser
 import mysql.connector
 from flask import Flask, jsonify, request
 from core import logup, passwordmanage
-from core.returnJson import verifyArgs
 app = Flask(__name__)
 
 @app.route('/')
@@ -50,7 +49,7 @@ def authenticate():
     result = handle_request("authenticate", account_owner, username, password)
     if not result:
         return jsonify({"error": "Internal server error"}), 500
-    return send_response(result)
+    return send_response(result[0])
 
         
 

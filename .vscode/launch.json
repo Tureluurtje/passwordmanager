@@ -9,7 +9,7 @@
           "stopOnEntry": false,
           "program": "${workspaceRoot}/main.py",
           "env": {
-              "FLASK_APP": "${workspaceRoot}/api/app.py"
+              "FLASK_APP": "${workspaceRoot}/main.py"
           },
           "args": [
               "run"
