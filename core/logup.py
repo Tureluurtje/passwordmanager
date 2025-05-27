@@ -1,7 +1,7 @@
 import hashlib
 import datetime
 
-from core.server import connectToDatabase
+from core.connection import connectToDatabase
 
 class AuthenticationManager:
     def __init__(self):
