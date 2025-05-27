@@ -7,11 +7,17 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 import base64
 
-from server import connect_to_database
+from core.connection import connectToDatabase
+from core.logup import AuthenticationManager
 
 class PasswordManager:
-    def __init__(self):
-        pass
+    def __init__(self, username=None, master_password=None):
+        if username is None or master_password is None:
+            return ["Username and master password must be provided.", 400]
+        userAuthenticated = AuthenticationManager.login(username, master_password)
+        if userAuthenticated == False:
+            return ["Authentication failed. Please check your credentials.", 401]
+        return
     def add_password(username, master_password, account_name, account_username, account_password):
         def generatepassword():
             lowercase_chars = string.ascii_lowercase
@@ -43,7 +49,7 @@ class PasswordManager:
                 encrypted_password = fernet.encrypt(account_password.encode())
                 return encrypted_password
         try:
-            db = connect_to_database()
+            db = connectToDatabase()
             mycursor = db.cursor()
             if account_password != '':
                 pass
@@ -63,7 +69,7 @@ class PasswordManager:
 
     def get_password(user, master_password, account_name):
         try:
-            db = connect_to_database()
+            db = connectToDatabase()
             mycursor = db.cursor()
             query = "SELECT account_password FROM passwords WHERE username = %s AND account_name = %s"
         except:
