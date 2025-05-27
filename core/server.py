@@ -1,7 +1,7 @@
 import os
 import configparser
 import mysql.connector
-from logup import AuthenticationManager
+from core.logup import AuthenticationManager
 from passwordmanage import PasswordManager
 
 def connectToDatabase():

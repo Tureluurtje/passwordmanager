@@ -1,30 +1,29 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  db:
-    image: mysql:8.0
-    container_name: mysql_db
-    environment:
-      MYSQL_ROOT_***REMOVED***: your_password
-      MYSQL_DATABASE: your_database_name
-      MYSQL_USER: your_username
-      MYSQL_***REMOVED***: your_password
-    ports:
-      - "3306:3306"  # Expose MySQL port for external access
-    volumes:
-      - mysql_data:/var/lib/mysql
-
-  python_app:
+  app:
     build: .
-    container_name: passwordmanager_app
+    ports:
+      - "127.0.0.1:5000:5000"
     depends_on:
       - db
-    ports:
-      - "5000:5000"
     environment:
-      CONFIG_FILE: config/config.ini
+      FLASK_ENV: development
+      DB_HOST: db
+      DB_USER: root
+      DB_***REMOVED***: example
+      DB_NAME: mydatabase
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_***REMOVED***: example
+      MYSQL_DATABASE: mydatabase
+    ports:
+      - "3306:3306"
     volumes:
-      - .:/app/passwordmanager
+      - db_data:/var/lib/mysql
 
 volumes:
-  mysql_data:
+  db_data:
