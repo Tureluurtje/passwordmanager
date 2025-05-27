@@ -1,7 +1,16 @@
+from mysql.connector.connection_cext import CMySQLConnection
+
 from core.logup import AuthenticationManager
 from core.passwordmanage import PasswordManager
+from core.connection import connectToDatabase
 
 def requestHandler(req):
+    try:
+        conn = connectToDatabase()
+        if conn != CMySQLConnection:
+            raise ConnectionError("Failed to connect to the database")
+    except Exception as e:
+        return {"error": str(e)}, 500
     requestMethod = req.args.get('requestMethod')
 
     if not requestMethod:
@@ -20,7 +29,7 @@ def handleAuthentication(req):
     password = req.args.get("password")
     action = req.args.get("action")
 
-    missing = [name for name, value in [("username", username), ("password", password), ("action")] if not value]
+    missing = [name for name, value in [("username", username), ("password", password), ("action", action)] if not value]
     if missing:
         raise ValueError(f"Missing arguments: {', '.join(missing)}")
     

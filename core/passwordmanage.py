@@ -8,10 +8,16 @@ from cryptography.hazmat.primitives import hashes
 import base64
 
 from core.connection import connectToDatabase
+from core.logup import AuthenticationManager
 
 class PasswordManager:
-    def __init__(self):
-        pass
+    def __init__(self, username=None, master_password=None):
+        if username is None or master_password is None:
+            return ["Username and master password must be provided.", 400]
+        userAuthenticated = AuthenticationManager.login(username, master_password)
+        if userAuthenticated == False:
+            return ["Authentication failed. Please check your credentials.", 401]
+        return
     def add_password(username, master_password, account_name, account_username, account_password):
         def generatepassword():
             lowercase_chars = string.ascii_lowercase
