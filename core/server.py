@@ -32,7 +32,7 @@ def requestHandler(req):
         case "password":
             return handlePassword(req)
         case _:
-            raise ValueError(f"Invalid request method: {"requestMethod"}")
+            raise ValueError(f"Invalid request method: {requestMethod}")
         
 def handleAuthentication(req):
     username = req.args.get("username")
@@ -52,13 +52,13 @@ def handleAuthentication(req):
     
 def handlePassword(req):
     username = req.args.get("username")
-    master_password = req.args.get("master_password")
-    credentialName = req.args.get("account_name", "")
-    credentialUsername = req.args.get("account_username", "")
-    credentialPassword = req.args.get("account_password", "")
+    masterPassword = req.args.get("masterPassword")
+    credentialName = req.args.get("credentialName", "")
+    credentialUsername = req.args.get("credentialUsername", "")
+    credentialPassword = req.args.get("credentialPassword", "")
     action = req.args.get("action")
 
-    missing = [name for name, value in [("username", username), ("master_password", master_password), ("action")] if not value]
+    missing = [name for name, value in [("username", username), ("master_password", masterPassword), ("action")] if not value]
     if missing:
         raise ValueError(f"Missing arguments: {', '.join(missing)}")
 
