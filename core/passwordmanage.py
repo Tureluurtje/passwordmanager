@@ -7,8 +7,6 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 import base64
 
-
-
 class PasswordManager:
     def __init__(self, connectToDatabase=None):
         if connectToDatabase :
