@@ -7,12 +7,16 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 import base64
 
-from server import connect_to_database
+
 
 class PasswordManager:
-    def __init__(self):
-        pass
-    def add_password(username, master_password, account_name, account_username, account_password):
+    def __init__(self, connectToDatabase=None):
+        if connectToDatabase :
+            self.connectToDatabase = connectToDatabase
+        else:
+            raise ValueError("connectToDatabase function is required")
+        
+    def add_password(self, username, master_password, account_name, account_username, account_password):
         def generatepassword():
             lowercase_chars = string.ascii_lowercase
             uppercase_chars = string.ascii_uppercase
@@ -43,7 +47,7 @@ class PasswordManager:
                 encrypted_password = fernet.encrypt(account_password.encode())
                 return encrypted_password
         try:
-            db = connect_to_database()
+            db = self.connectToDatabase()
             mycursor = db.cursor()
             if account_password != '':
                 pass
@@ -61,9 +65,9 @@ class PasswordManager:
             log = False
             return False, log
 
-    def get_password(user, master_password, account_name):
+    def get_password(self, user, master_password, account_name):
         try:
-            db = connect_to_database()
+            db = self.connectToDatabase()
             mycursor = db.cursor()
             query = "SELECT account_password FROM passwords WHERE username = %s AND account_name = %s"
         except:

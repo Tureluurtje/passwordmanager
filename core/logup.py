@@ -1,17 +1,17 @@
 import hashlib
 import datetime
 
-from core.server import connectToDatabase
-
 class AuthenticationManager:
-    def __init__(self):
-        pass
-    
-    @staticmethod
-    def login(username, password):
+    def __init__(self, connectToDatabase=None):
+        if connectToDatabase :
+            self.connectToDatabase = connectToDatabase
+        else:
+            raise ValueError("connectToDatabase function is required")
+        
+    def login(self, username, password):
         logAttempt = True
         login_succes = False
-        conn = connectToDatabase()
+        conn = self.connectToDatabase()
         myCursor = conn.cursor()  # creates cursor object
         query_failed_attempts = """
             SELECT COUNT(*) 
@@ -41,12 +41,11 @@ class AuthenticationManager:
             result = myCursor.fetchone()
             login_succes = result[0] > 0 if result is not None else False  # Check if match found
         conn.close() # Close the connection
-        return (True, masterPassword, logAttempt) if login_succes else (False, None, logAttempt) # Return the result: True if successful login, False otherwise
+        return (True, masterPassword) if login_succes else (False, None) # Return the result: True if successful login, False otherwise
 
-    @staticmethod
-    def register(username, password) -> None:
+    def register(self, username, password) -> None:
         try:
-            conn = connectToDatabase()
+            conn = self.connectToDatabase()
             myCursor = conn.cursor() # creates cursor object
             myCursor.execute(f"INSERT INTO users(username, password) VALUES('{username}', '{hashlib.sha256(password.encode()).hexdigest()}')") # inserts username, password and totp secret into database
             conn.commit()  # Commit on the same connection
@@ -56,8 +55,7 @@ class AuthenticationManager:
         except:
             return False
     
-def log(username, verify, logReason) -> None:
-    conn = connectToDatabase()
+def log(conn, username, verify, logReason) -> None:
     myCursor = conn.cursor() #creates cursor object
     myCursor.execute(f"INSERT INTO log(user, action, date, verify) VALUES(%s, %s, %s, %s)", (username, logReason, datetime.datetime.now(), verify,)) # inserts log of the users action into the database
     conn.commit()  # Commit on the same connection

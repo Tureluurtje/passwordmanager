@@ -1,8 +1,8 @@
 import os
 import configparser
 import mysql.connector
-from logup import AuthenticationManager
-from passwordmanage import PasswordManager
+from core.logup import AuthenticationManager
+from core.passwordmanage import PasswordManager
 
 def connectToDatabase():
     try:
@@ -43,10 +43,12 @@ def handleAuthentication(req):
     if missing:
         raise ValueError(f"Missing arguments: {', '.join(missing)}")
     
+    authenticationManagerObj = AuthenticationManager(connectToDatabase())
+    
     if action == "login":
-        return AuthenticationManager.login(username, password)
+        return authenticationManagerObj.login(username, password)
     elif action == "register":
-        return AuthenticationManager.register(username, password)
+        return authenticationManagerObj.register(username, password)
     
 def handlePassword(req):
     username = req.args.get("username")
@@ -60,15 +62,15 @@ def handlePassword(req):
     if missing:
         raise ValueError(f"Missing arguments: {', '.join(missing)}")
 
-    password_manager = PasswordManager()
+    passwordManagerObj = PasswordManager(connectToDatabase())
 
     if action == "add":
-        return password_manager.add_password(username, master_password, credentialName, credentialUsername, credentialPassword)
+        return passwordManagerObj.add_password(username, master_password, credentialName, credentialUsername, credentialPassword)
     elif action == "get":
-        return password_manager.get_password(username, master_password, credentialName)
+        return passwordManagerObj.get_password(username, master_password, credentialName)
     elif action == "delete":
-        return password_manager.delete_password(username, master_password, credentialName)
+        return passwordManagerObj.delete_password(username, master_password, credentialName)
     elif action == "update":
-        return password_manager.update_password(username, master_password, credentialName, credentialPassword)
+        return passwordManagerObj.update_password(username, master_password, credentialName, credentialPassword)
     else:
         raise ValueError(f"Invalid action: {action}")
