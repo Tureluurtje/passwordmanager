@@ -1,64 +1,71 @@
 import hashlib
 import datetime
+import secrets
+import time
 
 class AuthenticationManager:
     def __init__(self, connectToDatabase=None):
-        if connectToDatabase :
-            self.connectToDatabase = connectToDatabase
-        else:
-            raise ValueError("connectToDatabase function is required")
+        if connectToDatabase is None:
+            raise ValueError("connectToDatabase is required")
+        self.connectToDatabase = connectToDatabase
         
-    def login(self, username, password):
-        logAttempt = True
-        login_succes = False
-        conn = self.connectToDatabase()
-        myCursor = conn.cursor()  # creates cursor object
-        query_failed_attempts = """
-            SELECT COUNT(*) 
-            FROM log 
-            WHERE user = %s
-            AND action = 'login'
-            AND verify = 0
-            AND date >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)
-        """
-        myCursor.execute(query_failed_attempts, (username,)) # Check for failed login attempts of username in the last 10 minutes
-        failedLoginAttempts = myCursor.fetchone()[0]  # fetch failed login attempts
-        if failedLoginAttempts >= 5: # If more than 5 failed login attempts, exit
-            myCursor.execute(f"SELECT TIME_FORMAT(TIMEDIFF((DATE_SUB(NOW(6), INTERVAL 10 MINUTE)), (SELECT date from log WHERE user='{username}' AND verify='0' ORDER BY date DESC LIMIT 1)), '%i:%s') AS TIME_DIFFERENCE;")
-            logAttempt = False
-            time_difference = myCursor.fetchone()[0]
-            logAttempt = (f"Too many failed login attempts. Please try again in {time_difference[1:]} ")
+    def login(self, username, password) -> bool:
+        hasAuthToken = AuthenticationManager(self.connectToDatabase).verifyAuthToken(username)
+        if hasAuthToken:
+            return True
         else:
-            masterPassword = hashlib.sha256(username.encode() + password.encode()).hexdigest()  # hashed username + password
-            hashedPassword = hashlib.sha256(password.encode()).hexdigest() # hashed password only
-            query_login = """
-                SELECT COUNT(*)
-                FROM users
-                WHERE username = %s
-                AND password = %s
-            """
-            myCursor.execute(query_login, (username.lower(), hashedPassword)) # Check if the username and hashed password exist in the database
+            conn = self.connectToDatabase()  # Get a new connectionwith self.connectToDatabase() as conn:
+            myCursor = conn.cursor()
+            myCursor.execute("SELECT COUNT(*) FROM users WHERE username = %s AND password = %s", (username.lower(), password))  # Check if the username exists in the database
             result = myCursor.fetchone()
-            login_succes = result[0] > 0 if result is not None else False  # Check if match found
-        conn.close() # Close the connection
-        return (True, masterPassword) if login_succes else (False, None) # Return the result: True if successful login, False otherwise
+            myCursor.close()  # Close cursor
+            if result:  # Check if match found
+                if AuthenticationManager(self.connectToDatabase).generateAuthToken(username):  # Generate auth token if username exists
+                    return True
+            return False
 
-    def register(self, username, password) -> None:
+    def register(self, username, password) -> bool:
         try:
-            conn = self.connectToDatabase()
+            conn = self.connectToDatabase()  # Get a new connection
             myCursor = conn.cursor() # creates cursor object
             myCursor.execute(f"INSERT INTO users(username, password) VALUES('{username}', '{hashlib.sha256(password.encode()).hexdigest()}')") # inserts username, password and totp secret into database
             conn.commit()  # Commit on the same connection
             myCursor.close()  # Close cursor
-            conn.close()  # Close connection
             return True
         except:
             return False
-    
+        
+    def generateAuthToken(self, username) -> bool:
+        token = secrets.token_urlsafe(32) # Generate a random token
+        expiresAt = int(time.time()) + 300 # Token expires in 5 minutes
+        try:
+            conn = self.connectToDatabase()  # Get a new connection
+            myCursor = conn.cursor() # creates cursor object
+            myCursor.execute(
+                "INSERT INTO auth_tokens(username, token, expires_at) VALUES(%s, %s, %s)"
+                "ON CONFLICT (username) DO UPDATE SET token = EXCLUDED.token, expires_at = EXCLUDED.expires_at",
+                (username, token, expiresAt)) # inserts token into database
+            conn.commit()  # Commit on the same connection
+            myCursor.close()  # Close cursor
+            return True
+        except Exception:
+            return False
+        
+    def verifyAuthToken(self, username) -> bool:
+        conn = self.connectToDatabase()  # Get a new connection
+        myCursor = conn.cursor()
+        myCursor.execute("SELECT token, expires_at FROM auth_tokens WHERE username = %s", (username,))
+        result = myCursor.fetchone()
+        myCursor.close()
+        if result:
+            username, expires_at = result
+            if int(time.time()) < expires_at:
+                return True
+        return False
+        
 def log(conn, username, verify, logReason) -> None:
     myCursor = conn.cursor() #creates cursor object
     myCursor.execute(f"INSERT INTO log(user, action, date, verify) VALUES(%s, %s, %s, %s)", (username, logReason, datetime.datetime.now(), verify,)) # inserts log of the users action into the database
     conn.commit()  # Commit on the same connection
     myCursor.close()  # Close cursor
-    conn.close()  # Close connection
     return

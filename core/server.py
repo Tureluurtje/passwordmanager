@@ -39,10 +39,12 @@ def handleAuthentication(req):
     password = req.args.get("password")
     action = req.args.get("action")
 
-    missing = [name for name, value in [("username", username), ("password", password), ("action")] if not value]
+    missing = [name for name, value in [("username", username), ("password", password), ("action", action)] if not value]
     if missing:
         raise ValueError(f"Missing arguments: {', '.join(missing)}")
     
+    if isinstance(connectToDatabase(), mysql.connector.Error):
+        raise connectToDatabase()  # Raise the database connection error if it occurred
     authenticationManagerObj = AuthenticationManager(connectToDatabase())
     
     if action == "login":
@@ -58,19 +60,19 @@ def handlePassword(req):
     credentialPassword = req.args.get("credentialPassword", "")
     action = req.args.get("action")
 
-    missing = [name for name, value in [("username", username), ("master_password", masterPassword), ("action")] if not value]
+    missing = [name for name, value in [("username", username), ("master_password", masterPassword), ("action", action)] if not value]
     if missing:
         raise ValueError(f"Missing arguments: {', '.join(missing)}")
 
     passwordManagerObj = PasswordManager(connectToDatabase())
 
     if action == "add":
-        return passwordManagerObj.add_password(username, master_password, credentialName, credentialUsername, credentialPassword)
+        return passwordManagerObj.add_password(username, masterPassword, credentialName, credentialUsername, credentialPassword)
     elif action == "get":
-        return passwordManagerObj.get_password(username, master_password, credentialName)
+        return passwordManagerObj.get_password(username, masterPassword, credentialName)
     elif action == "delete":
-        return passwordManagerObj.delete_password(username, master_password, credentialName)
+        return passwordManagerObj.delete_password(username, masterPassword, credentialName)
     elif action == "update":
-        return passwordManagerObj.update_password(username, master_password, credentialName, credentialPassword)
+        return passwordManagerObj.update_password(username, masterPassword, credentialName, credentialPassword)
     else:
         raise ValueError(f"Invalid action: {action}")
