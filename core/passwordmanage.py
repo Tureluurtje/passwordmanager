@@ -7,18 +7,14 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 import base64
 
-from core.connection import connectToDatabase
-from core.logup import AuthenticationManager
-
 class PasswordManager:
-    def __init__(self, username=None, master_password=None):
-        if username is None or master_password is None:
-            return ["Username and master password must be provided.", 400]
-        userAuthenticated = AuthenticationManager.login(username, master_password)
-        if userAuthenticated == False:
-            return ["Authentication failed. Please check your credentials.", 401]
-        return
-    def add_password(username, master_password, account_name, account_username, account_password):
+    def __init__(self, connectToDatabase=None):
+        if connectToDatabase :
+            self.connectToDatabase = connectToDatabase
+        else:
+            raise ValueError("connectToDatabase function is required")
+        
+    def add_password(self, username, master_password, account_name, account_username, account_password):
         def generatepassword():
             lowercase_chars = string.ascii_lowercase
             uppercase_chars = string.ascii_uppercase
@@ -49,7 +45,7 @@ class PasswordManager:
                 encrypted_password = fernet.encrypt(account_password.encode())
                 return encrypted_password
         try:
-            db = connectToDatabase()
+            db = self.connectToDatabase()
             mycursor = db.cursor()
             if account_password != '':
                 pass
@@ -67,9 +63,9 @@ class PasswordManager:
             log = False
             return False, log
 
-    def get_password(user, master_password, account_name):
+    def get_password(self, user, master_password, account_name):
         try:
-            db = connectToDatabase()
+            db = self.connectToDatabase()
             mycursor = db.cursor()
             query = "SELECT account_password FROM passwords WHERE username = %s AND account_name = %s"
         except:

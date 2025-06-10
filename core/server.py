@@ -1,14 +1,50 @@
+import os
+import configparser
+import mysql.connector
+
 from mysql.connector.connection_cext import CMySQLConnection
 
 from core.logup import AuthenticationManager
 from core.passwordmanage import PasswordManager
-from core.connection import connectToDatabase
+
+def connectToDatabase():
+    try:
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(root_dir, '..', 'config/config.ini')
+        config = configparser.ConfigParser()
+        config.read(config_path)
+        mydb = mysql.connector.connect(
+        host=config['database']['host'],
+        user=config['database']['user'],
+        password=config['database']['password'],
+        database=config['database']['db']
+        ) # creates connection to database using a config file
+        return mydb 
+    except mysql.connector.Error:
+        return None
+
+def connectToDatabase():
+    try:
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(root_dir, '..', 'config/config.ini')
+        config = configparser.ConfigParser()
+        config.read(config_path)
+        mydb = mysql.connector.connect(
+        host=config['database']['host'],
+        user=config['database']['user'],
+        password=config['database']['password'],
+        database=config['database']['db']
+        ) # creates connection to database using a config file
+        return mydb 
+    except mysql.connector.Error:
+        return None
 
 def requestHandler(req):
     try:
         conn = connectToDatabase()
-        if conn != CMySQLConnection:
+        if conn == CMySQLConnection:
             raise ConnectionError("Failed to connect to the database")
+        conn.close()  # Close the connection if it was successful
     except Exception as e:
         return {"error": str(e)}, 500
     requestMethod = req.args.get('requestMethod')
@@ -33,10 +69,16 @@ def handleAuthentication(req):
     if missing:
         raise ValueError(f"Missing arguments: {', '.join(missing)}")
     
+    
+    dbConnection = connectToDatabase()
+    if not dbConnection:
+        raise ValueError("Could not connect to the database")
+    AuthenticationManagerObj = AuthenticationManager(dbConnection)
+    
     if action == "login":
-        return AuthenticationManager.login(username, password)
+        return AuthenticationManagerObj.login(username, password)
     elif action == "register":
-        return AuthenticationManager.register(username, password)
+        return AuthenticationManagerObj.register(username, password)
     
 def handlePassword(req):
     username = req.args.get("username")
