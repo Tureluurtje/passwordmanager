@@ -1,9 +1,7 @@
 from flask import Flask, jsonify, request
-
 from core.server import requestHandler
 
 app = Flask(__name__)
-
 
 @app.route('/')
 def home():
@@ -29,4 +27,6 @@ def requestReceiver():
         }), 400
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1' , port=5000)
+    app.run(debug=False, host='127.0.0.1', port=5000)  # Run the Flask app on localhost:5000
+# Note: In production, use a proper WSGI server like Gunicorn or uWSGI.
+# This is a simple Flask application that serves as an API for password management.
