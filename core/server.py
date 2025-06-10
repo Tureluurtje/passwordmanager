@@ -1,6 +1,9 @@
 import os
 import configparser
 import mysql.connector
+
+from mysql.connector.connection_cext import CMySQLConnection
+
 from core.logup import AuthenticationManager
 from core.passwordmanage import PasswordManager
 
@@ -17,10 +20,17 @@ def connectToDatabase():
         database=config['database']['db']
         ) # creates connection to database using a config file
         return mydb 
-    except mysql.connector.Error as e:
-        return e
+    except mysql.connector.Error:
+        return None
 
 def requestHandler(req):
+    try:
+        conn = connectToDatabase()
+        if conn == CMySQLConnection:
+            raise ConnectionError("Failed to connect to the database")
+        conn.close()  # Close the connection if it was successful
+    except Exception as e:
+        return {"error": str(e)}, 500
     requestMethod = req.args.get('requestMethod')
 
     if not requestMethod:
@@ -43,14 +53,16 @@ def handleAuthentication(req):
     if missing:
         raise ValueError(f"Missing arguments: {', '.join(missing)}")
     
-    if isinstance(connectToDatabase(), mysql.connector.Error):
-        raise connectToDatabase()  # Raise the database connection error if it occurred
-    authenticationManagerObj = AuthenticationManager(connectToDatabase())
+    
+    dbConnection = connectToDatabase()
+    if not dbConnection:
+        raise ValueError("Could not connect to the database")
+    AuthenticationManagerObj = AuthenticationManager(dbConnection)
     
     if action == "login":
-        return authenticationManagerObj.login(username, password)
+        return AuthenticationManagerObj.login(username, password)
     elif action == "register":
-        return authenticationManagerObj.register(username, password)
+        return AuthenticationManagerObj.register(username, password)
     
 def handlePassword(req):
     username = req.args.get("username")
@@ -60,19 +72,17 @@ def handlePassword(req):
     credentialPassword = req.args.get("credentialPassword", "")
     action = req.args.get("action")
 
-    missing = [name for name, value in [("username", username), ("master_password", masterPassword), ("action", action)] if not value]
+    missing = [name for name, value in [("username", username), ("master_password", masterPassword), ("action")] if not value]
     if missing:
         raise ValueError(f"Missing arguments: {', '.join(missing)}")
 
-    passwordManagerObj = PasswordManager(connectToDatabase())
-
     if action == "add":
-        return passwordManagerObj.add_password(username, masterPassword, credentialName, credentialUsername, credentialPassword)
+        return PasswordManager().add_password(username, masterPassword, credentialName, credentialUsername, credentialPassword)
     elif action == "get":
-        return passwordManagerObj.get_password(username, masterPassword, credentialName)
+        return PasswordManager().get_password(username, masterPassword, credentialName)
     elif action == "delete":
-        return passwordManagerObj.delete_password(username, masterPassword, credentialName)
+        return PasswordManager().delete_password(username, masterPassword, credentialName)
     elif action == "update":
-        return passwordManagerObj.update_password(username, masterPassword, credentialName, credentialPassword)
+        return PasswordManager().update_password(username, masterPassword, credentialName, credentialPassword)
     else:
         raise ValueError(f"Invalid action: {action}")
