@@ -25,7 +25,7 @@ class PasswordManager:
             for _ in range(4):
                 part = ''.join(random.choices(all_chars, k=4))
                 password_parts.append(part)
-            password = '-'.join(password_parts)
+            password = '-'.join(password_parts) 
             return password
         def generate_key(master_password):
             salt = b'salt_'
@@ -63,7 +63,11 @@ class PasswordManager:
             log = False
             return False, log
 
-    def get_password(self, user, master_password, account_name):
+
+    def addPassword(self, username, token, credentials_title, credentials_username, credentials_password, credentials_url=None, credentials_notes=None, credentials_category=None):
+        pass
+
+    def get_password(self, user, token, account_name):
         try:
             db = self.connectToDatabase()
             mycursor = db.cursor()
