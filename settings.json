@@ -1,0 +1,952 @@
+// General editor settings
+
+{
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[php]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "prettier.requireConfig": false,
+
+  "apc.electron": {
+    "backgroundColor": "#00000000",
+    "frame": false,
+    "vibrancy": "fullscreen-ui",
+    "visualEffectState": "active",
+    "titleBarStyle": "hidden",
+    "trafficLightPosition": {
+      "x": 15,
+      "y": 14
+    }
+  },
+  "window.title": "${rootName}",
+  "window.titleSeparator": " | ",
+
+  // Window and margin settings
+  "window.newWindowDimensions": "inherit",
+  "terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font, Consolas, 'Courier New', monospace",
+  // "editor.fontFamily": "Liga SFMono Nerd Font Light, Consolas, 'Courier New', monospace",
+  //"editor.fontFamily": "Cascadia code light, Consolas, 'Courier New', monospace",
+
+  "editor.fontFamily": "'Cascadia Code ExtraLight', 'Cascadia Code', Menlo, Monaco, monospace",
+
+  //"editor.fontFamily": "'Cascadia Code ExtraLight', Menlo, Monaco, monospace"
+
+  // "editor.fontFamily": "Cascadia Mono, Consolas, 'Courier New', monospace",
+  // "editor.fontFamily": "Dank Mono, Consolas, 'Courier New', monospace",
+  // "editor.fontFamily": "SF Mono Light, Consolas, 'Courier New', monospace",
+  // "editor.fontFamily": "CaskaydiaCove Nerd Font, Consolas, 'Courier New', monospace",
+  // "editor.fontFamily": "DejaVu Sans Mono, Consolas, 'Courier New', monospace",
+  // "editor.fontFamily": "Monaspace Krypton, Consolas, 'Courier New', monospace",
+  "apc.font.family": "Cascadia Code, Consolas, 'Courier New', monospace",
+  "apc.header": {
+    "height": 32,
+    "fontSize": 11
+  },
+  "editor.lineHeight": 1.9,
+  // "editor.letterSpacing": 0.3,
+  // "editor.tabSize": 2,
+  // "editor.wordWrap": "on",
+  // "editor.wordWrapColumn": 80,
+  // "editor.wrappingIndent": "same",
+  // "editor.wordWrapMinified": true,
+  // "editor.cursorBlinking": "solid",
+  // "editor.cursorSmoothCaretAnimation": "on",
+  "editor.fontLigatures": true,
+  // "editor.fontSize": 11.3,
+  "editor.fontSize": 11.6,
+  "editor.fontWeight": "370",
+  "editor.formatOnSave": true,
+  "editor.hideCursorInOverviewRuler": true,
+  "editor.lightbulb.enabled": "off",
+  "editor.linkedEditing": true,
+  "editor.minimap.maxColumn": 100,
+  "editor.minimap.renderCharacters": false,
+  "editor.occurrencesHighlight": "off",
+  "editor.parameterHints.enabled": false,
+  "editor.selectionHighlight": false,
+
+  // font size workbench
+
+  // GitHub Copilot settings
+  "github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false,
+    "java": false,
+    "yaml": false,
+    "javascript": false,
+    "typescriptreact": true,
+    "python": false
+  },
+
+  // Terminal settings
+  "terminal.integrated.defaultLocation": "view",
+  "terminal.integrated.fontSize": 11.5,
+  "terminal.integrated.lineHeight": 1.2,
+  "terminal.integrated.fontWeight": "380",
+  "terminal.integrated.gpuAcceleration": "on",
+  "terminal.integrated.cursorStyle": "block",
+  "terminal.integrated.tabs.enabled": true,
+  "terminal.integrated.tabs.location": "right",
+  "terminal.integrated.profiles.windows": {
+    "Powershell": {
+      "args": [],
+      "icon": "terminal-powershell",
+      "path": [
+        "${env:windir}\\Sysnative\\powershell",
+        "${env:windir}\\System32\\powershell.exe"
+      ]
+    },
+    "Command Prompt": {
+      "args": [],
+      "icon": "terminal-powershell",
+      "path": ["C:\\Windows\\System32\\cmd.exe"]
+    },
+    "Git Bash": {
+      "source": "Git Bash"
+    },
+    "PowerShell": {
+      "icon": "terminal-powershell",
+      "source": "PowerShell"
+    },
+    "Zsh (WSL)": {
+      "path": "wsl.exe",
+      "args": ["-d", "Ubuntu", "--exec", "/usr/bin/zsh"]
+    }
+  },
+  "terminal.integrated.profiles.osx": {
+    "zsh": {
+      "path": "/bin/zsh",
+      "overrideName": true
+    }
+  },
+  "terminal.integrated.defaultProfile.osx": "sh",
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+
+  // GitLens settings
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.hovers.currentLine.enabled": false,
+  "gitlens.blame.line.enabled": false, // was working in previous versions
+  "gitlens.currentLine.enabled": false, // in modern version
+  "gitlens.codeLens.authors.enabled": false,
+  "gitlens.codeLens.recentChange.enabled": false,
+
+  // File explorer settings
+  "symbols.hidesExplorerArrows": false,
+  "explorer.compactFolders": false,
+  "explorer.openEditors.visible": 1,
+
+  // File decorations settings
+  "files.exclude": {
+    "/.classpath": true,
+    "/.factorypath": true,
+    "/.project": true,
+    "/.settings": true
+  },
+  "files.watcherExclude": {
+    "/.git/objects/": true,
+    "/node_modules/": true
+  },
+
+  // Minimap settings
+  "editor.minimap.autohide": true,
+
+  // Indentation guide settings
+  "indenticator.showIndentGuide": false,
+  "editor.guides.highlightActiveBracketPair": false,
+  "editor.guides.indentation": false,
+  "indenticator.color.dark": "rgba(255,255,255,0.1)",
+  "indenticator.color.light": "rgba(0,0,0,0.1)",
+  "indenticator.hover.peekBack": 100,
+  "indenticator.hover.peekForward": 100,
+  "indenticator.inner.hover.peekBack": 0,
+  "indenticator.inner.hover.peekForward": 1,
+  "indenticator.showCurrentDepthInStatusBar": false,
+  "indenticator.width": 0.1,
+  "editor.bracketPairColorization.enabled": false,
+  // "editor.matchBrackets": "near",
+
+  // Integrated terminal and Git settings
+  "git.autofetch": true,
+  "terminal.integrated.shellIntegration.decorationsEnabled": "never",
+  "workbench.panel.defaultLocation": "bottom",
+  "workbench.view.alwaysShowHeaderActions": true,
+  "workbench.tree.renderIndentGuides": "none",
+  "workbench.startupEditor": "none",
+  "workbench.layoutControl.type": "both",
+  "workbench.editor.enablePreview": true,
+  "editor.multiCursorModifier": "alt",
+
+  // Custom CSS settings for specific themes
+  "workbench.colorCustomizations": {
+    "list.focusOutline": "#00000000",
+
+    "[Best Themes - Github Dark Dimmed]": {
+      // "editor.background": "#1e1e1e",
+      "editorGroupHeader.tabsBackground": "#1c2128",
+      "titleBar.activeBackground": "#1c2128",
+      "titleBar.inactiveBackground": "#1c2128",
+      "activityBar.background": "#1c2128",
+      "statusBar.background": "#1c2128",
+      "statusBar.border": "#00000000"
+      // "tab.activeBackground": "#1e1e1e",
+      // "tab.inactiveBackground": "#1e1e1e",
+      // "tab.hoverBackground": "#1e1e1e",
+      // "editorGutter.background": "#1e1e1e",
+      // "editorGroupHeader.tabsBorder": "#1e1e1e",
+      // "sideBar.background": "#1e1e1e",
+      // "sideBar.foreground": "#d5d5d5a9",
+      // "statusBar.background": "#1e1e1e",
+      // "activityBar.background": "#1e1e1e",
+      // "titleBar.activeBackground": "#1e1e1e",
+      // "titleBar.inactiveBackground": "#1e1e1e",
+      // "panel.background": "#1e1e1e",
+      // "panel.border": "#00000000",
+      // "terminal.background": "#1e1e1e",
+      // "terminal.foreground": "#d5d5d5",
+      // "terminalCursor.background": "#d5d5d5",
+      // "terminalCursor.foreground": "#d5d5d5"
+    },
+    "[Min Dark]": {
+      "terminal.background": "#1a1a1a",
+      "menu.background": "#1a1a1a",
+      "panel.background": "#1a1a1a",
+      // header background
+      "editorGroupHeader.tabsBackground": "#1a1a1a"
+      // "editor.background": "#1e1e1e",
+      // "editorGroupHeader.tabsBackground": "#1e1e1e",
+      // "tab.activeBackground": "#1e1e1e",
+      // "tab.inactiveBackground": "#1e1e1e",
+      // "tab.hoverBackground": "#1e1e1e",
+      // "editorGutter.background": "#1e1e1e",
+      // "editorGroupHeader.tabsBorder": "#1e1e1e",
+      // "sideBar.background": "#1e1e1e",
+      // "sideBar.foreground": "#d5d5d5a9",
+      // "statusBar.background": "#1e1e1e",
+      // "activityBar.background": "#1e1e1e",
+      // "titleBar.activeBackground": "#1e1e1e",
+      // "titleBar.inactiveBackground": "#1e1e1e",
+      // "panel.background": "#1e1e1e",
+      // "panel.border": "#00000000",
+      // "terminal.background": "#1e1e1e",
+      // "terminal.foreground": "#d5d5d5",
+      // "terminalCursor.background": "#d5d5d5",
+      // "terminalCursor.foreground": "#d5d5d5"
+    },
+    "[Violaceous (rainglow)]": {
+      "editorGutter.background": "#242038",
+      "titleBar.activeBackground": "#242038",
+      "titleBar.activeForeground": "#ffffff",
+      "terminal.background": "#242038",
+      "editorGroupHeader.tabsBackground": "#242038",
+      "sideBar.background": "#242038",
+      "sideBar.dropBackground": "#242038",
+      "sideBar.foreground": "#c1b4ff93",
+      "sideBarSectionHeader.foreground": "#ffffff",
+      "sideBarSectionHeader.background": "#242038",
+      "list.activeSelectionBackground": "#2a2642",
+      "list.activeSelectionForeground": "#ffffff",
+      "list.inactiveSelectionBackground": "#2a2642",
+      "list.inactiveSelectionForeground": "#ffffff",
+      "statusBar.background": "#242038",
+      "activityBar.background": "#242038",
+      "tab.activeBackground": "#2a2642",
+      "titleBar.inactiveBackground": "#242038",
+      "panel.background": "#242038",
+      "panel.border": "#00000000"
+    },
+    "[Violaceous Light (rainglow)]": {
+      "titleBar.activeBackground": "#dcd9e9"
+    },
+    "[mono-cl]": {
+      "editorLineNumber.foreground": "#4b4b4b",
+      "editor.lineHighlightBackground": "#2a2c2d",
+      "editor.lineHighlightBorder": "#2a2c2d",
+      "tab.activeBackground": "#2a2c2d",
+      // "sideBar.border": "#353535",
+      "terminal.background": "#191919",
+      "terminal.foreground": "#A0A0A0",
+      "terminalCursor.background": "#AA9175",
+      "terminalCursor.foreground": "#AA9175",
+      "terminal.ansiBlack": "#616161",
+      "terminal.ansiBlue": "#ABABAB",
+      "terminal.ansiBrightBlack": "#878787",
+      "terminal.ansiBrightBlue": "#8C8C8C",
+      "terminal.ansiBrightCyan": "#DCDCDC",
+      "terminal.ansiBrightGreen": "#8C8C8C",
+      "terminal.ansiBrightRed": "#A9A9A9",
+      "terminal.ansiBrightWhite": "#FFFFFF",
+      "terminal.ansiBrightYellow": "#F2F2F2",
+      "terminal.ansiCyan": "#C9C9C9",
+      "terminal.ansiGreen": "#666666",
+      "terminal.ansiRed": "#666666",
+      "terminal.ansiWhite": "#FFFFFF",
+      "terminal.ansiYellow": "#A3A3A3",
+      "terminal.selectionBackground": "#4D4D4D"
+    },
+    "[Nord Flat]": {
+      "sideBar.foreground": "#d5d5d5d7",
+      "panel.border": "#00000000"
+    },
+    "[Theme Flat]": {
+      "list.inactiveSelectionBackground": "#2c313c",
+      "sideBar.border": "#00000000",
+      "tab.activeBackground": "#2c313c",
+      "titleBar.inactiveBackground": "#282c34",
+      "panel.border": "#00000000"
+    },
+    "[Nord Dark Pro]": {
+      "activityBar.background": "#21252b",
+      "editorGroupHeader.tabsBackground": "#282c34",
+      "sideBar.background": "#21252b",
+      "list.inactiveSelectionBackground": "#2c313c",
+      "statusBar.background": "#282c34",
+      "titleBar.inactiveBackground": "#282c34",
+      "tab.activeBorderTop": "#8FBCBB",
+      "sideBar.foreground": "#d5d5d5a9",
+      "tab.inactiveBackground": "#282c34",
+      "tab.activeBackground": "#00000000",
+      "terminal.background": "#21252b",
+      "panel.background": "#21252b",
+      "panel.border": "#00000000",
+      "terminal.border": "#00000000"
+    },
+    "[Nord Dark Pro Darker]": {
+      "terminal.border": "#00000000",
+      "editorGroupHeader.tabsBackground": "#1e2228",
+      "sideBar.background": "#1e2228",
+      "list.inactiveSelectionBackground": "#2c313c",
+      "statusBar.background": "#1e2228",
+      "editor.background": "#1e2228",
+      "titleBar.activeBackground": "#1e2228",
+      "sideBar.border": "#00000000",
+      "tab.activeBackground": "#2b2f36",
+      "activityBar.background": "#1e2228",
+      "titleBar.inactiveBackground": "#1e2228",
+      "panel.border": "#00000000",
+      "editorGutter.background": "#1e2228",
+      "editorGroupHeader.tabsBorder": "#1e2228",
+      "sideBar.foreground": "#d5d5d5a9",
+      "terminal.background": "#1e2228"
+    },
+    "[Blueberry dark theme]": {
+      "editor.lineHighlightBackground": "#2c313c",
+      "sideBar.background": "#242938",
+      "editor.background": "#242938",
+      "editorGroupHeader.tabsBackground": "#242938",
+      "list.inactiveSelectionBackground": "#2c313c",
+      "list.activeSelectionBackground": "#2c313c",
+      "list.activeSelectionForeground": "#ffffff",
+      "list.hoverBackground": "#2c313c",
+      "statusBar.background": "#242938",
+      "activityBar.background": "#242938",
+      "sideBarSectionHeader.background": "#242938",
+      "sideBarSectionHeader.foreground": "#ffffff",
+      "editorGutter.background": "#242938",
+      "editorGroupHeader.tabsBorder": "#242938",
+      "titleBar.activeBackground": "#242938",
+      "titleBar.inactiveBackground": "#242938"
+    },
+    "[Serendipity Sunset]": {
+      "titleBar.activeBackground": "#232038",
+      "titleBar.inactiveBackground": "#232038",
+      "terminal.background": "#232038",
+      "panel.background": "#232038",
+      "editor.background": "#232038",
+      "sideBar.background": "#232038",
+      "activityBar.background": "#232038",
+      "menu.background": "#232038"
+    },
+    "[Tokyo Night]": {
+      "tab.activeBorderTop": "#3d59a1",
+      "tab.border": "#00000000",
+      "tab.activeBorder": "#00000000"
+    },
+    "[Tokyo Night Storm]": {
+      "scrollbarSlider.hoverBackground": "#61759d7d",
+      "scrollbarSlider.activeBackground": "#61759d7d",
+      "tab.activeBorderTop": "#838cad",
+      "tab.activeBorder": "#00000000",
+      "tab.hoverBorder": "#00000000",
+      "editorGroup.border": "#00000000",
+      "editorGroupHeader.tabsBorder": "#00000000",
+      "tab.border": "#00000000",
+      "tab.unfocusedHoverBackground": "#ffffff",
+      "editor.background": "#1f2335",
+      "tab.activeBackground": "#00000000",
+      "list.hoverBackground": "#30334b5f",
+      "tab.hoverBackground": "#292c41",
+      "titleBar.inactiveForeground": "#626b8b",
+      "titleBar.activeForeground": "#838cad",
+      "terminal.background": "#1b1f2f",
+      "panel.background": "#1b1f2f",
+      "statusBar.background": "#1b1f2f",
+      "sideBar.background": "#1b1f2f",
+      "sideBar.foreground": "#6a7195",
+      "activityBar.background": "#1b1f2f"
+    },
+    "[One Darker Pro]": {
+      "sideBar.foreground": "#d5d5d5ad"
+    },
+    "[One Dark Darker]": {
+      "tab.activeBorderTop": "#828C9E",
+      "scrollbarSlider.hoverBackground": "#676d7997",
+      "tab.hoverBackground": "#2c313c9b",
+      "sideBar.foreground": "#6a737d",
+      "editorGutter.foldingControlForeground": "#6a737d",
+      "terminal.border": "#00000000",
+      "panel.border": "#00000000",
+      "editorCursor.foreground": "#d5d5d5",
+      "tab.border": "#00000000"
+    },
+    "[IntelliJ Neo Dark]": {},
+    "[One Dark Pro]": {
+      "sideBar.background": "#282c34",
+      "editorGroupHeader.tabsBackground": "#282c34",
+      "tab.inactiveBackground": "#282c34",
+      "tab.activeBackground": "#00000000",
+      "tab.border": "#00000000",
+      "sideBar.foreground": "#d5d5d5a7",
+      "statusBar.background": "#282c34",
+      "panel.border": "#00000000",
+      "terminal.border": "#00000000",
+      "sideBar.border": "#00000000",
+      "tab.activeBorder": "#00000000",
+      "tab.activeBorderTop": "#ffffff7a",
+      "tab.hoverBackground": "#343841a7",
+      "titleBar.inactiveBackground": "#282c34"
+    },
+    "[One Dark Pro Darker]": {
+      "editorGroupHeader.tabsBackground": "#23272e",
+      "tab.inactiveBackground": "#23272e",
+      "tab.activeBackground": "#2d3139",
+      "tab.activeBorderTop": "#00000000",
+      "tab.activeBorder": "#00000000",
+      "tab.border": "#00000000",
+      "list.inactiveSelectionBackground": "#2c313c",
+      "statusBar.background": "#23272e",
+      "titleBar.activeBackground": "#23272e",
+      "terminal.background": "#23272e",
+      "panel.background": "#23272e",
+      "terminal.border": "#00000000",
+      "panel.border": "#84848429",
+      "sideBar.background": "#23272e",
+      "sideBar.border": "#84848429",
+      "sideBar.foreground": "#d5d5d579",
+      "editor.selectionBackground": "#3e4451de",
+      "editor.lineHighlightBackground": "#2c313c",
+      "editorCursor.foreground": "#d5d5d5"
+    },
+    "[PurpleSchool Theme]": {
+      "editorGroupHeader.tabsBorder": "#1e2228",
+      "tab.activeBackground": "#2c1d4dca",
+      "tab.activeBorderTop": "#00000000",
+      "activityBar.activeBackground": "#00000000"
+    },
+    "[Tokyo Night Light]": {
+      "titleBar.activeBackground": "#e6e7ed",
+      "editorGroupHeader.tabsBackground": "#e6e7ed",
+      "tab.inactiveBackground": "#e6e7ed",
+      "titleBar.inactiveBackground": "#e6e7ed",
+      "tab.activeBackground": "#00000000",
+      "tab.activeBorderTop": "#838cad",
+      "tab.border": "#e6e7ed00",
+      "tab.hoverBackground": "#d6d8df83",
+      "panel.border": "#00000000",
+      "editorGroup.border": "#00000000",
+      "editorGroupHeader.tabsBorder": "#00000000",
+      "tab.hoverBorder": "#00000000",
+      "tab.activeBorder": "#00000000",
+      "titleBar.border": "#00000000",
+      "window.activeBorder": "#00000000"
+    },
+    "[1Dark RainCoat Light]": {
+      "terminal.background": "#e1e4eb",
+      "terminal.foreground": "#000000",
+      "panel.background": "#e1e4eb",
+      "titleBar.activeBackground": "#e1e4eb",
+      "editorGroupHeader.tabsBorder": "#00000000",
+      "tab.border": "#00000000",
+      "tab.hoverBorder": "#00000000",
+      "titleBar.inactiveBackground": "#e1e4eb",
+      "statusBar.background": "#e1e4eb"
+    },
+    "[Sequoia Monochrome]": {
+      "editor.background": "#1a1b26"
+    },
+    "[Nord Flat Italic]": {
+      "sideBar.foreground": "#a4a4a4",
+      "editor.background": "#282c34",
+      "editorGroupHeader.tabsBackground": "#282c34",
+      "list.inactiveSelectionBackground": "#2c313c",
+      "statusBar.background": "#282c34",
+      "titleBar.activeBackground": "#282c34",
+      "activityBar.background": "#282c34",
+      "sideBar.background": "#282c34",
+      "panel.background": "#282c34",
+      "editorGutter.background": "#282c34",
+      "tab.activeBackground": "#333843",
+      "tab.inactiveBackground": "#282c34",
+      "tab.unfocusedHoverBackground": "#333843",
+      "tab.inactiveForeground": "#d5d5d5af"
+    },
+    "[Eva Light]": {
+      "editorGroupHeader.tabsBackground": "#ebeef5",
+      "tab.inactiveBackground": "#ebeef5",
+      "tab.activeBackground": "#d8e0f3",
+      "tab.hoverBackground": "#e1e4eb",
+      "editorGroup.border": "#00000000",
+      "editorGroupHeader.tabsBorder": "#00000000",
+      "tab.border": "#00000000",
+      "tab.unfocusedHoverBackground": "#e1e4eb",
+      "panel.background": "#e1e4eb",
+      "activityBar.background": "#e1e4eb",
+      "activityBar.activeBackground": "#e1e4eb",
+      "terminal.background": "#e1e4eb",
+      "terminal.border": "#00000000"
+    },
+    "[Rosé Pine (no italics)]": {
+      "terminal.background": "#191724",
+      "panel.background": "#191724",
+      "tab.activeBorder": "#676196"
+    },
+    "[Rosé Pine Moon (no italics)]": {
+      "sideBar.background": "#1f1d30",
+      "sideBar.foreground": "#747090",
+      "terminal.background": "#1f1d30",
+      "panel.background": "#1f1d30",
+      "tab.activeBorder": "#676196"
+    },
+    "[One Dark Pro Flat]": {
+      "sideBar.foreground": "#d5d5d588",
+      "terminal.border": "#ffffff00",
+      "sideBar.border": "#62626265",
+      "tab.activeBorder": "#00000000",
+      "tab.activeBackground": "#333844",
+      "tab.border": "#00000000"
+    },
+    "[One Dark Pro Mix]": {
+      "panel.background": "#21252b",
+      "terminal.background": "#21252b",
+      "terminal.border": "#00000000",
+      "sideBar.foreground": "#d5d5d57a",
+      "tab.activeBorderTop": "#00000000",
+      "tab.activeBorder": "#ffffff00",
+      "panel.border": "#00000000",
+      "editorGroupHeader.tabsBackground": "#282c34",
+      "tab.activeBackground": "#333844",
+      "tab.inactiveBackground": "#282c34",
+      "tab.border": "#00000000",
+      "titleBar.activeBackground": "#282c34",
+      "titleBar.inactiveBackground": "#282c34"
+    },
+    "[GitHub Dark Dimmed]": {
+      "editorGroupHeader.tabsBackground": "#22272e",
+      "editorGroupHeader.tabsBorder": "#00000000",
+      "editorGroup.border": "#00000000",
+      "tab.activeBackground": "#22272e",
+      "tab.inactiveBackground": "#22272e",
+      "editorGroupHeader.border": "#00000000",
+      "tab.border": "#00000000",
+      "tab.hoverBackground": "#323942ac",
+      "tab.activeBorder": "#00000000"
+    },
+
+    // Gemeral settings
+    "activityBar.border": "#00000000",
+    "tab.border": "#00000000",
+    "panel.border": "#00000000",
+    "terminal.border": "#00000000",
+    "tab.activeBorder": "#00000000",
+    "diffEditor.border": "#00000000",
+    "titleBar.border": "#00000000",
+    "editorGroupHeader.border": "#00000000",
+    "scrollbar.shadow": "#00000000",
+    "widget.shadow": "#00000000",
+    "editor.foldBackground": "#00000000",
+    "window.titleBarStyle": "",
+    "sideBarTitle.foreground": "#00000000",
+    "sideBarTitle.background": "#00000000",
+    "sideBar.border": "#00000000",
+    "editorGroupHeader.tabsBorder": "#00000000",
+    "editorGroup.border": "#00000000",
+    "focusBorder": "#00000000"
+    // "activityBarTop.foreground": "#00000000",
+    // "activityBarTop.background": "#00000000",
+    // "activityBar.border": "#00000000"
+  },
+  "files.autoSaveDelay": 0,
+
+  // Diff and SCM settings
+  "diffEditor.hideUnchangedRegions.enabled": true,
+  "scm.showIncomingChanges": "true",
+  "scm.showOutgoingChanges": "true",
+
+  // Other settings
+  "workbench.tree.indent": 15,
+  "editor.accessibilitySupport": "off",
+  "workbench.editor.empty.hint": "hidden",
+  "breadcrumbs.icons": false,
+  "explorer.decorations.colors": true,
+  "explorer.decorations.badges": true,
+  "editor.overviewRulerBorder": false,
+  "editor.renderWhitespace": "none",
+  "editor.scrollbar.horizontal": "hidden",
+  "editor.suggestSelection": "first",
+  "terminal.integrated.scrollback": 10000,
+  "editor.scrollbar.verticalScrollbarSize": 0,
+  "editor.showFoldingControls": "mouseover",
+  "editor.padding.top": 10,
+  "editor.folding": true,
+  "editor.foldingStrategy": "auto",
+  "tailwind-fold.unfoldIfLineSelected": false,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "chat.editor.fontSize": 11,
+  "chat.editor.wordWrap": "on",
+  "editor.renderLineHighlight": "none",
+
+  "window.autoDetectColorScheme": true,
+  //"workbench.preferredHighContrastLightColorTheme": "Atom One Light",
+  "gitlens.graph.minimap.enabled": false,
+  "gitlens.graph.minimap.additionalTypes": ["tags"],
+  "gitlens.graph.layout": "editor",
+  "diffEditor.ignoreTrimWhitespace": false,
+  "workbench.reduceMotion": "on",
+  "terminal.integrated.env.windows": {
+    "PATH": "C:/Users/arthu/AppData/Local/Programs/Python/Python313;${env:PATH}"
+  },
+  "console-ninja.featureSet": "Community",
+  "tailwind-fold.autoFold": false,
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.matchBrackets": "never",
+  "oneDarkPro.bold": false,
+  "oneDarkPro.vivid": false,
+  "workbench.tree.enableStickyScroll": false,
+  "editor.stickyScroll.enabled": false,
+  "editor.stickyScroll.scrollWithEditor": false,
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "apc.sidebar.titlebar": {
+    "height": -20,
+    "fontSize": -10
+  },
+  "apc.stylesheet": {
+    // ".explorer-folders-view": "zoom: 1.0;"
+    ".tabs-container": "margin-bottom: 10px;"
+  },
+
+  // "apc.monospace.font.family": "Cascadia Code, Consolas, 'Courier New', monospace",
+  "apc.listRow": {
+    // "lists": ["explorer-folders-view"],
+    "height": 19.5,
+    "fontSize": 11.5
+  },
+  "telemetry.telemetryLevel": "off",
+  "workbench.editor.tabSizing": "shrink",
+  "apc.imports": [
+    // "file:///c:/Users/adrs1/oneDrive/Documents/VSCode/CustomCSS/vscode-styles.css"
+  ],
+  "update.mode": "default",
+  "apc.menubar.compact": true,
+
+  "editor.cursorBlinking": "blink",
+  "editor.cursorSmoothCaretAnimation": "off",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "supermaven.otherWarning": false,
+  "supermaven.enable": {
+    "*": false
+  },
+  "explorer.fileNesting.patterns": {
+    "//": "Last update at 22/9/2024, 17:48:31",
+    ".clang-tidy": ".clang-format, .clangd, compile_commands.json",
+    ".env": "*.env, .env.*, .envrc, env.d.ts",
+    ".gitignore": ".gitattributes, .gitmodules, .gitmessage, .mailmap, .git-blame*",
+    ".project": ".classpath",
+    "+layout.svelte": "+layout.ts,+layout.ts,+layout.js,+layout.server.ts,+layout.server.js,+layout.gql",
+    "+page.svelte": "+page.server.ts,+page.server.js,+page.ts,+page.js,+page.gql",
+    "ansible.cfg": "ansible.cfg, .ansible-lint, requirements.yml",
+    "app.config.*": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "artisan": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, rspack.config.*, server.php, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, webpack.mix.js, windi.config.*",
+    "astro.config.*": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "build-wrapper.log": "build-wrapper*.log, build-wrapper-dump*.json, build-wrapper-win*.exe, build-wrapper-linux*, build-wrapper-macosx*",
+    "BUILD.bazel": "*.bzl, *.bazel, *.bazelrc, bazel.rc, .bazelignore, .bazelproject, WORKSPACE",
+    "Cargo.toml": ".clippy.toml, .rustfmt.toml, cargo.lock, clippy.toml, cross.toml, rust-toolchain.toml, rustfmt.toml",
+    "CMakeLists.txt": "*.cmake, *.cmake.in, .cmake-format.yaml, CMakePresets.json, CMakeCache.txt",
+    "composer.json": ".php*.cache, composer.lock, phpunit.xml*, psalm*.xml",
+    "default.nix": "shell.nix",
+    "deno.json*": "*.env, .env.*, .envrc, api-extractor.json, deno.lock, env.d.ts, import-map.json, import_map.json, jsconfig.*, tsconfig.*, tsdoc.*",
+    "Dockerfile": "*.dockerfile, .devcontainer.*, .dockerignore, captain-definition, compose.*, docker-compose.*, dockerfile*",
+    "flake.nix": "flake.lock",
+    "gatsby-config.*": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, gatsby-browser.*, gatsby-node.*, gatsby-ssr.*, gatsby-transformer.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "gemfile": ".ruby-version, gemfile.lock",
+    "go.mod": ".air*, go.sum",
+    "go.work": "go.work.sum",
+    "hatch.toml": ".editorconfig, .flake8, .isort.cfg, .python-version, hatch.toml, requirements*.in, requirements*.pip, requirements*.txt, tox.ini",
+    "I*.cs": "$(capture).cs",
+    "Makefile": "*.mk",
+    "mix.exs": ".credo.exs, .dialyzer_ignore.exs, .formatter.exs, .iex.exs, .tool-versions, mix.lock",
+    "next.config.*": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, next-env.d.ts, next-i18next.config.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "nuxt.config.*": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .nuxtignore, .nuxtrc, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "package.json": "*.code-workspace, .browserslist*, .circleci*, .commitlint*, .cz-config.js, .czrc, .dlint.json, .dprint.json*, .editorconfig, .eslint*, .firebase*, .flowconfig, .github*, .gitlab*, .gitmojirc.json, .gitpod*, .huskyrc*, .jslint*, .knip.*, .lintstagedrc*, .markdownlint*, .node-version, .nodemon*, .npm*, .nvmrc, .pm2*, .pnp.*, .pnpm*, .prettier*, .pylintrc, .release-please*.json, .releaserc*, .ruff.toml, .sentry*, .simple-git-hooks*, .stackblitz*, .styleci*, .stylelint*, .tazerc*, .textlint*, .tool-versions, .travis*, .versionrc*, .vscode*, .watchman*, .xo-config*, .yamllint*, .yarnrc*, Procfile, apollo.config.*, appveyor*, azure-pipelines*, biome.json*, bower.json, build.config.*, bun.lockb, bunfig.toml, commitlint*, crowdin*, dangerfile*, dlint.json, dprint.json*, electron-builder.*, eslint*, firebase.json, grunt*, gulp*, jenkins*, knip.*, lerna*, lint-staged*, nest-cli.*, netlify*, nodemon*, npm-shrinkwrap.json, nx.*, package-lock.json, package.nls*.json, phpcs.xml, pm2.*, pnpm*, prettier*, pullapprove*, pyrightconfig.json, release-please*.json, release-tasks.sh, release.config.*, renovate*, rollup.config.*, rspack*, ruff.toml, simple-git-hooks*, sonar-project.properties, stylelint*, tslint*, tsup.config.*, turbo*, typedoc*, unlighthouse*, vercel*, vetur.config.*, webpack*, workspace.json, wrangler.toml, xo.config.*, yarn*",
+    "Pipfile": ".editorconfig, .flake8, .isort.cfg, .python-version, Pipfile, Pipfile.lock, requirements*.in, requirements*.pip, requirements*.txt, tox.ini",
+    "pubspec.yaml": ".metadata, .packages, all_lint_rules.yaml, analysis_options.yaml, build.yaml, pubspec.lock, pubspec_overrides.yaml",
+    "pyproject.toml": ".commitlint*, .dlint.json, .dprint.json*, .editorconfig, .eslint*, .flake8, .flowconfig, .isort.cfg, .jslint*, .lintstagedrc*, .markdownlint*, .pdm-python, .pdm.toml, .prettier*, .pylintrc, .python-version, .ruff.toml, .stylelint*, .textlint*, .xo-config*, .yamllint*, MANIFEST.in, Pipfile, Pipfile.lock, biome.json*, commitlint*, dangerfile*, dlint.json, dprint.json*, eslint*, hatch.toml, lint-staged*, pdm.lock, phpcs.xml, poetry.lock, poetry.toml, prettier*, pyproject.toml, pyrightconfig.json, requirements*.in, requirements*.pip, requirements*.txt, ruff.toml, setup.cfg, setup.py, stylelint*, tox.ini, tslint*, uv.lock, uv.toml, xo.config.*",
+    "quasar.conf.js": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, quasar.extensions.json, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "readme*": "AUTHORS, Authors, BACKERS*, Backers*, CHANGELOG*, CITATION*, CODEOWNERS, CODE_OF_CONDUCT*, CONTRIBUTING*, CONTRIBUTORS, COPYING*, CREDITS, Changelog*, Citation*, Code_Of_Conduct*, Codeowners, Contributing*, Contributors, Copying*, Credits, GOVERNANCE.MD, Governance.md, HISTORY.MD, History.md, LICENSE*, License*, MAINTAINERS, Maintainers, README-*, README_*, RELEASE_NOTES*, Readme-*, Readme_*, Release_Notes*, SECURITY.MD, SPONSORS*, Security.md, Sponsors*, authors, backers*, changelog*, citation*, code_of_conduct*, codeowners, contributing*, contributors, copying*, credits, governance.md, history.md, license*, maintainers, readme-*, readme_*, release_notes*, security.md, sponsors*",
+    "Readme*": "AUTHORS, Authors, BACKERS*, Backers*, CHANGELOG*, CITATION*, CODEOWNERS, CODE_OF_CONDUCT*, CONTRIBUTING*, CONTRIBUTORS, COPYING*, CREDITS, Changelog*, Citation*, Code_Of_Conduct*, Codeowners, Contributing*, Contributors, Copying*, Credits, GOVERNANCE.MD, Governance.md, HISTORY.MD, History.md, LICENSE*, License*, MAINTAINERS, Maintainers, README-*, README_*, RELEASE_NOTES*, Readme-*, Readme_*, Release_Notes*, SECURITY.MD, SPONSORS*, Security.md, Sponsors*, authors, backers*, changelog*, citation*, code_of_conduct*, codeowners, contributing*, contributors, copying*, credits, governance.md, history.md, license*, maintainers, readme-*, readme_*, release_notes*, security.md, sponsors*",
+    "README*": "AUTHORS, Authors, BACKERS*, Backers*, CHANGELOG*, CITATION*, CODEOWNERS, CODE_OF_CONDUCT*, CONTRIBUTING*, CONTRIBUTORS, COPYING*, CREDITS, Changelog*, Citation*, Code_Of_Conduct*, Codeowners, Contributing*, Contributors, Copying*, Credits, GOVERNANCE.MD, Governance.md, HISTORY.MD, History.md, LICENSE*, License*, MAINTAINERS, Maintainers, README-*, README_*, RELEASE_NOTES*, Readme-*, Readme_*, Release_Notes*, SECURITY.MD, SPONSORS*, Security.md, Sponsors*, authors, backers*, changelog*, citation*, code_of_conduct*, codeowners, contributing*, contributors, copying*, credits, governance.md, history.md, license*, maintainers, readme-*, readme_*, release_notes*, security.md, sponsors*",
+    "remix.config.*": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, remix.*, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "requirements.txt": ".editorconfig, .flake8, .isort.cfg, .python-version, requirements*.in, requirements*.pip, requirements*.txt, tox.ini",
+    "rush.json": "*.code-workspace, .browserslist*, .circleci*, .commitlint*, .cz-config.js, .czrc, .dlint.json, .dprint.json*, .editorconfig, .eslint*, .firebase*, .flowconfig, .github*, .gitlab*, .gitmojirc.json, .gitpod*, .huskyrc*, .jslint*, .knip.*, .lintstagedrc*, .markdownlint*, .node-version, .nodemon*, .npm*, .nvmrc, .pm2*, .pnp.*, .pnpm*, .prettier*, .pylintrc, .release-please*.json, .releaserc*, .ruff.toml, .sentry*, .simple-git-hooks*, .stackblitz*, .styleci*, .stylelint*, .tazerc*, .textlint*, .tool-versions, .travis*, .versionrc*, .vscode*, .watchman*, .xo-config*, .yamllint*, .yarnrc*, Procfile, apollo.config.*, appveyor*, azure-pipelines*, biome.json*, bower.json, build.config.*, bun.lockb, bunfig.toml, commitlint*, crowdin*, dangerfile*, dlint.json, dprint.json*, electron-builder.*, eslint*, firebase.json, grunt*, gulp*, jenkins*, knip.*, lerna*, lint-staged*, nest-cli.*, netlify*, nodemon*, npm-shrinkwrap.json, nx.*, package-lock.json, package.nls*.json, phpcs.xml, pm2.*, pnpm*, prettier*, pullapprove*, pyrightconfig.json, release-please*.json, release-tasks.sh, release.config.*, renovate*, rollup.config.*, rspack*, ruff.toml, simple-git-hooks*, sonar-project.properties, stylelint*, tslint*, tsup.config.*, turbo*, typedoc*, unlighthouse*, vercel*, vetur.config.*, webpack*, workspace.json, wrangler.toml, xo.config.*, yarn*",
+    "sanity.config.*": "sanity.cli.*, sanity.types.ts, schema.json",
+    "setup.cfg": ".editorconfig, .flake8, .isort.cfg, .python-version, MANIFEST.in, requirements*.in, requirements*.pip, requirements*.txt, setup.cfg, tox.ini",
+    "setup.py": ".editorconfig, .flake8, .isort.cfg, .python-version, MANIFEST.in, requirements*.in, requirements*.pip, requirements*.txt, setup.cfg, setup.py, tox.ini",
+    "shims.d.ts": "*.d.ts",
+    "svelte.config.*": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, houdini.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, mdsvex.config.js, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vite.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "vite.config.*": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "vue.config.*": "*.env, .babelrc*, .codecov, .cssnanorc*, .env.*, .envrc, .htmlnanorc*, .lighthouserc.*, .mocha*, .postcssrc*, .terserrc*, api-extractor.json, ava.config.*, babel.config.*, capacitor.config.*, contentlayer.config.*, cssnano.config.*, cypress.*, env.d.ts, formkit.config.*, formulate.config.*, histoire.config.*, htmlnanorc.*, i18n.config.*, ionic.config.*, jasmine.*, jest.config.*, jsconfig.*, karma*, lighthouserc.*, panda.config.*, playwright.config.*, postcss.config.*, puppeteer.config.*, rspack.config.*, sst.config.*, svgo.config.*, tailwind.config.*, tsconfig.*, tsdoc.*, uno.config.*, unocss.config.*, vitest.config.*, vuetify.config.*, webpack.config.*, windi.config.*",
+    "*.asax": "$(capture).*.cs, $(capture).*.vb",
+    "*.ascx": "$(capture).*.cs, $(capture).*.vb",
+    "*.ashx": "$(capture).*.cs, $(capture).*.vb",
+    "*.aspx": "$(capture).*.cs, $(capture).*.vb",
+    "*.axaml": "$(capture).axaml.cs",
+    "*.bloc.dart": "$(capture).event.dart, $(capture).state.dart",
+    "*.c": "$(capture).h",
+    "*.cc": "$(capture).hpp, $(capture).h, $(capture).hxx, $(capture).hh",
+    "*.cjs": "$(capture).cjs.map, $(capture).*.cjs, $(capture)_*.cjs",
+    "*.component.ts": "$(capture).component.html, $(capture).component.spec.ts, $(capture).component.css, $(capture).component.scss, $(capture).component.sass, $(capture).component.less",
+    "*.cpp": "$(capture).hpp, $(capture).h, $(capture).hxx, $(capture).hh",
+    "*.cs": "$(capture).*.cs",
+    "*.cshtml": "$(capture).cshtml.cs",
+    "*.csproj": "*.config, *proj.user, appsettings.*, bundleconfig.json",
+    "*.css": "$(capture).css.map, $(capture).*.css",
+    "*.cxx": "$(capture).hpp, $(capture).h, $(capture).hxx, $(capture).hh",
+    "*.dart": "$(capture).freezed.dart, $(capture).g.dart",
+    "*.db": "*.db-shm, *.db-wal",
+    "*.ex": "$(capture).html.eex, $(capture).html.heex, $(capture).html.leex",
+    "*.fs": "$(capture).fs.js, $(capture).fs.js.map, $(capture).fs.jsx, $(capture).fs.ts, $(capture).fs.tsx, $(capture).fs.rs, $(capture).fs.php, $(capture).fs.dart",
+    "*.go": "$(capture)_test.go",
+    "*.java": "$(capture).class",
+    "*.js": "$(capture).js.map, $(capture).*.js, $(capture)_*.js",
+    "*.jsx": "$(capture).js, $(capture).*.jsx, $(capture)_*.js, $(capture)_*.jsx, $(capture).less, $(capture).module.less, $(capture).module.less.d.ts,  $(capture).scss, $(capture).module.scss, $(capture).module.scss.d.ts",
+    "*.master": "$(capture).*.cs, $(capture).*.vb",
+    "*.md": "$(capture).*",
+    "*.mjs": "$(capture).mjs.map, $(capture).*.mjs, $(capture)_*.mjs",
+    "*.module.ts": "$(capture).resolver.ts, $(capture).controller.ts, $(capture).service.ts",
+    "*.mts": "$(capture).mts.map, $(capture).*.mts, $(capture)_*.mts",
+    "*.pubxml": "$(capture).pubxml.user",
+    "*.py": "$(capture).pyi",
+    "*.razor": "$(capture).razor.cs, $(capture).razor.css, $(capture).razor.scss",
+    "*.resx": "$(capture).*.resx, $(capture).designer.cs, $(capture).designer.vb",
+    "*.tex": "$(capture).acn, $(capture).acr, $(capture).alg, $(capture).aux, $(capture).bbl, $(capture).blg, $(capture).fdb_latexmk, $(capture).fls, $(capture).glg, $(capture).glo, $(capture).gls, $(capture).idx, $(capture).ind, $(capture).ist, $(capture).lof, $(capture).log, $(capture).lot, $(capture).out, $(capture).pdf, $(capture).synctex.gz, $(capture).toc, $(capture).xdv",
+    "*.ts": "$(capture).js, $(capture).d.ts.map, $(capture).*.ts, $(capture)_*.js, $(capture)_*.ts",
+    "*.tsx": "$(capture).ts, $(capture).*.tsx, $(capture)_*.ts, $(capture)_*.tsx, $(capture).less, $(capture).module.less, $(capture).module.less.d.ts, $(capture).scss, $(capture).module.scss, $(capture).module.scss.d.ts, $(capture).css.ts",
+    "*.vbproj": "*.config, *proj.user, appsettings.*, bundleconfig.json",
+    "*.vue": "$(capture).*.ts, $(capture).*.js, $(capture).story.vue",
+    "*.w": "$(capture).*.w, I$(capture).w",
+    "*.xaml": "$(capture).xaml.cs"
+  },
+  "workbench.editor.labelFormat": "short",
+  "gitlens.views.repositories.showIncomingActivity": true,
+  "gitlens.views.workspaces.showIncomingActivity": true,
+  "settings.cycle": [
+    {
+      "id": "breadcrumbs",
+      "values": [
+        {
+          "breadcrumbs.enabled": false
+        },
+        {
+          "breadcrumbs.enabled": true
+        }
+      ]
+    },
+    {
+      "id": "lineNumbers",
+      "values": [
+        {
+          "editor.lineNumbers": "off",
+          "editor.folding": true
+        },
+        {
+          "editor.lineNumbers": "on",
+          "editor.folding": true
+        }
+      ]
+    },
+    {
+      "id": "indentation",
+      "values": [
+        {
+          "indenticator.showIndentGuide": false
+        },
+        {
+          "indenticator.showIndentGuide": true
+        }
+      ]
+    }
+  ],
+  "background.style": {
+    "background-position": "100% 100%",
+    "background-size": "auto",
+    "opacity": 0
+  },
+  "workbench.tips.enabled": false,
+  "git.mergeEditor": true,
+  "workbench.iconTheme": "material-icon-theme",
+  "errorLens.fontWeight": "300",
+  "git.alwaysShowStagedChangesResourceGroup": true,
+  "workbench.settings.applyToAllProfiles": ["workbench.colorCustomizations"],
+  "scm.providerCountBadge": "auto",
+  "scm.alwaysShowActions": true,
+  "scm.alwaysShowRepositories": true,
+  "scm.diffDecorations": "none",
+  "codemosModern.dark.auxiliaryUiTheme": null,
+  "codemosModern.dark.design": "modern",
+  "codemosModern.dark.accentColor": "#1c1e23",
+  "codemosModern.dark.adaptiveMode": "moderate",
+  "codemosModern.dark.auxiliaryCodeTheme": null,
+  "window.titleBarStyle": "custom",
+  "vscode_vibrancy.opacity": 0.4,
+  "explorer.autoReveal": true,
+  "git.confirmSync": false,
+  "workbench.editor.scrollToSwitchTabs": true,
+  //"workbench.preferredDarkColorTheme": "Material Theme Ocean High Contrast",
+  "workbench.sideBar.location": "right",
+  "glassit.alpha": 250,
+  "zenMode.restore": false,
+  "zenMode.hideStatusBar": false,
+  "zenMode.centerLayout": false,
+  "zenMode.fullScreen": true,
+  "workbench.view.defaultViewLocations": {
+    "workbench.view.explorer": "left",
+    "workbench.view.coPilot": "right"
+  },
+  "editor.lineNumbers": "interval",
+  "git.enableSmartCommit": true,
+  "window.newWindowProfile": "Default",
+  "workbench.list.smoothScrolling": true,
+  "editor.smoothScrolling": true,
+  "terminal.integrated.smoothScrolling": true,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmDelete": false,
+  "kotlin.languageServer.enabled": false,
+  "kotlin.debugAdapter.enabled": false,
+  "workbench.productIconTheme": "Default",
+  "security.workspace.trust.untrustedFiles": "open",
+  "editor.tabCompletion": "off",
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.acceptSuggestionOnTab": false,
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.renderControlCharacters": false,
+  "window.menuBarVisibility": "compact",
+  "workbench.preferredLightColorTheme": "Default Dark Modern",
+  "workbench.layoutControl.enabled": false,
+  "window.commandCenter": false,
+  "git.enabled": true,
+  "git.decorations.enabled": true,
+  "svg.preview.mode": "svg",
+  "statsBar.modules": ["cpuLoad", "memoUsage"],
+  "better-comments.tags": [
+    {
+      "tag": "!",
+      "color": "#FF2D00",
+      "strikethrough": false,
+      "backgroundColor": "transparent"
+    },
+    {
+      "tag": "?",
+      "color": "#3498DB",
+      "strikethrough": false,
+      "backgroundColor": "transparent"
+    },
+    {
+      "tag": "//",
+      "color": "#F0F2F5",
+      "strikethrough": true,
+      "backgroundColor": "transparent"
+    },
+    {
+      "tag": "*",
+      "color": "#98C379",
+      "strikethrough": false,
+      "backgroundColor": "transparent"
+    },
+    {
+      "tag": "todo:",
+      "color": "#000000",
+      "strikethrough": false,
+      "backgroundColor": "#ffff00"
+    },
+    {
+      "tag": "note:",
+      "color": "#000000",
+      "strikethrough": false,
+      "backgroundColor": "#DF38FF"
+    },
+    {
+      "tag": "hack:",
+      "color": "#000000",
+      "strikethrough": false,
+      "backgroundColor": "#FF8C00"
+    },
+    {
+      "tag": "fix:",
+      "color": "#000000",
+      "strikethrough": false,
+      "backgroundColor": "#FF2D00"
+    },
+    {
+      "tag": "optimize:",
+      "color": "#000000",
+      "strikethrough": false,
+      "backgroundColor": "#98C379"
+    },
+    {
+      "tag": "@critical",
+      "color": "#FF2D00",
+      "strikethrough": false,
+      "backgroundColor": "transparent"
+    },
+    {
+      "tag": "@high",
+      "color": "#FF8C00",
+      "strikethrough": false,
+      "backgroundColor": "transparent"
+    },
+    {
+      "tag": "@low",
+      "color": "#98C379",
+      "strikethrough": false,
+      "backgroundColor": "transparent"
+    }
+  ],
+  "leetcode.workspaceFolder": "/Users/tureluurtje/Developer/python/excersises/Leetcode",
+  "leetcode.hint.configWebviewMarkdown": false,
+  "leetcode.hint.commentDescription": false,
+  "leetcode.defaultLanguage": "python",
+  "leetcode.hint.commandShortcut": false,
+  "extensions.ignoreRecommendations": true,
+  "database-client.autoSync": true,
+  "files.autoSave": "afterDelay",
+  "python.analysis.typeCheckingMode": "standard"
+}

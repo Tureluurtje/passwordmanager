@@ -72,10 +72,12 @@ class PasswordManager:
             pass
         pass
 
-    def delete_password(user, master_password, account_name):
+    #TODO add function
+    def delete_password(self, user, master_password, account_name):
         # Implement the logic to delete the password
         pass
-
-    def update_password(user, master_password, account_name, account_password):
+    
+    #TODO add function
+    def update_password(self, user, master_password, account_name, account_password):
         # Implement the logic to update the password
         pass

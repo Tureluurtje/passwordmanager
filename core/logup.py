@@ -2,12 +2,13 @@ import hashlib
 import datetime
 import secrets
 import time
+from mysql.connector import CMySQLConnection, MySQLConnection
 
 class AuthenticationManager:
-    def __init__(self, dbConnection=None):
+    def __init__(self, dbConnection):
+        if dbConnection is not CMySQLConnection or dbConnection is not MySQLConnection:
+            raise ValueError("dbConnection is not valid")
         self.dbConnection = dbConnection
-        if dbConnection is None:
-            raise ValueError("dbConnection is required")
 
         
     def login(self, username, password) -> bool:
