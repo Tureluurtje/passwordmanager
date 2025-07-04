@@ -6,7 +6,7 @@ import mysql.connector
 from core.logup import AuthenticationManager
 from core.passwordmanage import PasswordManager
 
-def connectToDatabase() -> mysql.connector.connection.MySQLConnection:
+def connectToDatabase() -> object:
     try:
         root_dir = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(root_dir, '..', 'config/config.ini')
