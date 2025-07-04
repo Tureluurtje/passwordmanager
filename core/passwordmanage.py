@@ -6,15 +6,16 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 import base64
+from mysql.connector import CMySQLConnection, MySQLConnection
 
 class PasswordManager:
-    def __init__(self, connectToDatabase=None):
-        if connectToDatabase :
-            self.connectToDatabase = connectToDatabase
+    def __init__(self, dbConnection):
+        if isinstance(dbConnection, (CMySQLConnection, MySQLConnection)):
+            self.dbConnection = dbConnection
         else:
-            raise ValueError("connectToDatabase function is required")
+            raise ValueError("dbConnection is not valid")
         
-    def add_password(self, username, master_password, account_name, account_username, account_password):
+    def add_password(self, username, account_name, account_username, account_password):
         def generatepassword():
             lowercase_chars = string.ascii_lowercase
             uppercase_chars = string.ascii_uppercase
@@ -62,19 +63,18 @@ class PasswordManager:
             error = err
             log = False
             return False, log
-
-
-    def addPassword(self, username, token, credentials_title, credentials_username, credentials_password, credentials_url=None, credentials_notes=None, credentials_category=None):
-        pass
-
-    def get_password(self, user, token, account_name):
+        
+    def get_password(self, username):
         try:
             db = self.connectToDatabase()
             mycursor = db.cursor()
-            query = "SELECT account_password FROM passwords WHERE username = %s AND account_name = %s"
-        except:
-            pass
-        pass
+            query = "SELECT * FROM passwords WHERE username = %s"
+            values = (username,)
+            mycursor.execute(query, values)
+            results = mycursor.fetchall()
+            return results
+        except mysql.connector.Error as err:
+            return None
 
     #TODO add function
     def delete_password(self, user, master_password, account_name):
