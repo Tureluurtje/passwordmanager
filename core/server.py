@@ -2,12 +2,11 @@ import os
 import configparser
 import mysql.connector
 
-from mysql.connector.connection_cext import CMySQLConnection
 
 from core.logup import AuthenticationManager
 from core.passwordmanage import PasswordManager
 
-def connectToDatabase():
+def connectToDatabase() -> mysql.connector.connection.MySQLConnection:
     try:
         root_dir = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(root_dir, '..', 'config/config.ini')
@@ -26,7 +25,7 @@ def connectToDatabase():
 def requestHandler(req):
     try:
         conn = connectToDatabase()
-        if conn == CMySQLConnection:
+        if isinstance(conn, (mysql.connector.CMySQLConnection, mysql.connector.MySQLConnection)):
             raise ConnectionError("Failed to connect to the database")
         conn.close()  # Close the connection if it was successful
     except Exception as e:

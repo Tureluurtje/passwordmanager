@@ -2,6 +2,7 @@ import hashlib
 import datetime
 import secrets
 import time
+from datetime import datetime, date, timezone
 from mysql.connector import CMySQLConnection, MySQLConnection
 
 class AuthenticationManager:
@@ -55,19 +56,24 @@ class AuthenticationManager:
         myCursor.execute("SELECT expires_at FROM auth_tokens WHERE token = %s", (token,))
         result = myCursor.fetchone()
         myCursor.close()
+
         if result:
-            token, expires_at = result
-            try:
-                expires_at_int = int(expires_at)
-            except (TypeError, ValueError):
-                return False
-            if int(time.time()) < expires_at_int:
-                return True
+            expires_at = result[0]
+            if isinstance(expires_at, date) and not isinstance(expires_at, datetime):
+                expires_at = datetime.combine(expires_at, datetime.min.time())
+            if isinstance(expires_at, datetime):
+                if expires_at.tzinfo is None:
+                    expires_at = expires_at.replace(tzinfo=timezone.utc)
+                expires_at_ts = expires_at.timestamp()
+
+                if time.time() < expires_at_ts:
+                    return True
+
         return False
         
 def log(dbConnection, username, verify, logReason) -> None:
     myCursor = dbConnection.cursor() #creates cursor object
-    myCursor.execute(f"INSERT INTO log(user, action, date, verify) VALUES(%s, %s, %s, %s)", (username, logReason, datetime.datetime.now(), verify,)) # inserts log of the users action into the database
+    myCursor.execute(f"INSERT INTO log(user, action, date, verify) VALUES(%s, %s, %s, %s)", (username, logReason, datetime.now(), verify,)) # inserts log of the users action into the database
     dbConnection.commit()  # Commit on the same connection
     myCursor.close()  # Close cursor
     return
