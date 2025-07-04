@@ -1,4 +1,9 @@
 *.ini
-venv/
 **/__pycache__/
-/config/
+config/
+*.py[cod]
+*. #pyc
+*.DS_Store
+*.pyc
+/.pytest_cache/
+/venv/

@@ -1,9 +1,7 @@
 from flask import Flask, jsonify, request
-
 from core.server import requestHandler
 
 app = Flask(__name__)
-
 
 @app.route('/')
 def home():

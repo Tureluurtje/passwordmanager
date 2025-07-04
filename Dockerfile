@@ -1,29 +1,13 @@
-# Use the official Python image from the Docker Hub
-FROM python:3.10-slim
+FROM python:3.13-slim AS builder
 
-# Install dependencies for tkinter
-RUN apt-get update && apt-get install -y \
-    python3-tk \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender-dev
+WORKDIR /app
 
-# Set the working directory
-WORKDIR /app/passwordmanager
-
-# Copy the requirements file
+# Install dependencies
 COPY requirements.txt .
-
-# Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code
+# Copy app source
 COPY . .
-
-# Expose the port the app runs on
-EXPOSE 5000
-
-# Run the application
-ENTRYPOINT [ "python" ]
-CMD ["api/app.py"]
+ ADD source dest
+# Run the app
+CMD ["python", "main.py"]

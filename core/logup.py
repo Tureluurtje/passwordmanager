@@ -2,12 +2,15 @@ import hashlib
 import datetime
 import secrets
 import time
+from datetime import datetime, date, timezone
+from mysql.connector import CMySQLConnection, MySQLConnection
 
 class AuthenticationManager:
-    def __init__(self, dbConnection=None):
-        self.dbConnection = dbConnection
-        if dbConnection is None:
-            raise ValueError("dbConnection is required")
+    def __init__(self, dbConnection):
+        if isinstance(dbConnection, (CMySQLConnection, MySQLConnection)):
+            self.dbConnection = dbConnection
+        else:
+            raise ValueError("dbConnection is not valid")
 
         
     def login(self, username, password) -> bool:
@@ -48,20 +51,29 @@ class AuthenticationManager:
         except Exception as e:
             return False
         
-    def verifyAuthToken(self, username) -> bool:
+    def verifyAuthToken(self, token) -> bool:
         myCursor = self.dbConnection.cursor()
-        myCursor.execute("SELECT token, expires_at FROM auth_tokens WHERE username = %s", (username,))
+        myCursor.execute("SELECT expires_at FROM auth_tokens WHERE token = %s", (token,))
         result = myCursor.fetchone()
         myCursor.close()
+
         if result:
-            username, expires_at = result
-            if int(time.time()) < expires_at:
-                return True
+            expires_at = result[0]
+            if isinstance(expires_at, date) and not isinstance(expires_at, datetime):
+                expires_at = datetime.combine(expires_at, datetime.min.time())
+            if isinstance(expires_at, datetime):
+                if expires_at.tzinfo is None:
+                    expires_at = expires_at.replace(tzinfo=timezone.utc)
+                expires_at_ts = expires_at.timestamp()
+
+                if time.time() < expires_at_ts:
+                    return True
+
         return False
         
 def log(dbConnection, username, verify, logReason) -> None:
     myCursor = dbConnection.cursor() #creates cursor object
-    myCursor.execute(f"INSERT INTO log(user, action, date, verify) VALUES(%s, %s, %s, %s)", (username, logReason, datetime.datetime.now(), verify,)) # inserts log of the users action into the database
+    myCursor.execute(f"INSERT INTO log(user, action, date, verify) VALUES(%s, %s, %s, %s)", (username, logReason, datetime.now(), verify,)) # inserts log of the users action into the database
     dbConnection.commit()  # Commit on the same connection
     myCursor.close()  # Close cursor
     return
