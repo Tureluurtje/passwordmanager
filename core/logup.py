@@ -6,9 +6,10 @@ from mysql.connector import CMySQLConnection, MySQLConnection
 
 class AuthenticationManager:
     def __init__(self, dbConnection):
-        if dbConnection is not CMySQLConnection or dbConnection is not MySQLConnection:
+        if isinstance(dbConnection, (CMySQLConnection, MySQLConnection)):
+            self.dbConnection = dbConnection
+        else:
             raise ValueError("dbConnection is not valid")
-        self.dbConnection = dbConnection
 
         
     def login(self, username, password) -> bool:
@@ -49,14 +50,18 @@ class AuthenticationManager:
         except Exception as e:
             return False
         
-    def verifyAuthToken(self, username) -> bool:
+    def verifyAuthToken(self, token) -> bool:
         myCursor = self.dbConnection.cursor()
-        myCursor.execute("SELECT token, expires_at FROM auth_tokens WHERE username = %s", (username,))
+        myCursor.execute("SELECT expires_at FROM auth_tokens WHERE token = %s", (token,))
         result = myCursor.fetchone()
         myCursor.close()
         if result:
-            username, expires_at = result
-            if int(time.time()) < expires_at:
+            token, expires_at = result
+            try:
+                expires_at_int = int(expires_at)
+            except (TypeError, ValueError):
+                return False
+            if int(time.time()) < expires_at_int:
                 return True
         return False
         
