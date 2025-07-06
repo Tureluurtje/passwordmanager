@@ -6,16 +6,14 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 import base64
-from mysql.connector import CMySQLConnection, MySQLConnection
 
 class PasswordManager:
     def __init__(self, dbConnection):
-        if isinstance(dbConnection, (CMySQLConnection, MySQLConnection)):
-            self.dbConnection = dbConnection
-        else:
-            raise ValueError("dbConnection is not valid")
+        if dbConnection is None:
+            return "Database connection is not valid", 500
+        self.dbConnection = dbConnection
         
-    def add_password(self, username, account_name, account_username, account_password):
+    def add_password(self, token, account_name, account_username, account_password):
         def generatepassword():
             lowercase_chars = string.ascii_lowercase
             uppercase_chars = string.ascii_uppercase
@@ -58,11 +56,9 @@ class PasswordManager:
             mycursor.execute(query, values)
             db.commit()
             log = True
-            return True, log
+            return "Password added successfully", 200
         except mysql.connector.Error as err:
-            error = err
-            log = False
-            return False, log
+            return "Databse connection error", 500
         
     def get_password(self, username):
         try:
@@ -72,9 +68,9 @@ class PasswordManager:
             values = (username,)
             mycursor.execute(query, values)
             results = mycursor.fetchall()
-            return results
+            return results, 200
         except mysql.connector.Error as err:
-            return None
+            return "Database connection error", 500
 
     #TODO add function
     def delete_password(self, user, master_password, account_name):

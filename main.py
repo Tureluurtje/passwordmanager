@@ -16,13 +16,13 @@ def ping():
 @app.route('/api/', methods=['GET'])
 def requestReceiver():
     try:
-        result = requestHandler(request)
+        result, code = requestHandler(request)
         return jsonify({
-            "succes": result
-        }), 200
+            "message": result
+        }), code
     except Exception as e:
         return jsonify({
-            "succes": False,
+            "message": False,
             "data": str(e)
         }), 400
 

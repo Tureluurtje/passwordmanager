@@ -2,6 +2,7 @@ import os
 import configparser
 import mysql.connector
 
+from mysql.connector import CMySQLConnection, MySQLConnection
 
 from core.logup import AuthenticationManager
 from core.passwordmanage import PasswordManager
@@ -25,15 +26,17 @@ def connectToDatabase() -> object:
 def requestHandler(req):
     try:
         conn = connectToDatabase()
-        if isinstance(conn, (mysql.connector.CMySQLConnection, mysql.connector.MySQLConnection)):
-            raise ConnectionError("Failed to connect to the database")
+        if conn is None:
+            raise ConnectionError(f"Failed to connect to the database, because the connection is {type(conn).__name__}")
+        AuthenticationManager(conn).cleanExpiredTokens()  # Clean expired tokens before login
         conn.close()  # Close the connection if it was successful
     except Exception as e:
-        return {"error": str(e)}, 500
+        return str(e), 500
+    
     requestMethod = req.args.get('requestMethod')
 
     if not requestMethod:
-        raise ValueError("Missing 'requestMethod' parameter")
+        return "Missing 'requestMethod' parameter", 400
 
     match requestMethod:
         case "authenticate":
@@ -41,7 +44,7 @@ def requestHandler(req):
         case "password":
             return handlePassword(req)
         case _:
-            raise ValueError(f"Invalid request method: {requestMethod}")
+            return f"Invalid request method: {requestMethod}", 400
         
 def handleAuthentication(req):
     username = req.args.get("username")
@@ -50,18 +53,22 @@ def handleAuthentication(req):
 
     missing = [name for name, value in [("username", username), ("password", password), ("action", action)] if not value]
     if missing:
-        raise ValueError(f"Missing arguments: {', '.join(missing)}")
+        return f"Missing arguments: {', '.join(missing)}", 400
     
     
     dbConnection = connectToDatabase()
     if not dbConnection:
-        raise ValueError("Could not connect to the database")
+        return "Could not connect to the database", 500
     AuthenticationManagerObj = AuthenticationManager(dbConnection)
     
-    if action == "login":
-        return AuthenticationManagerObj.login(username, password)
-    elif action == "register":
-        return AuthenticationManagerObj.register(username, password)
+    match action:
+        case "login":
+            return AuthenticationManagerObj.login(username, password)
+        case "register":
+            return AuthenticationManagerObj.register(username, password)
+        case _:
+            return f"Invalid action: {action}", 400
+    
     
 def handlePassword(req):
     username = req.args.get("username")
@@ -73,15 +80,16 @@ def handlePassword(req):
 
     missing = [name for name, value in [("username", username), ("master_password", masterPassword), ("action")] if not value]
     if missing:
-        raise ValueError(f"Missing arguments: {', '.join(missing)}")
+        return f"Missing arguments: {', '.join(missing)}", 400
 
-    if action == "add":
-        return PasswordManager().add_password(username, masterPassword, credentialName, credentialUsername, credentialPassword)
-    elif action == "get":
-        return PasswordManager().get_password(username, masterPassword, credentialName)
-    elif action == "delete":
-        return PasswordManager().delete_password(username, masterPassword, credentialName)
-    elif action == "update":
-        return PasswordManager().update_password(username, masterPassword, credentialName, credentialPassword)
-    else:
-        raise ValueError(f"Invalid action: {action}")
+    match action:
+        case "add":
+            return PasswordManager().add_password(username, masterPassword, credentialName, credentialUsername, credentialPassword)
+        case "get":
+            return PasswordManager().get_password(username, masterPassword, credentialName)
+        case "delete":
+            return PasswordManager().delete_password(username, masterPassword, credentialName)
+        case "update":
+            return PasswordManager().update_password(username, masterPassword, credentialName, credentialPassword)
+        case _:
+            return f"Invalid action: {action}", 400

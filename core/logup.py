@@ -10,33 +10,41 @@ class AuthenticationManager:
         if isinstance(dbConnection, (CMySQLConnection, MySQLConnection)):
             self.dbConnection = dbConnection
         else:
-            raise ValueError("dbConnection is not valid")
+            return "Databse connection error", 500
 
         
     def login(self, username, password) -> bool:
-        hasAuthToken = self.verifyAuthToken(username)
-        if hasAuthToken:
-            return True
-        else:
+        try:
             myCursor = self.dbConnection.cursor()
-            myCursor.execute("SELECT COUNT(*) FROM users WHERE username = %s AND password = %s", (username.lower(), password))  # Check if the username exists in the database
+            myCursor.execute("SELECT COUNT(*) FROM users WHERE username = %s AND password = %s", (username.lower(), password))  # Check if the username and password combo exists in the database
             result = myCursor.fetchone()
             myCursor.close()  # Close cursor
-            if result:  # Check if match found
-                if self.generateAuthToken(username):  # Generate auth token if username exists
-                    return True
-            return False
+            if result and result[0] > 0 and self.generateAuthToken(username):  # Check if match found
+                    return "Login successful", 200
+            return "Login failed, username or password is incorrect", 401  # Return error if no match found
+        except:
+            return "There was an error while trying to login", 500  # Return error if there was an error while trying to login
+            
 
     def register(self, username, password) -> bool:
         try:
             myCursor = self.dbConnection.cursor() # creates cursor object
-            myCursor.execute(f"INSERT INTO users(username, password) VALUES('{username}', '{hashlib.sha256(password.encode()).hexdigest()}')") # inserts username, password and totp secret into database
+            myCursor.execute(f"INSERT INTO users(username, password) VALUES('{username}', '{password}')") # inserts username, password and totp secret into database
             self.dbConnection.commit()  # Commit on the same connection
             myCursor.close()  # Close cursor
-            return True
+            return "Registration successful", 200  # Return success message
         except:
-            return False
-        
+            return "There was an error while trying to register", 500  # Return error if there was an error while trying to register
+    
+    def cleanExpiredTokens(self):
+        try:
+            myCursor = self.dbConnection.cursor()
+            myCursor.execute("DELETE FROM auth_tokens WHERE expires_at < %s", (int(time.time()) + 300,))
+            self.dbConnection.commit()
+            myCursor.close()
+        except Exception as e:
+            return f"Failed to clean expired tokens: {e}", 500
+
     def generateAuthToken(self, username) -> bool:
         token = secrets.token_urlsafe(32) # Generate a random token
         expiresAt = int(time.time()) + 300 # Token expires in 5 minutes
@@ -68,7 +76,16 @@ class AuthenticationManager:
 
                 if time.time() < expires_at_ts:
                     return True
-
+                # Update expires_at to current time + 5 minutes
+                new_expires_at = int(time.time()) + 300
+                update_cursor = self.dbConnection.cursor()
+                update_cursor.execute(
+                    "UPDATE auth_tokens SET expires_at = %s WHERE token = %s",
+                    (new_expires_at, token)
+                )
+                self.dbConnection.commit()
+                update_cursor.close()
+                return True
         return False
         
 def log(dbConnection, username, verify, logReason) -> None:
