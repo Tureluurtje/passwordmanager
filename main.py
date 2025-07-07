@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request
 from core.server import requestHandler
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def home():
@@ -22,9 +24,8 @@ def requestReceiver():
         }), code
     except Exception as e:
         return jsonify({
-            "message": False,
-            "data": str(e)
-        }), 400
+            "error": str(e)
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=False, host='127.0.0.1', port=5000)  # Run the Flask app on localhost:5000

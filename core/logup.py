@@ -20,7 +20,7 @@ class AuthenticationManager:
             result = myCursor.fetchone()
             myCursor.close()  # Close cursor
             if result and result[0] > 0 and self.generateAuthToken(username):  # Check if match found
-                    return "Login successful", 200
+                    return f"Login successful, {result}\n\n{("SELECT COUNT(*) FROM users WHERE username = %s AND password = %s", (username.lower(), password))}", 200
             return "Login failed, username or password is incorrect", 401  # Return error if no match found
         except:
             return "There was an error while trying to login", 500  # Return error if there was an error while trying to login
