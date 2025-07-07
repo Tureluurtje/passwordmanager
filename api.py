@@ -3,17 +3,14 @@ from core.server import requestHandler
 
 app = Flask(__name__)
 
-@app.route('/')
-def home():
-    #Default return
-    return jsonify({'message': 'Hello, World!'})
 
 @app.route('/ping/')
 def ping():
     #Server ping
     return jsonify({'message': 'pong'})
 
-@app.route('/api/', methods=['GET'])
+# NOTE: This route handles API requests
+@app.route('/', methods=['GET'])
 def requestReceiver():
     try:
         result, code = requestHandler(request)

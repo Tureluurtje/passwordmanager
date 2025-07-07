@@ -24,6 +24,8 @@ def connectToDatabase() -> object:
         return None
 
 def requestHandler(req):
+    if not req or not req.args:
+        return "Hello World!", 200
     try:
         conn = connectToDatabase()
         if conn is None:
