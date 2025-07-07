@@ -5,17 +5,14 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/')
-def home():
-    #Default return
-    return jsonify({'message': 'Hello, World!'})
 
 @app.route('/ping/')
 def ping():
     #Server ping
     return jsonify({'message': 'pong'})
 
-@app.route('/api/', methods=['GET'])
+# NOTE: This route handles API requests
+@app.route('/', methods=['GET'])
 def requestReceiver():
     try:
         result, code = requestHandler(request)
