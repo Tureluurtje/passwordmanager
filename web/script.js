@@ -13,16 +13,29 @@ form.addEventListener('submit', async function(event) {
     }
 
     const hashedPassword = await hashPassword(password)
-    // @CRITICAL This line MUST be optimized before release
-    const url = new URL('http://127.0.0.1:5000/api/');
-    url.searchParams.set('requestMethod', 'authenticate');
-    url.searchParams.set('action', 'login');
-    url.searchParams.set('username', username);
-    url.searchParams.set('password', hashedPassword);
 
-    fetch(url)
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(err => console.error('Error:', err));
+    const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+        username: username,
+        password: hashedPassword
+        })
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+
+        if (data.success) {
+            window.location.href = '/';
+        } else {
+            console.log('Login failed:', data.message);
+        }
+    } else {
+        console.error('Network error:', response.statusText);
+    }
 
 });
