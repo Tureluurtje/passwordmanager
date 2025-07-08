@@ -24,8 +24,8 @@ form.addEventListener('submit', async function(event) {
         password: hashedPassword
         })
     });
-
-    if (response.ok) {
+    console.log(response);
+    /*if (response.ok) {
         const data = await response.json();
         console.log(data);
 
@@ -34,8 +34,6 @@ form.addEventListener('submit', async function(event) {
         } else {
             console.log('Login failed:', data.message);
         }
-    } else {
-        console.error('Network error:', response.statusText);
     }
-
+    */
 });

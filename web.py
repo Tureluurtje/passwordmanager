@@ -1,9 +1,9 @@
-from flask import Flask, jsonify, request, session, redirect, url_for
+from flask import Flask, jsonify, request, session, redirect, url_for, render_template
 from flask_cors import CORS
 import requests
 
-app = Flask(__name__, static_folder='web', static_url_path='/')
-app.secret_key = '#611OaA1!'
+app = Flask(__name__, static_folder='web', static_url_path='/', template_folder='web')
+app.secret_key = 'MySUP3R53CR3T'  # @CRITICAL: Change this to a secure key in production
 
 # @CRITICAL: Change app.config.update before production
 app.config.update(
@@ -16,13 +16,13 @@ app.config.update(
 def index():
     if not session.get('logged_in'):
         return redirect(url_for('login'))  # Redirect to /login
-    return f"Welcome, {session['username']}!"
+    return render_template('index.html', username=session.get('username'))
 
 @app.route('/login', methods=['GET'])
 def login():
     if session.get('logged_in'):
         return redirect(url_for('index'))
-    return app.send_static_file('login.html')  # Serve the login page
+    return render_template('login.html')  # Serve the login page
 
 # Note: The following endpoints are POST requests to handle login and logout actions.
 @app.route('/login', methods=['POST'])
@@ -39,10 +39,11 @@ def login_post():
     else:
         return jsonify({'success': False}), 401
 
-@app.route('/logout', methods=['POST'])
+@app.route('/logout', methods=['GET'])
 def logout():
-    session.clear()
-    return jsonify({'success': True}), 200
+    session.pop('username', None)
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=False, host='127.0.0.1', port=4000)  # Run the Flask app on localhost:5000
