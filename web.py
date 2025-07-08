@@ -16,7 +16,7 @@ app.config.update(
 def index():
     if not session.get('logged_in'):
         return redirect(url_for('login'))  # Redirect to /login
-    return render_template('index.html', username=session.get('username'))
+    return render_template('index.html', username=session.get('username'), token = session.get('auth_token'))
 
 @app.route('/login', methods=['GET'])
 def login():

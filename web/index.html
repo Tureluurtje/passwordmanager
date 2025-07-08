@@ -6,7 +6,13 @@
   <title>Index</title>
 </head>
 <body>
-  <h1>Welcome to the Password Manager, {{username}}!</h1>
+  <h1>Welcome to the Password Manager, {{ username }}!</h1>
   <button onclick="location.href='/logout'">Logout</button>
+
+  <script>
+    window.AUTH_TOKEN = "{{ token }}";
+  </script>
+
+  <script src="index.js"></script>
 </body>
 </html>
