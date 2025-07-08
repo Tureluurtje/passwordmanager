@@ -10,7 +10,7 @@ class AuthenticationManager:
         if isinstance(dbConnection, (CMySQLConnection, MySQLConnection)):
             self.dbConnection = dbConnection
         else:
-            return "Databse connection error", 500
+            return "Database connection error", 500
 
         
     def login(self, username, password) -> bool:
@@ -19,8 +19,9 @@ class AuthenticationManager:
             myCursor.execute("SELECT COUNT(*) FROM users WHERE username = %s AND password = %s", (username.lower(), password))  # Check if the username and password combo exists in the database
             result = myCursor.fetchone()
             myCursor.close()  # Close cursor
-            if result and result[0] > 0 and self.generateAuthToken(username):  # Check if match found
-                    return f"Login successful, {result}\n\n{("SELECT COUNT(*) FROM users WHERE username = %s AND password = %s", (username.lower(), password))}", 200
+            token = self.generateAuthToken(username)
+            if result and result[0] > 0 and token:  # Check if match found and auth token generated successfully
+                return f"Login successful, {token}", 200
             return "Login failed, username or password is incorrect", 401  # Return error if no match found
         except:
             return "There was an error while trying to login", 500  # Return error if there was an error while trying to login
@@ -46,24 +47,29 @@ class AuthenticationManager:
             return f"Failed to clean expired tokens: {e}", 500
 
     def generateAuthToken(self, username) -> bool:
-        token = secrets.token_urlsafe(32) # Generate a random token
-        expiresAt = int(time.time()) + 300 # Token expires in 5 minutes
         try:
-            myCursor = self.dbConnection.cursor() # creates cursor object
+            # Remove all old tokens linked to the username
+            myCursor = self.dbConnection.cursor()
+            myCursor.execute("DELETE FROM auth_tokens WHERE username = %s", (username,))
+            self.dbConnection.commit()
+            # Generate a new auth token
+            token = secrets.token_urlsafe(32)  # Generate a random token
+            expiresAt = int(time.time()) + 300  # Token expires in 5 minutes
             myCursor.execute(
                 "INSERT INTO auth_tokens(username, token, expires_at) VALUES(%s, %s, %s)",
-                (username, token, expiresAt)) # inserts token into database
-            self.dbConnection.commit()  # Commit on the same connection
-            myCursor.close()  # Close cursor
-            return True
+                (username, token, expiresAt)
+            )
+            self.dbConnection.commit()
+            myCursor.close()
+            return token, 200  # Return success message and token
         except Exception as e:
-            return False
+            return False, f"Failed to generate auth token: {e}", 500  # Return error if there was an error while trying to generate the token
         
     def verifyAuthToken(self, token) -> bool:
-        myCursor = self.dbConnection.cursor()
-        myCursor.execute("SELECT expires_at FROM auth_tokens WHERE token = %s", (token,))
-        result = myCursor.fetchone()
-        myCursor.close()
+        mycursor = self.dbConnection.cursor()
+        mycursor.execute("SELECT expires_at FROM auth_tokens WHERE token = %s", (token,))
+        result = mycursor.fetchone()
+        mycursor.close()
 
         if result:
             expires_at = result[0]

@@ -35,6 +35,10 @@ def login_post():
     if api_res.ok:
         session['username'] = username
         session['logged_in'] = True
+        message = api_res.json().get('message', '')
+        token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
+        session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
+
         return jsonify({'success': True}), 200
     else:
         return jsonify({'success': False}), 401

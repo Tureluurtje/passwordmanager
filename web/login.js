@@ -24,8 +24,8 @@ form.addEventListener('submit', async function(event) {
         password: hashedPassword
         })
     });
-    console.log(response);
-    /*if (response.ok) {
+    
+    if (response.ok) {
         const data = await response.json();
         console.log(data);
 
@@ -35,5 +35,5 @@ form.addEventListener('submit', async function(event) {
             console.log('Login failed:', data.message);
         }
     }
-    */
+    
 });
