@@ -1,6 +1,10 @@
 *.ini
 **/__pycache__/
 config/
- __pycache__/
 *.py[cod]
+*. #pyc
+*.DS_Store
 *.pyc
+/.pytest_cache/
+/venv/
+.vscode/

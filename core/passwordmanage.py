@@ -8,13 +8,12 @@ from cryptography.hazmat.primitives import hashes
 import base64
 
 class PasswordManager:
-    def __init__(self, connectToDatabase=None):
-        if connectToDatabase :
-            self.connectToDatabase = connectToDatabase
-        else:
-            raise ValueError("connectToDatabase function is required")
+    def __init__(self, dbConnection):
+        if dbConnection is None:
+            return "Database connection is not valid", 500
+        self.dbConnection = dbConnection
         
-    def add_password(self, username, master_password, account_name, account_username, account_password):
+    def add_password(self, token, account_name, account_username, account_password):
         def generatepassword():
             lowercase_chars = string.ascii_lowercase
             uppercase_chars = string.ascii_uppercase
@@ -25,7 +24,7 @@ class PasswordManager:
             for _ in range(4):
                 part = ''.join(random.choices(all_chars, k=4))
                 password_parts.append(part)
-            password = '-'.join(password_parts)
+            password = '-'.join(password_parts) 
             return password
         def generate_key(master_password):
             salt = b'salt_'
@@ -57,20 +56,21 @@ class PasswordManager:
             mycursor.execute(query, values)
             db.commit()
             log = True
-            return True, log
+            return "Password added successfully", 200
         except mysql.connector.Error as err:
-            error = err
-            log = False
-            return False, log
-
-    def get_password(self, user, master_password, account_name):
+            return "Databse connection error", 500
+        
+    def get_password(self, username):
         try:
             db = self.connectToDatabase()
             mycursor = db.cursor()
-            query = "SELECT account_password FROM passwords WHERE username = %s AND account_name = %s"
-        except:
-            pass
-        pass
+            query = "SELECT * FROM passwords WHERE username = %s"
+            values = (username,)
+            mycursor.execute(query, values)
+            results = mycursor.fetchall()
+            return results, 200
+        except mysql.connector.Error as err:
+            return "Database connection error", 500
 
     #TODO add function
     def delete_password(self, user, master_password, account_name):

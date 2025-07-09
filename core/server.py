@@ -2,28 +2,12 @@ import os
 import configparser
 import mysql.connector
 
-from mysql.connector.connection_cext import CMySQLConnection
+from mysql.connector import CMySQLConnection, MySQLConnection
 
 from core.logup import AuthenticationManager
 from core.passwordmanage import PasswordManager
 
-def connectToDatabase():
-    try:
-        root_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(root_dir, '..', 'config/config.ini')
-        config = configparser.ConfigParser()
-        config.read(config_path)
-        mydb = mysql.connector.connect(
-        host=config['database']['host'],
-        user=config['database']['user'],
-        password=config['database']['password'],
-        database=config['database']['db']
-        ) # creates connection to database using a config file
-        return mydb 
-    except mysql.connector.Error:
-        return None
-
-def connectToDatabase():
+def connectToDatabase() -> object:
     try:
         root_dir = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(root_dir, '..', 'config/config.ini')
@@ -40,17 +24,21 @@ def connectToDatabase():
         return None
 
 def requestHandler(req):
+    if not req or not req.args:
+        return "Hello World!", 200
     try:
         conn = connectToDatabase()
-        if conn == CMySQLConnection:
-            raise ConnectionError("Failed to connect to the database")
+        if conn is None:
+            raise ConnectionError(f"Failed to connect to the database, because the connection is {type(conn).__name__}")
+        AuthenticationManager(conn).cleanExpiredTokens()  # Clean expired tokens before login
         conn.close()  # Close the connection if it was successful
     except Exception as e:
-        return {"error": str(e)}, 500
+        return str(e), 500
+    
     requestMethod = req.args.get('requestMethod')
 
     if not requestMethod:
-        raise ValueError("Missing 'requestMethod' parameter")
+        return "Missing 'requestMethod' parameter", 400
 
     match requestMethod:
         case "authenticate":
@@ -58,7 +46,7 @@ def requestHandler(req):
         case "password":
             return handlePassword(req)
         case _:
-            raise ValueError(f"Invalid request method: {requestMethod}")
+            return f"Invalid request method: {requestMethod}", 400
         
 def handleAuthentication(req):
     username = req.args.get("username")
@@ -67,38 +55,42 @@ def handleAuthentication(req):
 
     missing = [name for name, value in [("username", username), ("password", password), ("action", action)] if not value]
     if missing:
-        raise ValueError(f"Missing arguments: {', '.join(missing)}")
+        return f"Missing arguments: {', '.join(missing)}", 400
     
     
     dbConnection = connectToDatabase()
     if not dbConnection:
-        raise ValueError("Could not connect to the database")
+        return "Could not connect to the database", 500
     AuthenticationManagerObj = AuthenticationManager(dbConnection)
     
-    if action == "login":
-        return AuthenticationManagerObj.login(username, password)
-    elif action == "register":
-        return AuthenticationManagerObj.register(username, password)
+    match action:
+        case "login":
+            return AuthenticationManagerObj.login(username, password)
+        case "register":
+            return AuthenticationManagerObj.register(username, password)
+        case _:
+            return f"Invalid action: {action}", 400
+    
     
 def handlePassword(req):
-    username = req.args.get("username")
-    masterPassword = req.args.get("masterPassword")
+    token = req.args.get("token", "")
     credentialName = req.args.get("credentialName", "")
     credentialUsername = req.args.get("credentialUsername", "")
     credentialPassword = req.args.get("credentialPassword", "")
     action = req.args.get("action")
 
-    missing = [name for name, value in [("username", username), ("master_password", masterPassword), ("action")] if not value]
+    missing = [name for name, value in [("token", token), ("action")] if not value]
     if missing:
-        raise ValueError(f"Missing arguments: {', '.join(missing)}")
+        return f"Missing arguments: {', '.join(missing)}", 400
 
-    if action == "add":
-        return PasswordManager().add_password(username, masterPassword, credentialName, credentialUsername, credentialPassword)
-    elif action == "get":
-        return PasswordManager().get_password(username, masterPassword, credentialName)
-    elif action == "delete":
-        return PasswordManager().delete_password(username, masterPassword, credentialName)
-    elif action == "update":
-        return PasswordManager().update_password(username, masterPassword, credentialName, credentialPassword)
-    else:
-        raise ValueError(f"Invalid action: {action}")
+    match action:
+        case "add":
+            return PasswordManager().add_password(token, credentialName, credentialUsername, credentialPassword)
+        case "get":
+            return PasswordManager().get_password(token, credentialName)
+        case "delete":
+            return PasswordManager().delete_password(token, credentialName)
+        case "update":
+            return PasswordManager().update_password(token, credentialName, credentialPassword)
+        case _:
+            return f"Invalid action: {action}", 400

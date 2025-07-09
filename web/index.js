@@ -1,0 +1,1 @@
+console.log("Token:", window.AUTH_TOKEN);
