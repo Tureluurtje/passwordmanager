@@ -73,25 +73,24 @@ def handleAuthentication(req):
     
     
 def handlePassword(req):
-    username = req.args.get("username")
-    masterPassword = req.args.get("masterPassword")
+    token = req.args.get("token", "")
     credentialName = req.args.get("credentialName", "")
     credentialUsername = req.args.get("credentialUsername", "")
     credentialPassword = req.args.get("credentialPassword", "")
     action = req.args.get("action")
 
-    missing = [name for name, value in [("username", username), ("master_password", masterPassword), ("action")] if not value]
+    missing = [name for name, value in [("token", token), ("action")] if not value]
     if missing:
         return f"Missing arguments: {', '.join(missing)}", 400
 
     match action:
         case "add":
-            return PasswordManager().add_password(username, masterPassword, credentialName, credentialUsername, credentialPassword)
+            return PasswordManager().add_password(token, credentialName, credentialUsername, credentialPassword)
         case "get":
-            return PasswordManager().get_password(username, masterPassword, credentialName)
+            return PasswordManager().get_password(token, credentialName)
         case "delete":
-            return PasswordManager().delete_password(username, masterPassword, credentialName)
+            return PasswordManager().delete_password(token, credentialName)
         case "update":
-            return PasswordManager().update_password(username, masterPassword, credentialName, credentialPassword)
+            return PasswordManager().update_password(token, credentialName, credentialPassword)
         case _:
             return f"Invalid action: {action}", 400
