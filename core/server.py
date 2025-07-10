@@ -4,7 +4,7 @@ import mysql.connector
 
 from mysql.connector import CMySQLConnection, MySQLConnection
 
-from core.logup import AuthenticationManager
+from core.authentication import AuthenticationManager
 from core.passwordmanage import PasswordManager
 
 def connectToDatabase() -> object:
