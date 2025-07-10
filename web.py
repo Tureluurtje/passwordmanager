@@ -28,20 +28,31 @@ def login():
 @app.route('/login', methods=['POST'])
 def login_post():
     data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    
-    api_res = requests.get(f'http://127.0.0.1:5000/?requestMethod=authenticate&action=login&username={username}&password={password}')
-    if api_res.ok:
-        session['username'] = username
-        session['logged_in'] = True
-        message = api_res.json().get('message', '')
-        token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
-        session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
+    method = data.get('method')
 
-        return jsonify({'success': True}), 200
-    else:
-        return jsonify({'success': False}), 401
+    
+    match method:
+        case 'authenticate':
+            username = data.get('username')
+            password = data.get('password')
+            api_res = requests.get(f'http://127.0.0.1:5000/?requestMethod=authenticate&action=login&username={username}&password={password}')
+            if api_res.ok:
+                session['username'] = username
+                session['logged_in'] = True
+                message = api_res.json().get('message', '')
+                token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
+                session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
+
+                return jsonify({'success': True}), 200
+            else:
+                return jsonify({'success': False}), 401
+        case 'salt':
+            username = data.get('username')
+            api_res = requests.get(f'http://127.0.0.1:5000/?requestMethod=utils&action=fetchSalt&username={username}')
+            if api_res.ok:
+                return jsonify({'success': True, 'salt': api_res.json()}), 200
+            else:
+                return jsonify({'success': False}), 500
 
 @app.route('/logout', methods=['GET'])
 def logout():
