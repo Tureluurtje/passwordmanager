@@ -2,10 +2,9 @@ import os
 import configparser
 import mysql.connector
 
-from mysql.connector import CMySQLConnection, MySQLConnection
-
-from core.logup import AuthenticationManager
+from core.authentication import AuthenticationManager
 from core.passwordmanage import PasswordManager
+import core.utils
 
 def connectToDatabase() -> object:
     try:
@@ -14,10 +13,10 @@ def connectToDatabase() -> object:
         config = configparser.ConfigParser()
         config.read(config_path)
         mydb = mysql.connector.connect(
-        host=config['database']['host'],
-        user=config['database']['user'],
-        password=config['database']['password'],
-        database=config['database']['db']
+            host=config['database']['host'],
+            user=config['database']['user'],
+            password=config['database']['password'],
+            database=config['database']['db']
         ) # creates connection to database using a config file
         return mydb 
     except mysql.connector.Error:
@@ -45,6 +44,8 @@ def requestHandler(req):
             return handleAuthentication(req)
         case "password":
             return handlePassword(req)
+        case "utils":
+            return handleUtils(req)
         case _:
             return f"Invalid request method: {requestMethod}", 400
         
@@ -94,3 +95,18 @@ def handlePassword(req):
             return PasswordManager().update_password(token, credentialName, credentialPassword)
         case _:
             return f"Invalid action: {action}", 400
+        
+def handleUtils(req):
+    action = req.args.get("action", "")
+
+    dbConnection = connectToDatabase()
+    if not dbConnection:
+        return "Could not connect to the database", 500
+    
+    try:
+        match action:
+            case "fetchSalt":
+                username = req.args.get("username", "")
+                return core.utils.fetchSalt(username, dbConnection), 200
+    except:
+        return "Internal server error", 500

@@ -2,8 +2,10 @@ from flask import Flask, jsonify, request, session, redirect, url_for, render_te
 from flask_cors import CORS
 import requests
 
+import config.config as config
+
 app = Flask(__name__, static_folder='web', static_url_path='/', template_folder='web')
-app.secret_key = 'MySUP3R53CR3T'  # @CRITICAL: Change this to a secure key in production
+app.secret_key = config.SECRET_KEY  # @CRITICAL: Change this to a secure key in production
 
 # @CRITICAL: Change app.config.update before production
 app.config.update(
@@ -28,20 +30,31 @@ def login():
 @app.route('/login', methods=['POST'])
 def login_post():
     data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    
-    api_res = requests.get(f'http://127.0.0.1:5000/?requestMethod=authenticate&action=login&username={username}&password={password}')
-    if api_res.ok:
-        session['username'] = username
-        session['logged_in'] = True
-        message = api_res.json().get('message', '')
-        token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
-        session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
+    method = data.get('method')
 
-        return jsonify({'success': True}), 200
-    else:
-        return jsonify({'success': False}), 401
+    
+    match method:
+        case 'authenticate':
+            username = data.get('username')
+            password = data.get('password')
+            api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=authenticate&action=login&username={username}&password={password}')
+            if api_res.ok:
+                session['username'] = username
+                session['logged_in'] = True
+                message = api_res.json().get('message', '')
+                token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
+                session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
+
+                return jsonify({'success': True}), 200
+            else:
+                return jsonify({'success': False}), 401
+        case 'salt':
+            username = data.get('username')
+            api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=utils&action=fetchSalt&username={username}')
+            if api_res.ok:
+                return jsonify({'success': True, 'salt': api_res.json()}), 200
+            else:
+                return jsonify({'success': False}), 500
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -50,6 +63,6 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=False, host='127.0.0.1', port=4000)  # Run the Flask app on localhost:5000
+    app.run(debug=config.DEBUG, host=config.FLASK_HOST, port=config.PORT_WEB)  # Run the Flask app on passafe.local:4000
 # Note: In production, use a proper WSGI server like Gunicorn or uWSGI.
 # This is a simple Flask application that serves as an API for password management.
