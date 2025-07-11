@@ -1,25 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 body {
     margin: 0;
     padding: 0;
     height: 100vh;
     width: 100vw;
     font-size: 32px;
+    font-family: 'inter', sans-serif;
 }
 
 .login {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     height: 100%;
     width: 100%;
+}
+
+.login__title {
+    font-size: 2.3rem;
+}
+
+.login__form {
+    display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
 }
 
-.login input {
+/* Wrap inputs and error messages */
+.input-group {
+    position: relative;
     width: 20rem;
-    height: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+/* Style inputs */
+.login__form input {
+    width: 100%; /* now takes full width of .input-group */
     border: 2px solid;
     border-radius: 5px;
-    margin: 10px;
     font-size: 1.2rem;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+/* Style the submit button hover */
+.login__form input[type="submit"]:hover {
+    cursor: pointer;
+}
+
+/* Cursor for text inputs */
+.login__form input:hover {
+    cursor: text;
+}
+
+/* Focus style */
+.login__form input:focus {
+    outline: none;
+    border: 2px solid #000000;
+}
+
+.login__form input::placeholder {
+    color: #aaa; /* Light gray, adjust as needed */
+    opacity: 1;  /* Ensure it's fully visible in some browsers */
+}
+
+/* Invalid input styles */
+.login__form.was-validated input:invalid {
+    border-color: #dc3545;
+    background-color: #ffe6e6;
+}
+
+/* Invalid message styling */
+.invalid-message {
+    display: flex;
+    color: #dc3545;
+    font-size: 0.8rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    height: fit-content;
+    margin: 0.3rem;
+    padding: 0;
+}
+
+/* Authentication error state */
+.auth-error .invalid-message {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.invalid-message:empty::before {
+    content: '\00a0'; /* fallback in case message gets truly empty */
+}
+
+.login__form .invalid-message {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.login__form.was-validated .invalid-message,
+.login__form.auth-error .invalid-message {
+    opacity: 1;
+    pointer-events: auto;
 }

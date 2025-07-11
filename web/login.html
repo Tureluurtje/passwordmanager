@@ -7,11 +7,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <form class="login" action="">
-        <input type="text" name="username" placeholder="username" required>
-        <input type="password" name="password" placeholder="password" required>
-        <input type="submit">
-    </form>
+    <div class="login">
+        <p class="login__title">Welcome to your Passafe</p>
+        <form class="login__form" action="" novalidate>
+            <div class="input-group">
+                <input type="text" name="username" placeholder="username" required>
+                <p class="invalid-message" id="username-input">&nbsp;</p>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="password" required>
+                <p class="invalid-message" id="password-input">&nbsp;</p>
+            </div>
+            <input type="submit">
+        </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
     <script src="login.js"></script>
 </body>
 </html>
