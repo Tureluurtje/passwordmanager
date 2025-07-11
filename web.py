@@ -35,7 +35,7 @@ def login_post():
         case 'authenticate':
             username = data.get('username')
             password = data.get('password')
-            api_res = requests.get(f'http://127.0.0.1:5000/?requestMethod=authenticate&action=login&username={username}&password={password}')
+            api_res = requests.get(f'http://127.0.0.1:4001/?requestMethod=authenticate&action=login&username={username}&password={password}')
             if api_res.ok:
                 session['username'] = username
                 session['logged_in'] = True
@@ -48,7 +48,7 @@ def login_post():
                 return jsonify({'success': False}), 401
         case 'salt':
             username = data.get('username')
-            api_res = requests.get(f'http://127.0.0.1:5000/?requestMethod=utils&action=fetchSalt&username={username}')
+            api_res = requests.get(f'http://127.0.0.1:4001/?requestMethod=utils&action=fetchSalt&username={username}')
             if api_res.ok:
                 return jsonify({'success': True, 'salt': api_res.json()}), 200
             else:
@@ -61,6 +61,6 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=False, host='127.0.0.1', port=4000)  # Run the Flask app on localhost:5000
+    app.run(debug=False, host='0.0.0.0', port=4000)  # Run the Flask app on passafe.local:4000
 # Note: In production, use a proper WSGI server like Gunicorn or uWSGI.
 # This is a simple Flask application that serves as an API for password management.
