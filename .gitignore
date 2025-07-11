@@ -8,3 +8,5 @@ config/
 /.pytest_cache/
 /venv/
 .vscode/
+Procfile
+cracker.py
