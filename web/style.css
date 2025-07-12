@@ -8,8 +8,15 @@ body {
     font-size: 16px; 
     font-family: 'inter', sans-serif;
     display: flex;
+    position: relative;
 }
 
+.logout {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 9999999;
+}
 
 .sidebar {
     border-right: 2px solid #F1F5F9;
@@ -28,6 +35,7 @@ body {
 .sidebar__section__title {
     font-size: 1.2rem;
     font-weight: 600;
+    margin: 0 0.6rem;
 }
 .sidebar__section__items {
     list-style: none;
@@ -52,11 +60,11 @@ body {
 .sidebar__section__item img {
     height: 1.2rem;
     width: 1.2rem;
-    margin-right: 0.6rem;
+    margin: 0 0.6rem;
 }
 
 .sidebar__section__item:hover {
-  background-color: #F1F5F9;
+    background-color: #F1F5F9;
     transition: background-color 0.4s ease;
 }
 
@@ -68,8 +76,56 @@ body {
  main {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 2rem;
  }
+
+.header {
+    height: fit-content;
+    width: 100%;
+    margin: 0;
+}
+
+.header__title {
+    font-size: 1.6rem;
+    margin-bottom: 0rem;
+}
+
+.header__subtitle {
+    font-size: 0.9rem;
+    color: #999999;
+}
+
+.passwordPanel {
+    width: 100%;
+    height: fit-content;
+}
+
+.passwordPanel__input {
+    width: 75%;
+    height: 2rem;
+    font-size: 0.8rem;
+    border: 1px solid #999999;
+    border-radius: 7px;
+    padding: 0.7rem;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  display: none;
+}
+.passwordPanel__addPassword {
+    width: 24%;
+    height: 2rem;
+    background-color: #000000;
+    color: #ffffff;
+    font-size: 0.8rem;
+    border-radius: 7px;
+    outline: none;
+    box-sizing: border-box;
+    border: none;
+}
 
 .content-item {
     margin-bottom: 1rem;
