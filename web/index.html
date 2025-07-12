@@ -4,15 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Index</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Welcome to the Password Manager, {{ username }}!</h1>
-  <button onclick="location.href='/logout'">Logout</button>
+  <aside class="sidebar">
+    <div class="sidebar__section">
+      <h3 class="sidebar__section__title">Passwords</h3>
+      <ul class="sidebar__section__items">
+        <li onclick="setView('all', this)" class="sidebar__section__item"><img src="img/lock.svg">Passwords</li>
+      </ul>
+    </div>
+    <div class="sidebar__section">
+      <h3 class="sidebar__section__title">Categories</h3>
+      <ul class="sidebar__section__items">
+        <li onclick="setView('web-logins', this)" class="sidebar__section__item"><img src="img/globe.svg">Web Logins</li>
+        <li onclick="setView('credit-cards', this)" class="sidebar__section__item"><img src="img/credit-card.svg">Credit Cards</li>
+        <li onclick="setView('identity-documents', this)" class="sidebar__section__item"><img src="img/profile.svg">Identity Documents</li>
+        <li onclick="setView('notes', this)" class="sidebar__section__item"><img src="img/document.svg">Notes</li>
+        <li onclick="setView('social-media-accounts', this)" class="sidebar__section__item"><img src="img/at.svg">Social Media Accounts</li>
+        <li onclick="setView('email-accounts', this)" class="sidebar__section__item"><img src="img/envelope.svg">Email Accounts</li>
+        <li onclick="setView('wifi-passwords', this)" class="sidebar__section__item"><img src="img/wifi.svg">Wifi Passwords</li>
+        <li onclick="setView('bank-accounts', this)" class="sidebar__section__item"><img src="img/bank-building.svg">Bank Accounts</li>
+      </ul>
+    </div>
+  </aside>
+  <main id="main-content">
+    <div class="content-item" data-category="web-logins">Facebook login</div>
+    <div class="content-item" data-category="web-logins">Twitter login</div>
+    <div class="content-item" data-category="credit-cards">Visa ending in 1234</div>
+    <div class="content-item" data-category="notes">Note about bank pin</div>
+    <!-- etc. -->
+  </main>
 
-  <script>
-    window.AUTH_TOKEN = "{{ token }}";
-  </script>
-  
+
   <script src="index.js"></script>
 </body>
 </html>
