@@ -28,12 +28,19 @@
       </ul>
     </div>
   </aside>
+  <button class="logout" onclick="location.href='/login'">logout</button>
   <main id="main-content">
-    <div class="content-item" data-category="web-logins">Facebook login</div>
-    <div class="content-item" data-category="web-logins">Twitter login</div>
-    <div class="content-item" data-category="credit-cards">Visa ending in 1234</div>
-    <div class="content-item" data-category="notes">Note about bank pin</div>
-    <!-- etc. -->
+    <div class="header">
+      <p class="header__title">All Passwords</p>
+      <p class="header__subtitle">Safely manage and acces your passwords</p>
+      <div class="passwordPanel">
+        <input type="search" class="passwordPanel__input" placeholder="Search">
+        <button class="passwordPanel__addPassword">+ Add New Password</button>
+      </div>
+    </div>
+    <div class="passwords">
+
+    </div>
   </main>
 
 
