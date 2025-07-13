@@ -17,24 +17,6 @@ app.config.update(
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-MAX_REDIRECTS = 5
-
-@app.before_request
-def prevent_redirect_loop():
-    count = session.get('redirect_count', 0)
-    path = request.path
-
-    # Reset counter if user is on login or index page
-    if path in ('/', '/login'):
-        # Reset count on successful landing
-        session['redirect_count'] = 0
-    else:
-        # Increment counter for other redirects
-        session['redirect_count'] = count + 1
-        if session['redirect_count'] > MAX_REDIRECTS:
-            return "Too many redirects detected. Aborting.", 400
-
-
 @app.route('/')
 def index():
     if not session.get('logged_in'):

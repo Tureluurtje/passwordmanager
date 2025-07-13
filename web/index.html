@@ -32,7 +32,7 @@
   <main id="main-content">
     <div class="header">
       <p class="header__title">All Passwords</p>
-      <p class="header__subtitle">Safely manage and acces your passwords</p>
+      <p class="header__subtitle">Safely manage and access your passwords</p>
       <div class="passwordPanel">
         <input type="search" class="passwordPanel__input" placeholder="Search">
         <button class="passwordPanel__addPassword">+ Add New Password</button>
@@ -47,14 +47,16 @@
           </div>
           <img src="img/chevron.svg" class="passwordContainer__item__header-chevron">
         </div>
-        <div class="passwordContainer__item__content">
-          <p class="passwordContainer__item__content-email">Email: arthur@katak.nl</p>
-          <p class="passwordContainer__item__content-password">Password: <input class="passwordContainer__item__content-password" type="password" readonly value="Password1" /></p>
-          <p class="passwordContainer__item__content-URL">URL: https://passafe.local/login</p>
-        </div>
-        <div class="passwordContainer__item__actions">
-          <button class="passwordContainer__item__action passwordContainer__item__action-delete">Delete</button>
-          <button class="passwordContainer__item__action passwordContainer__item__action-edit">Edit</button>
+        <div class="passwordContainer__item__drawer collapsed">
+          <div class="passwordContainer__item__content">
+            <p class="passwordContainer__item__content-email">Email: arthur@katak.nl</p>
+            <p class="passwordContainer__item__content-password">Password: <input class="passwordContainer__item__content-password" type="password" readonly value="Password1" /></p>
+            <p class="passwordContainer__item__content-URL">URL: https://passafe.local/login</p>
+          </div>
+          <div class="passwordContainer__item__actions">
+            <button class="passwordContainer__item__action passwordContainer__item__action-delete">Delete</button>
+            <button class="passwordContainer__item__action passwordContainer__item__action-edit">Edit</button>
+          </div>
         </div>
       </div>
       <!-- More password items can be added here -->
