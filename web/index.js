@@ -4,15 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
   chevrons.forEach(chevron => {
     chevron.addEventListener("click", () => {
       const item = chevron.closest(".passwordContainer__item");
-      const content = item.querySelector(".passwordContainer__item__content");
-      const actions = item.querySelector(".passwordContainer__item__actions");
+      const drawer = item.querySelector(".passwordContainer__item__drawer");
 
-      content?.classList.toggle("collapsed");
-      actions?.classList.toggle("collapsed");
+      drawer.classList.toggle("collapsed");
       chevron.classList.toggle("rotated");
     });
   });
 });
+
 
 function setView(category, clickedElement) {
   const items = document.querySelectorAll('.content-item');

@@ -108,6 +108,13 @@ body {
     border: 1px solid #F4F4F4;
     border-radius: 5px;
     padding: 0.7rem;
+    transition: border 0.2s ease;
+}
+
+.passwordPanel__input:focus {
+    border: 1px solid #000000;
+    outline: none;
+    transition: border 0.2s ease;
 }
 
 input[type="search"]::-webkit-search-decoration,
@@ -126,6 +133,7 @@ input[type="search"]::-webkit-search-results-decoration {
     outline: none;
     box-sizing: border-box;
     border: none;
+    cursor: pointer;
 }
 
 .passwordContainer {
@@ -173,15 +181,28 @@ input[type="search"]::-webkit-search-results-decoration {
     transform: rotate(180deg);
 }
 
+.passwordContainer__item__drawer {
+    overflow: hidden;
+    max-height: 1000px;
+    transition: max-height 0.3s ease;
+}
+
+.passwordContainer__item__drawer.collapsed {
+  max-height: 0;
+}
+
+.passwordContainer__item__content,
+.passwordContainer__item__actions {
+  margin: 0;
+  padding: 0.5rem 0.5rem;
+  border-radius: 3px;
+}
+
 .passwordContainer__item__content {
     margin: 1rem 0.5rem;
     border: 1px solid #F4F4F4;
     padding: 0 1rem;
     border-radius: 3px;
-}
-
-.passwordContainer__item__actions.hidden {
-  display: none;
 }
 
 .passwordContainer__item__content-password {
@@ -196,19 +217,15 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .passwordContainer__item__actions {
-    margin: 0.5rem;
     display: flex;
     justify-content: space-between;
-}
-
-.passwordContainer__item__content.hidden {
-  display: none;
 }
 
 .passwordContainer__item__action {
     width: 49%;
     font-size: 0.9rem;
     height: 2rem;
+    cursor: pointer;
 }
 
 .passwordContainer__item__action-delete {
