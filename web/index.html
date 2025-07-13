@@ -38,7 +38,26 @@
         <button class="passwordPanel__addPassword">+ Add New Password</button>
       </div>
     </div>
-    <div class="passwords">
+    <div class="passwordContainer">
+      <div class="passwordContainer__item">
+        <div class="passwordContainer__item__header">
+          <div class="passwordContainer__item__header-title">
+            <img src="img/globe.svg">
+            <p>Example Password</p>
+          </div>
+          <img src="img/chevron.svg" class="passwordContainer__item__header-chevron">
+        </div>
+        <div class="passwordContainer__item__content">
+          <p class="passwordContainer__item__content-email">Email: arthur@katak.nl</p>
+          <p class="passwordContainer__item__content-password">Password: <input class="passwordContainer__item__content-password" type="password" readonly value="Password1" /></p>
+          <p class="passwordContainer__item__content-URL">URL: https://passafe.local/login</p>
+        </div>
+        <div class="passwordContainer__item__actions">
+          <button class="passwordContainer__item__action passwordContainer__item__action-delete">Delete</button>
+          <button class="passwordContainer__item__action passwordContainer__item__action-edit">Edit</button>
+        </div>
+      </div>
+      <!-- More password items can be added here -->
 
     </div>
   </main>
