@@ -1,4 +1,18 @@
-console.log("Token:", window.AUTH_TOKEN);
+document.addEventListener("DOMContentLoaded", () => {
+  const chevrons = document.querySelectorAll(".passwordContainer__item__header-chevron");
+
+  chevrons.forEach(chevron => {
+    chevron.addEventListener("click", () => {
+      const item = chevron.closest(".passwordContainer__item");
+      const content = item.querySelector(".passwordContainer__item__content");
+      const actions = item.querySelector(".passwordContainer__item__actions");
+
+      content?.classList.toggle("collapsed");
+      actions?.classList.toggle("collapsed");
+      chevron.classList.toggle("rotated");
+    });
+  });
+});
 
 function setView(category, clickedElement) {
   const items = document.querySelectorAll('.content-item');

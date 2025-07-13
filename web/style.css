@@ -19,7 +19,7 @@ body {
 }
 
 .sidebar {
-    border-right: 2px solid #F1F5F9;
+    border-right: 2px solid #F4F4F4;
     height: 100vh;
     width: fit-content;
     top: 0;
@@ -98,14 +98,15 @@ body {
 .passwordPanel {
     width: 100%;
     height: fit-content;
+    margin-top: 2rem;
 }
 
 .passwordPanel__input {
     width: 75%;
     height: 2rem;
     font-size: 0.8rem;
-    border: 1px solid #999999;
-    border-radius: 7px;
+    border: 1px solid #F4F4F4;
+    border-radius: 5px;
     padding: 0.7rem;
 }
 
@@ -121,26 +122,106 @@ input[type="search"]::-webkit-search-results-decoration {
     background-color: #000000;
     color: #ffffff;
     font-size: 0.8rem;
-    border-radius: 7px;
+    border-radius: 5px;
     outline: none;
     box-sizing: border-box;
     border: none;
 }
 
-.content-item {
-    margin-bottom: 1rem;
+.passwordContainer {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 0;
+    height: fit-content;
 }
 
-.hidden {
-    display: none;
+.passwordContainer__item {
+    padding: 1rem;
+    border: 1px solid #F4F4F4;
+    border-radius: 5px;
 }
 
+.passwordContainer__item__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
 
+.passwordContainer__item__header-title {
+    display: flex;
+    margin: 0 1rem;
+}
 
+.passwordContainer__item__header-title p {
+    margin: 0 1rem;
+}
 
+.passwordContainer__item__header-title img {
+    height: 1.2rem;
+    width: 1.2rem;
+}
 
+.passwordContainer__item__header-chevron {
+    height: 0.8rem;
+    width: 0.8rem;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
 
+.passwordContainer__item__header-chevron.rotated {
+    transform: rotate(180deg);
+}
 
+.passwordContainer__item__content {
+    margin: 1rem 0.5rem;
+    border: 1px solid #F4F4F4;
+    padding: 0 1rem;
+    border-radius: 3px;
+}
+
+.passwordContainer__item__actions.hidden {
+  display: none;
+}
+
+.passwordContainer__item__content-password {
+    border: none;
+}
+
+.passwordContainer__item.closed{
+    width: 100%;
+    border: 1px solid;
+    padding: 0;
+    height: fit-content;
+}
+
+.passwordContainer__item__actions {
+    margin: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.passwordContainer__item__content.hidden {
+  display: none;
+}
+
+.passwordContainer__item__action {
+    width: 49%;
+    font-size: 0.9rem;
+    height: 2rem;
+}
+
+.passwordContainer__item__action-delete {
+    border: 1px solid #F4F4F4;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+}
+
+.passwordContainer__item__action-edit {
+    background-color: #F1F5F9;
+    border: none;
+    border-radius: 5px;
+}
 
 /* ======================== login styles =-======================== */
 .login {
