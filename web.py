@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request, session, redirect, url_for, render_template
+from flask import Flask, jsonify, request, session, redirect, url_for, render_template, make_response
 from flask_cors import CORS
+from werkzeug.middleware.proxy_fix import ProxyFix
 import requests
 
 import config.config as config
@@ -13,6 +14,8 @@ app.config.update(
     SESSION_COOKIE_SECURE=False,
     SESSION_COOKIE_SAMESITE='Lax'
 )
+
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 @app.route('/')
 def index():
@@ -37,24 +40,29 @@ def login_post():
         case 'authenticate':
             username = data.get('username')
             password = data.get('password')
-            api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=authenticate&action=login&username={username}&password={password}')
-            if api_res.ok:
-                session['username'] = username
-                session['logged_in'] = True
-                message = api_res.json().get('message', '')
-                token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
-                session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
-
-                return jsonify({'success': True}), 200
-            else:
-                return jsonify({'success': False}), 401
+            try:
+                api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=authenticate&action=login&username={username}&password={password}')
+                if api_res.ok:
+                    session['username'] = username
+                    session['logged_in'] = True
+                    message = api_res.json().get('message', '')
+                    token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
+                    session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
+                    return jsonify({'success': True}), 200
+                else:
+                    return jsonify({'success': False}), 401
+            except Exception as e:
+                return jsonify({'success': False, 'error': str(e)}), 500
         case 'salt':
             username = data.get('username')
-            api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=utils&action=fetchSalt&username={username}')
-            if api_res.ok:
-                return jsonify({'success': True, 'salt': api_res.json()}), 200
-            else:
-                return jsonify({'success': False}), 500
+            try:
+                api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=utils&action=fetchSalt&username={username}')
+                if api_res.ok:
+                    return jsonify({'success': True, 'salt': api_res.json()}), 200
+                else:
+                    return jsonify({'success': False}), 500
+            except Exception as e:
+                return jsonify({'succes': False, 'error': str(e)}), 500
 
 @app.route('/logout', methods=['GET'])
 def logout():
