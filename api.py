@@ -14,7 +14,7 @@ def ping():
     return jsonify({'message': 'pong'})
 
 # NOTE: This route handles API requests
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['POST'])
 def requestReceiver():
     try:
         result, code = requestHandler(request)
@@ -25,6 +25,11 @@ def requestReceiver():
         return jsonify({
             "error": str(e)
         }), 500
+        
+@app.route('/', methods=['GET'])
+def test_get():
+    return jsonify({"message": "GET works"}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=config.DEBUG, host=config.FLASK_HOST, port=config.PORT_API)  # Run the Flask app on localhost:5000

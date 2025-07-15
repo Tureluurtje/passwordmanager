@@ -4,7 +4,7 @@ import mysql.connector
 
 from core.authentication import AuthenticationManager
 from core.passwordmanage import PasswordManager
-import core.utils
+import core.utils as utils
 
 def connectToDatabase() -> object:
     try:
@@ -23,8 +23,6 @@ def connectToDatabase() -> object:
         return None
 
 def requestHandler(req):
-    if not req or not req.args:
-        return "Hello World!", 200
     try:
         conn = connectToDatabase()
         if conn is None:
@@ -34,23 +32,26 @@ def requestHandler(req):
     except Exception as e:
         return str(e), 500
     
-    requestMethod = req.args.get('requestMethod')
+    data = req.get_json(silent=True) or {} #Parse json data
+    
+    requestMethod = data.get('requestMethod')
 
     if not requestMethod:
         return "Missing 'requestMethod' parameter", 400
 
     match requestMethod:
         case "authenticate":
-            return handleAuthentication(req)
+            return handleAuthentication(data)
         case "password":
-            return handlePassword(req)
+            return handlePassword(data)
         case "utils":
-            return handleUtils(req)
+            return handleUtils(data)
         case _:
             return f"Invalid request method: {requestMethod}", 400
         
-def handleAuthentication(req):
-    action = req.args.get("action")
+def handleAuthentication(data):
+    action = data.get("action")
+
     if not action:
         return f"Missing arguments: action", 400
     
@@ -61,7 +62,7 @@ def handleAuthentication(req):
     auth = AuthenticationManager(dbConnection)    
     
     if action == "token":
-        token = req.args.get("token")
+        token = data.get("token")
         if not token:
             return "Missing arguments: token", 400
         return AuthenticationManager.verifyAuthToken(token)
@@ -72,8 +73,8 @@ def handleAuthentication(req):
     if missing:
         return f"Missing arguments: {', '.join(missing)}", 400
     
-    username = req.args.get("username")
-    password = req.args.get("password")
+    username = data.get("username")
+    password = data.get("password")
         
     if action == "login":
         return auth.login(username, password)
@@ -83,31 +84,37 @@ def handleAuthentication(req):
         return f"Invalid action: {action}", 400
     
     
-def handlePassword(req):
-    token = req.args.get("token", "")
-    credentialName = req.args.get("credentialName", "")
-    credentialUsername = req.args.get("credentialUsername", "")
-    credentialPassword = req.args.get("credentialPassword", "")
-    action = req.args.get("action")
+def handlePassword(data):
+    token = data.get("token", "")
+    credentialName = data.get("credentialName", "")
+    credentialUsername = data.get("credentialUsername", "")
+    credentialPassword = data.get("credentialPassword", "")
+    action = data.get("action")
 
     missing = [name for name, value in [("token", token), ("action")] if not value]
     if missing:
         return f"Missing arguments: {', '.join(missing)}", 400
 
+    dbConnection = connectToDatabase()
+    if not dbConnection:
+        return "Could not connect to the database", 500
+
+    PasswordManagerObj = PasswordManager(dbConnection)
+
     match action:
         case "add":
-            return PasswordManager().add_password(token, credentialName, credentialUsername, credentialPassword)
+            return PasswordManagerObj.add_password(token, credentialName, credentialUsername, credentialPassword)
         case "get":
-            return PasswordManager().get_password(token, credentialName)
+            return PasswordManagerObj.get_password(token, credentialName)
         case "delete":
-            return PasswordManager().delete_password(token, credentialName)
+            return PasswordManagerObj.delete_password(token, credentialName)
         case "update":
-            return PasswordManager().update_password(token, credentialName, credentialPassword)
+            return PasswordManagerObj.update_password(token, credentialName, credentialPassword)
         case _:
             return f"Invalid action: {action}", 400
         
-def handleUtils(req):
-    action = req.args.get("action", "")
+def handleUtils(data):
+    action = data.get("action", "")
 
     dbConnection = connectToDatabase()
     if not dbConnection:
@@ -116,7 +123,7 @@ def handleUtils(req):
     try:
         match action:
             case "fetchSalt":
-                username = req.args.get("username", "")
-                return core.utils.fetchSalt(username, dbConnection), 200
+                username = data.get("username", "")
+                return utils.fetchSalt(username, dbConnection), 200
     except:
         return "Internal server error", 500
