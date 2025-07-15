@@ -57,53 +57,49 @@ def login():
 @app.route('/login', methods=['POST'])
 def login_post():
     data = request.get_json()
-    method = data.get('method')
+    username = data.get('username')
+    password = data.get('password')
+    try:
+        api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=authenticate&action=login&username={username}&password={password}')
+        if api_res.ok:
+            session['username'] = username
+            session['logged_in'] = True
+            message = api_res.json().get('message', '')
+            token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
+            session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
+            return jsonify({'success': True}), 200
+        else:
+            return jsonify({'success': False}), 401
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
-    
-    match method:
-        case 'authenticate':
-            username = data.get('username')
-            password = data.get('password')
-            try:
-                api_res = requests.post(
-                    f'{config.HOST}:{config.PORT_API}/',
-                    json={
-                        "requestMethod": "authenticate",
-                        "action": "login",
-                        "username": username,
-                        "password": password
-                    }
-                )
+@app.route('/add-password', methods=['POST'])
 
-                if api_res.ok:
-                    session['username'] = username
-                    session['logged_in'] = True
-                    message = api_res.json().get('message', '')
-                    token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
-                    session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
-                    return jsonify({'success': True}), 200
-                else:
-                    return jsonify({'success': False}), 401
-            except Exception as e:
-                return jsonify({'success': False, 'error': str(e)}), 500
-        case 'salt':
-            username = data.get('username')
-            try:
-                api_res = requests.post(
-                    f'{config.HOST}:{config.PORT_API}/',
-                    json={
-                        "requestMethod": "utils",
-                        "action": "fetchSalt",
-                        "username": username
-                    }
-                )
 
-                if api_res.ok:
-                    return jsonify({'success': True, 'salt': api_res.json()}), 200
-                else:
-                    return jsonify({'success': False}), 500
-            except Exception as e:
-                return jsonify({'succes': False, 'error': str(e)}), 500
+
+def authenticate(token):
+    try:
+        api_res = request.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=authenticate&token={token}')
+        if api_res:
+            return True
+        else:
+            False
+    except:
+        pass
+        
+
+@app.route('/salt', methods=['POST'])
+def salt():
+    data = request.get_json()
+    username = data.get('username')
+    try:
+        api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=utils&action=fetchSalt&username={username}')
+        if api_res.ok:
+            return jsonify({'success': True, 'salt': api_res.json()}), 200
+        else:
+            return jsonify({'success': False}), 500
+    except Exception as e:
+        return jsonify({'succes': False, 'error': str(e)}), 500
 
 @app.route('/keepalive')
 def keepalive():
