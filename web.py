@@ -41,7 +41,16 @@ def login_post():
             username = data.get('username')
             password = data.get('password')
             try:
-                api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=authenticate&action=login&username={username}&password={password}')
+                api_res = requests.post(
+                    f'{config.HOST}:{config.PORT_API}/',
+                    json={
+                        "requestMethod": "authenticate",
+                        "action": "login",
+                        "username": username,
+                        "password": password
+                    }
+                )
+
                 if api_res.ok:
                     session['username'] = username
                     session['logged_in'] = True
@@ -56,7 +65,15 @@ def login_post():
         case 'salt':
             username = data.get('username')
             try:
-                api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=utils&action=fetchSalt&username={username}')
+                api_res = requests.post(
+                    f'{config.HOST}:{config.PORT_API}/',
+                    json={
+                        "requestMethod": "utils",
+                        "action": "fetchSalt",
+                        "username": username
+                    }
+                )
+
                 if api_res.ok:
                     return jsonify({'success': True, 'salt': api_res.json()}), 200
                 else:
