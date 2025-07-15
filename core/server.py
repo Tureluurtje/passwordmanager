@@ -54,6 +54,7 @@ def handleAuthentication(data):
 
     if not action:
         return f"Missing arguments: action", 400
+        
     
     dbConnection = connectToDatabase()
     if not dbConnection:
@@ -68,7 +69,7 @@ def handleAuthentication(data):
         return AuthenticationManager.verifyAuthToken(token)
     
     required_params = ["username", "password"]    
-    missing = [param for param in required_params if not req.args.get(param)]
+    missing = [param for param in required_params if not data.get(param)]
     
     if missing:
         return f"Missing arguments: {', '.join(missing)}", 400
