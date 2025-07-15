@@ -63,9 +63,18 @@ def login_post():
     match method:
         case 'authenticate':
             username = data.get('username')
-            authKey = data.get('password')
+            password = data.get('password')
             try:
-                api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=authenticate&action=login&username={username}&password={authKey}')
+                api_res = requests.post(
+                    f'{config.HOST}:{config.PORT_API}/',
+                    json={
+                        "requestMethod": "authenticate",
+                        "action": "login",
+                        "username": username,
+                        "password": password
+                    }
+                )
+
                 if api_res.ok:
                     session['username'] = username
                     session['logged_in'] = True

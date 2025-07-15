@@ -49,8 +49,9 @@ def requestHandler(req):
         case _:
             return f"Invalid request method: {requestMethod}", 400
         
-def handleAuthentication(req):
-    action = req.args.get("action")
+def handleAuthentication(data):
+    action = data.get("action")
+
     if not action:
         return f"Missing arguments: action", 400
     
@@ -61,7 +62,7 @@ def handleAuthentication(req):
     auth = AuthenticationManager(dbConnection)    
     
     if action == "token":
-        token = req.args.get("token")
+        token = data.get("token")
         if not token:
             return "Missing arguments: token", 400
         return AuthenticationManager.verifyAuthToken(token)
@@ -72,8 +73,8 @@ def handleAuthentication(req):
     if missing:
         return f"Missing arguments: {', '.join(missing)}", 400
     
-    username = req.args.get("username")
-    password = req.args.get("password")
+    username = data.get("username")
+    password = data.get("password")
         
     if action == "login":
         return auth.login(username, password)
