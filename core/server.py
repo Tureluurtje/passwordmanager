@@ -50,27 +50,37 @@ def requestHandler(req):
             return f"Invalid request method: {requestMethod}", 400
         
 def handleAuthentication(req):
-    username = req.args.get("username")
-    password = req.args.get("password")
     action = req.args.get("action")
-
-    missing = [name for name, value in [("username", username), ("password", password), ("action", action)] if not value]
-    if missing:
-        return f"Missing arguments: {', '.join(missing)}", 400
-    
+    if not action:
+        return f"Missing arguments: action", 400
     
     dbConnection = connectToDatabase()
     if not dbConnection:
         return "Could not connect to the database", 500
-    AuthenticationManagerObj = AuthenticationManager(dbConnection)
     
-    match action:
-        case "login":
-            return AuthenticationManagerObj.login(username, password)
-        case "register":
-            return AuthenticationManagerObj.register(username, password)
-        case _:
-            return f"Invalid action: {action}", 400
+    auth = AuthenticationManager(dbConnection)    
+    
+    if action == "token":
+        token = req.args.get("token")
+        if not token:
+            return "Missing arguments: token", 400
+        return AuthenticationManager.verifyAuthToken(token)
+    
+    required_params = ["username", "password"]    
+    missing = [param for param in required_params if not req.args.get(param)]
+    
+    if missing:
+        return f"Missing arguments: {', '.join(missing)}", 400
+    
+    username = req.args.get("username")
+    password = req.args.get("password")
+        
+    if action == "login":
+        return auth.login(username, password)
+    elif action == "register":
+        return auth.register(username, password)
+    else:
+        return f"Invalid action: {action}", 400
     
     
 def handlePassword(req):

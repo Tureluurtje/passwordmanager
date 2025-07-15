@@ -72,7 +72,7 @@ form.addEventListener('submit', async function(event) {
     form.classList.remove('was-validated');
 
     try {
-        const response_salt = await fetch('/login', {
+        const response_salt = await fetch('/salt', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
