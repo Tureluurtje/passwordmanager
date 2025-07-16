@@ -2,10 +2,11 @@ from flask import Flask, jsonify, request, session, redirect, url_for, render_te
 from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 import requests
+from argon2 import PasswordHasher
 
 import config.config as config
 
-app = Flask(__name__, static_folder='web', static_url_path='/', template_folder='web')
+app = Flask(__name__, static_folder='web', static_url_path='/', template_folder='web/templates/')
 app.secret_key = config.SECRET_KEY  # @CRITICAL: Change this to a secure key in production
 
 # @CRITICAL: Change app.config.update before production
@@ -39,18 +40,9 @@ def login_post():
     match method:
         case 'authenticate':
             username = data.get('username')
-            password = data.get('password')
+            authKey = data.get('password')
             try:
-                api_res = requests.post(
-                    f'{config.HOST}:{config.PORT_API}/',
-                    json={
-                        "requestMethod": "authenticate",
-                        "action": "login",
-                        "username": username,
-                        "password": password
-                    }
-                )
-
+                api_res = requests.get(f'{config.HOST}:{config.PORT_API}/?requestMethod=authenticate&action=login&username={username}&password={authKey}')
                 if api_res.ok:
                     session['username'] = username
                     session['logged_in'] = True
