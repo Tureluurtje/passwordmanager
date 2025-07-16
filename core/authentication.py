@@ -4,6 +4,7 @@ import secrets
 import time
 from datetime import datetime, date, timezone
 from mysql.connector import CMySQLConnection, MySQLConnection
+from argon2 import PasswordHasher, exceptions
 
 class AuthenticationManager:
     def __init__(self, dbConnection):
@@ -16,14 +17,28 @@ class AuthenticationManager:
     def login(self, username, password) -> bool:
         try:
             myCursor = self.dbConnection.cursor()
-            myCursor.execute("SELECT COUNT(*) FROM users WHERE username = %s AND password = %s", (username.lower(), password))  # Check if the username and password combo exists in the database
+            myCursor.execute("SELECT password FROM users WHERE username = %s", (username.lower(),))
             result = myCursor.fetchone()
             myCursor.close()  # Close cursor
+            if not result:
+                return "Login failed, username or password is incorrect", 401
+
+            stored_hash = result[0]
+            
+            ph = PasswordHasher()
+            try:
+                # Verify password (password is the raw authKey client sends)
+                ph.verify(stored_hash, password)
+            except exceptions.VerifyMismatchError:
+                return "Login failed, username or password is incorrect", 401
+        
+
             token = self.generateAuthToken(username)
-            if result and result[0] > 0 and token:  # Check if match found and auth token generated successfully
+            if token:
                 return f"Login successful, {token}", 200
-            return "Login failed, username or password is incorrect", 401  # Return error if no match found
-        except:
+            else:
+                raise Exception('Token failed to generate')
+        except Exception as e:
             return "There was an error while trying to login", 500  # Return error if there was an error while trying to login
             
 

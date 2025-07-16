@@ -1,5 +1,5 @@
 import secrets
-
+from argon2 import PasswordHasher
 '''
 import mysql.connector
 
@@ -20,3 +20,6 @@ for line in data:
     except:
         pass
 '''
+ph = PasswordHasher()
+x = ph.hash('a11c0d0f88415d0e3efc23c44e4d11f6581b89ef1be0db9979ae202bea75d9b0')
+print(x)
