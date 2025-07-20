@@ -1,22 +1,23 @@
-const worker = new SharedWorker('js/worker.js'); 
-worker.port.start(); //Initialise worker
+const token = window.name;
+window.name = '';
 
-function requestEncKey() {
-  return new Promise((resolve, reject) => {
-    worker.port.postMessage({ action: 'getKey' });
+if (token) {
+  console.log('Received token: ', token);
+} else {
+  console.log('No token received')
+}
 
-    worker.port.onmessage = (event) => {
-      if (event.data.status === 'ok') {
-        // Got key from worker
-        const encryptionKeyBytes = new Uint8Array(event.data.key);
-        resolve(encryptionKeyBytes);
-      } else {
-        reject(new Error(event.data.message));
-      }
-    };
-  });
+
+
+
+class AddPassword {
+  constructor(username, encKey) {
+    this.username = username;
+    this.password = password;
+  };
+
+  generateNonce() {
+    const iv = crypto.getRandomValues(new Uint8Array(16));
+    return iv;
+  }
 };
-
-requestEncKey().then(encKey => {
-  console.log(encKey);
-});

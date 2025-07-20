@@ -1,6 +1,3 @@
-const worker = new SharedWorker('js/worker.js');
-worker.port.start();
-
 const form = document.querySelector('form');
 const usernameInput = form.elements['username'];
 const passwordInput = form.elements['password'];
@@ -124,7 +121,10 @@ async function login(username, masterPassword) {
     const authKey = await hkdf(rootKeyMaterialBytes, "authentication");
     const authKeyHex = toHex(authKey);
 
-    return [await sendAuthReq(username, authKeyHex), authKeyHex];
+    const encKey = await hkdf(rootKeyMaterialBytes, "encryption");
+    const encKeyHex = toHex(encKey);
+
+    return [await sendAuthReq(username, authKeyHex), encKeyHex];
 }
 
 
@@ -157,31 +157,25 @@ form.addEventListener('submit', async function(event) {
     form.classList.remove('was-validated');
 
     try {
-        const [loginSucces, authKeyHex] = await login(usernameInput.value, passwordInput.value);
-            if (loginSucces.ok) {
-                const data = await loginSucces.json();
-                if (data.success) {
-                    worker.port.postMessage({ action : 'setKey', data: Array.from(authKeyHex) })
-                    worker.port.onmessage = (event) => {
-                        if (event.data.status == "ok") {
-                            window.location.href = '/';
-                        } else {
-                            console.log('Worker response: ', event.data)
-                        }
-                    };
-                } else {
-                    passwordError.textContent = 'Username or password incorrect';
-                    form.classList.add('auth-error');
-                }
-            } else {
-                passwordError.textContent = 'Username or password incorrect';
-                form.classList.add('auth-error');
-            };
+        const username = usernameInput.value;
+        const [loginResponse, encKeyHex] = await login(username, passwordInput.value);
+
+        if (!loginResponse.ok) throw new Error("Login response not OK");
+
+
+        const data = await loginResponse.json();
+        if (!data.success) throw new Error("Username or password incorrect");
+
+        window.name = encKeyHex;
+        window.location.href = '/';
+
     } catch (err) {
         console.error(err);
-        passwordError.textContent = 'An error occurred';
-        form.classList.add('auth-error');
-    }
+        passwordError.textContent = err.message.includes("username") ? 
+            "Username or password incorrect" : "An error occurred";
+        form.classList.add("auth-error");
+    };
+
 });
 
 usernameInput.addEventListener('input', () => {
