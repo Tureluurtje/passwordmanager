@@ -113,20 +113,26 @@ async function sendAuthReq(username, authKey) {
         return res
 }
 
+
 async function login(username, masterPassword) {
     const saltHex = await fetchSalt(username);
     const rootKeyMaterial = await deriveRootKey(masterPassword, saltHex);
     const rootKeyMaterialBytes = hexToBytes(rootKeyMaterial);
-
+    
     const authKey = await hkdf(rootKeyMaterialBytes, "authentication");
     const authKeyHex = toHex(authKey);
-
+    
     const encKey = await hkdf(rootKeyMaterialBytes, "encryption");
-    const encKeyHex = toHex(encKey);
-
-    return [await sendAuthReq(username, authKeyHex), encKeyHex];
+    //const encKeyHex = toHex(encKey);
+    
+    return [await sendAuthReq(username, authKeyHex), encKey];
 }
 
+function uint8ArrayToBase64(bytes) {
+let binary = '';
+bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary);
+}
 
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
@@ -158,15 +164,16 @@ form.addEventListener('submit', async function(event) {
 
     try {
         const username = usernameInput.value;
-        const [loginResponse, encKeyHex] = await login(username, passwordInput.value);
+        const [loginResponse, encKey] = await login(username, passwordInput.value);
 
         if (!loginResponse.ok) throw new Error("Login response not OK");
-
 
         const data = await loginResponse.json();
         if (!data.success) throw new Error("Username or password incorrect");
 
-        window.name = encKeyHex;
+        const encKeyBase64 = uint8ArrayToBase64(encKey);
+        
+        window.name = encKeyBase64;
         window.location.href = '/';
 
     } catch (err) {
