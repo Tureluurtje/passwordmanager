@@ -73,9 +73,7 @@ def login_post():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/add-password', methods=['POST'])
-
-
+@app.route('/password', methods=['POST'])
 
 def authenticate(token):
     try:
