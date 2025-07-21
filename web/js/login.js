@@ -171,7 +171,7 @@ form.addEventListener('submit', async function(event) {
 
         const encKeyBase64 = uint8ArrayToBase64(encKey);
         
-        window.name = encKeyBase64;
+        window.name = JSON.stringify({ username: username, encKey: encKeyBase64 });
         window.location.href = '/';
 
     } catch (err) {

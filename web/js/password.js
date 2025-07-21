@@ -66,11 +66,17 @@ class AddPassword {
     return payload;
   };
 
-  async uploadPayload(payload) {
-    const res = await fetch('/passwords', {
+  async uploadPayload(username, payload, nonce) {
+    const res = await fetch('/password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      headers: { 
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: username,
+        payload: payload,
+        nonce: uint8ArrayToBase64(nonce)
+      })
     });
     if (!res.ok) {
       throw new Error(`Failed to upload password: ${res.statusText}`);
@@ -97,38 +103,45 @@ function base64ToUint8Array(base64) {
 
 (async () => {
   try {
-    let url, username, notes, datetime;
+    let metadata_url, metadata_username, metadata_notes, metadata_datetime;
     try {
-      url = typeof urlInput !== 'undefined' && urlInput ? urlInput.value : null;
-      username = typeof usernameInput !== 'undefined' && usernameInput ? usernameInput.value : null;
-      notes = typeof notesInput !== 'undefined' && notesInput ? notesInput.value : null;
-      datetime = typeof datetimeInput !== 'undefined' && datetimeInput ? datetimeInput.value : null;
+      metadata_url = typeof urlInput !== 'undefined' && urlInput ? urlInput.value : null;
+      metadata_username = typeof usernameInput !== 'undefined' && usernameInput ? usernameInput.value : null;
+      metadata_notes = typeof notesInput !== 'undefined' && notesInput ? notesInput.value : null;
+      metadata_datetime = typeof datetimeInput !== 'undefined' && datetimeInput ? datetimeInput.value : null;
     } catch (err) {
       console.error(err);
     }
-    const encKeyBase64 = window.name;
+
+    let username, encKeyBase64;
+    try {
+      const data = JSON.parse(window.name);
+      username = data.username;
+      encKeyBase64 = data.encKey;
+    } catch (e) {
+      console.error('Failed to parse window.name JSON:', e);
+    }
 
     if (!encKeyBase64) {
-      console.error('No token received')
+      console.error('No token received');
+    } else if (!username) {
+      console.error('No username received');
     }
     window.name = '';
-
     const encKey = base64ToUint8Array(encKeyBase64);
 
     const obj = new AddPassword();
     const { ciphertext, nonce } = await obj.encryptPassword(encKey, 'test');
 
     const metadata = {
-        "url": url,
-        "username": username,
-        "notes": notes,
-        "datetime": datetime,
+        "url": metadata_url,
+        "username": metadata_username,
+        "notes": metadata_notes,
+        "datetime": metadata_datetime,
     }
     const payload = obj.preparePayload(ciphertext, metadata);
-    console.log(payload);
-    console.log(JSON.stringify(payload, null, 2));
-    const response = await obj.uploadPayload(payload);
-    if (!response || !response.id) {
+    const response = await obj.uploadPayload(username, payload, nonce);
+    if (!response || !response.success) {
       throw new Error('Invalid response from server');
     }
     console.log('Password uploaded successfully:', response);
