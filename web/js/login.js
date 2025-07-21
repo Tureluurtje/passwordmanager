@@ -5,11 +5,10 @@ const usernameError = document.getElementById('username-input');
 const passwordError = document.getElementById('password-input');
 
 async function fetchSalt(username) {
-    const response_salt = await fetch('/login', {
+    const response_salt = await fetch('/salt', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                method: 'salt',
                 username: username,
             })
         });
@@ -104,7 +103,6 @@ async function sendAuthReq(username, authKey) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                method: 'authenticate',
                 username: username,
                 password: authKey
             })
