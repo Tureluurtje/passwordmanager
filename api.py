@@ -10,7 +10,6 @@ CORS(app)
 
 @app.route('/ping/')
 def ping():
-    #Server ping
     return jsonify({'message': 'pong'})
 
 # NOTE: This route handles API requests
@@ -28,7 +27,7 @@ def requestReceiver():
         
 @app.route('/', methods=['GET'])
 def test_get():
-    return jsonify({"message": "GET works"}), 200
+    return jsonify({"message": "Hello World!"}), 200
 
 
 if __name__ == '__main__':
