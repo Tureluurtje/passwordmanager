@@ -2,12 +2,11 @@ from flask import Flask, jsonify, request, session, redirect, url_for, render_te
 from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 import requests
-from argon2 import PasswordHasher
 import logging
 
 import config.config as config
 
-app = Flask(__name__, static_folder='web', static_url_path='/', template_folder='web/templates')
+app = Flask(__name__, static_folder='web', static_url_path='/', template_folder='web/html')
 app.secret_key = config.SECRET_KEY  # @CRITICAL: Change this to a secure key in production
 
 # @CRITICAL: Change app.config.update before production
@@ -92,8 +91,26 @@ def password():
         # Handle GET request
         pass
     elif request.method == 'POST':
-        # Handle POST request
-        return jsonify({'success': True}), 200
+        data = request.get_json()
+        username = data.get('username')
+        payload = data.get('payload')
+        try:
+            api_res = requests.post(
+                f'{config.HOST}:{config.PORT_API}/',
+                json={
+                'token': session.get('auth_token'),
+                'requestMethod': 'password',
+                'action': 'add',
+                'username': username,
+                'payload': payload
+                }
+            )
+            if api_res.ok:
+                return jsonify({'success': True}), 200
+            else:
+                return jsonify({'success': False}), 500
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
     elif request.method == 'PUT':
         # Handle PUT request
         pass

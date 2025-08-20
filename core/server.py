@@ -22,16 +22,7 @@ def connectToDatabase() -> object:
     except mysql.connector.Error:
         return None
 
-def requestHandler(req):
-    try:
-        conn = connectToDatabase()
-        if conn is None:
-            raise ConnectionError(f"Failed to connect to the database, because the connection is {type(conn).__name__}")
-        AuthenticationManager(conn).cleanExpiredTokens()  # Clean expired tokens before login
-        conn.close()  # Close the connection if it was successful
-    except Exception as e:
-        return str(e), 500
-    
+def requestHandler(req):    
     data = req.get_json(silent=True) or {} #Parse json data
     
     requestMethod = data.get('requestMethod')
@@ -60,7 +51,12 @@ def handleAuthentication(data):
     if not dbConnection:
         return "Could not connect to the database", 500
     
+    
     auth = AuthenticationManager(dbConnection)    
+    try:
+        auth.cleanExpiredTokens()
+    except Exception as e:
+        return str(e), 500
     
     if action == "token":
         token = data.get("token")
@@ -87,12 +83,10 @@ def handleAuthentication(data):
     
 def handlePassword(data):
     token = data.get("token", "")
-    credentialName = data.get("credentialName", "")
-    credentialUsername = data.get("credentialUsername", "")
-    credentialPassword = data.get("credentialPassword", "")
+    username = data.get("username", "")
     action = data.get("action")
 
-    missing = [name for name, value in [("token", token), ("action")] if not value]
+    missing = [name for name, value in [("token", token), ("action", action)] if not value]
     if missing:
         return f"Missing arguments: {', '.join(missing)}", 400
 
@@ -100,19 +94,31 @@ def handlePassword(data):
     if not dbConnection:
         return "Could not connect to the database", 500
 
-    PasswordManagerObj = PasswordManager(dbConnection)
+    password = PasswordManager(dbConnection)
 
-    match action:
-        case "add":
-            return PasswordManagerObj.add_password(token, credentialName, credentialUsername, credentialPassword)
-        case "get":
-            return PasswordManagerObj.get_password(token, credentialName)
-        case "delete":
-            return PasswordManagerObj.delete_password(token, credentialName)
-        case "update":
-            return PasswordManagerObj.update_password(token, credentialName, credentialPassword)
-        case _:
-            return f"Invalid action: {action}", 400
+    try:
+        authenticateDbConnection = connectToDatabase()
+        authenticated = AuthenticationManager(authenticateDbConnection).verifyAuthToken(token)
+        authenticateDbConnection.close()
+        if not authenticated:
+            return "Invalid token", 401
+    except Exception as e:
+        return f"Authentication error: {str(e)}", 500
+    
+    if action == "add":
+        payload = data.get("payload", {})
+        return password.add_password(username, payload)
+    elif action == "get":
+        pass
+        #return password.get_password(token, credentialName)
+    elif action == "delete":
+        pass
+        #return password.delete_password(token, credentialName)
+    elif action == "update":
+        pass
+        #return password.update_password(token, credentialName, credentialPassword)
+    else:
+        return f"Invalid action: {action}", 400
         
 def handleUtils(data):
     action = data.get("action", "")

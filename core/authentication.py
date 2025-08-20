@@ -81,32 +81,31 @@ class AuthenticationManager:
             return False, f"Failed to generate auth token: {e}", 500  # Return error if there was an error while trying to generate the token
         
     def verifyAuthToken(self, token) -> bool:
-        mycursor = self.dbConnection.cursor()
+        dbConnection = self.dbConnection
+        mycursor = dbConnection.cursor()
         mycursor.execute("SELECT expires_at FROM auth_tokens WHERE token = %s", (token,))
         result = mycursor.fetchone()
         mycursor.close()
 
         if result:
             expires_at = result[0]
-            if isinstance(expires_at, date) and not isinstance(expires_at, datetime):
-                expires_at = datetime.combine(expires_at, datetime.min.time())
-            if isinstance(expires_at, datetime):
-                if expires_at.tzinfo is None:
-                    expires_at = expires_at.replace(tzinfo=timezone.utc)
-                expires_at_ts = expires_at.timestamp()
-
-                if time.time() < expires_at_ts:
-                    return True
-                # Update expires_at to current time + 5 minutes
-                new_expires_at = int(time.time()) + 300
-                update_cursor = self.dbConnection.cursor()
-                update_cursor.execute(
-                    "UPDATE auth_tokens SET expires_at = %s WHERE token = %s",
-                    (new_expires_at, token)
-                )
-                self.dbConnection.commit()
-                update_cursor.close()
+            # Always treat expires_at as a Unix timestamp (int)
+            try:
+                expires_at_ts = int(expires_at)
+            except Exception:
+                return False
+            if time.time() < expires_at_ts:
                 return True
+            # Update expires_at to current time + 5 minutes
+            new_expires_at = int(time.time()) + 300
+            update_cursor = dbConnection.cursor()
+            update_cursor.execute(
+                "UPDATE auth_tokens SET expires_at = %s WHERE token = %s",
+                (new_expires_at, token)
+            )
+            self.dbConnection.commit()
+            update_cursor.close()
+            return True
         return False
         
 def log(dbConnection, username, verify, logReason) -> None:

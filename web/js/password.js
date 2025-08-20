@@ -49,12 +49,14 @@ class AddPassword {
     });
   }
 
-  preparePayload(encryptedPassword, metadata) {
+  preparePayload(encryptedPassword, nonce, metadata) {
     const UUID = this.generateUUID();
     const Base64Password = uint8ArrayToBase64(encryptedPassword);
+    const base64Nonce = uint8ArrayToBase64(nonce);
     const payload = {
       "id": UUID,
       "password": Base64Password,
+      "nonce": base64Nonce,
       "metadata": {
         "url": metadata.url,
         "username": metadata.username,
@@ -66,7 +68,7 @@ class AddPassword {
     return payload;
   };
 
-  async uploadPayload(username, payload, nonce) {
+  async uploadPayload(username, payload) {
     const res = await fetch('/password', {
       method: 'POST',
       headers: { 
@@ -75,7 +77,6 @@ class AddPassword {
       body: JSON.stringify({
         username: username,
         payload: payload,
-        nonce: uint8ArrayToBase64(nonce)
       })
     });
     if (!res.ok) {
@@ -139,12 +140,12 @@ function base64ToUint8Array(base64) {
         "notes": metadata_notes,
         "datetime": metadata_datetime,
     }
-    const payload = obj.preparePayload(ciphertext, metadata);
-    const response = await obj.uploadPayload(username, payload, nonce);
-    if (!response || !response.success) {
-      throw new Error('Invalid response from server');
-    }
-    console.log('Password uploaded successfully:', response);
+    const payload = obj.preparePayload(ciphertext, nonce, metadata);
+    //const response = await obj.uploadPayload(username, payload);
+    //if (!response || !response.success) {
+    //  throw new Error('Invalid response from server');
+    //}
+    //console.log('Password uploaded successfully:', response);
   } catch (err) {
     console.error(err);
   }
