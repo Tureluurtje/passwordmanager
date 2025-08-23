@@ -189,7 +189,7 @@ const passwordData = {
 
 // State
 let selectedCategory = 'vaults';
-let selectedPassword = 'google';
+let selectedPassword = '';
 let searchTerm = '';
 let showPassword = false;
 
