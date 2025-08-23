@@ -135,7 +135,7 @@
             </div>
 
             <!-- Add Button -->
-            <button class="add-button">
+            <button class="add-button" id="addPasswordBtn">
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -353,7 +353,94 @@
             </div>
         </div>
     </div>
+    <!-- Add Password Modal -->
+    <div id="addPasswordModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Password</h2>
+                <button class="modal-close" id="closeModalBtn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
 
-    <script src="js/index.js"></script>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form id="addPasswordForm">
+                    <!-- Site Name -->
+                    <div class="form-group">
+                        <label for="siteName" class="form-label">Site Name *</label>
+                        <input type="text" id="siteName" class="form-input" placeholder="e.g. Google, Facebook" required>
+                    </div>
+
+                    <!-- Username/Email -->
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username / Email *</label>
+                        <input type="text" id="username" class="form-input" placeholder="john.doe@example.com" required>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password *</label>
+                        <div class="password-input-container">
+                            <input type="password" id="password" class="form-input" placeholder="Enter password" required>
+                            <button type="button" class="password-toggle" id="toggleNewPassword">
+                                <svg id="newPasswordEyeIcon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="generate-password" id="generatePasswordBtn">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Website/URL -->
+                    <div class="form-group">
+                        <label for="website" class="form-label">Website / URL</label>
+                        <input type="text" id="website" class="form-input" placeholder="https://example.com">
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label for="category" class="form-label">Category</label>
+                        <select id="category" class="form-select">
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="social">Social Media</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="shopping">Shopping</option>
+                        </select>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea id="notes" class="form-textarea" placeholder="Add any additional notes..." rows="3"></textarea>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="form-group">
+                        <label for="tags" class="form-label">Tags</label>
+                        <input type="text" id="tags" class="form-input" placeholder="work, important, backup (comma separated)">
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn-primary">Add Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/index.js"></script>
+    <script type="module" src="js/password.js"></script>
 </body>
 </html>
