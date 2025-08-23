@@ -1,8 +1,3 @@
-const urlInput = { value: "https://example.com" };
-const usernameInput = { value: "testUser123" };
-const notesInput = { value: "This is a note about the password." };
-const datetimeInput = { value: "2025-07-20T12:00:00Z" };
-
 async function decryptPassword(encKeyBytes, ciphertext, nonce) {
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
@@ -102,22 +97,24 @@ function base64ToUint8Array(base64) {
   return bytes;
 }
 
-(async () => {
+export async function handleAddPassword(name, url, username, password, notes, category, datetime) {
   try {
-    let metadata_url, metadata_username, metadata_notes, metadata_datetime;
+    let metadata_name, metadata_url, metadata_username, metadata_notes, metadata_category, metadata_datetime;
     try {
-      metadata_url = typeof urlInput !== 'undefined' && urlInput ? urlInput.value : null;
-      metadata_username = typeof usernameInput !== 'undefined' && usernameInput ? usernameInput.value : null;
-      metadata_notes = typeof notesInput !== 'undefined' && notesInput ? notesInput.value : null;
-      metadata_datetime = typeof datetimeInput !== 'undefined' && datetimeInput ? datetimeInput.value : null;
+      metadata_name = typeof name !== 'undefined' && name ? name : null;
+      metadata_url = typeof url !== 'undefined' && url ? url : null;
+      metadata_username = typeof username !== 'undefined' && username ? username : null;
+      metadata_notes = typeof notes !== 'undefined' && notes ? notes : null;
+      metadata_category = typeof category !== 'undefined' && category ? category : null;
+      metadata_datetime = typeof datetime !== 'undefined' && datetime ? datetime : null;
     } catch (err) {
       console.error(err);
     }
 
-    let username, encKeyBase64;
+    let user, encKeyBase64;
     try {
       const data = JSON.parse(window.name);
-      username = data.username;
+      user = data.username;
       encKeyBase64 = data.encKey;
     } catch (e) {
       console.error('Failed to parse window.name JSON:', e);
@@ -125,28 +122,29 @@ function base64ToUint8Array(base64) {
 
     if (!encKeyBase64) {
       console.error('No token received');
-    } else if (!username) {
+    } else if (!user) {
       console.error('No username received');
     }
     window.name = '';
     const encKey = base64ToUint8Array(encKeyBase64);
 
     const obj = new AddPassword();
-    const { ciphertext, nonce } = await obj.encryptPassword(encKey, 'test');
+    const { ciphertext, nonce } = await obj.encryptPassword(encKey, password);
 
     const metadata = {
-        "url": metadata_url,
-        "username": metadata_username,
-        "notes": metadata_notes,
-        "datetime": metadata_datetime,
+      "name": metadata_name,
+      "url": metadata_url,
+      "username": metadata_username,
+      "notes": metadata_notes,
+      "category": metadata_category,
+      "datetime": metadata_datetime,
     }
     const payload = obj.preparePayload(ciphertext, nonce, metadata);
-    //const response = await obj.uploadPayload(username, payload);
-    //if (!response || !response.success) {
-    //  throw new Error('Invalid response from server');
-    //}
-    //console.log('Password uploaded successfully:', response);
+    const response = await obj.uploadPayload(user, payload);
+    if (!response || !response.success) {
+      throw new Error('Invalid response from server');
+    }
   } catch (err) {
     console.error(err);
   }
-})();
+}

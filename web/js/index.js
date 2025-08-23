@@ -1,3 +1,5 @@
+import { handleAddPassword } from './password.js';
+
 // Validate user session on page load
 window.addEventListener('load', () => {
   fetch('/validate-session')  // Verify here because beacon can't redirect
@@ -377,6 +379,88 @@ function copyToClipboard(elementId, isPassword = false) {
     });
 }
 
+// Modal functions
+function openModal() {
+    document.getElementById('addPasswordModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    document.getElementById('addPasswordModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    resetForm();
+}
+
+function resetForm() {
+    document.getElementById('addPasswordForm').reset();
+    showNewPassword = false;
+    updateNewPasswordVisibility();
+}
+
+// Password generation function
+function generatePassword() {
+    const length = 16;
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+        password += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return password;
+}
+
+// New password visibility toggle
+let showNewPassword = false;
+
+function toggleNewPasswordVisibility() {
+    showNewPassword = !showNewPassword;
+    updateNewPasswordVisibility();
+}
+
+function updateNewPasswordVisibility() {
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('newPasswordEyeIcon');
+    
+    if (showNewPassword) {
+        passwordInput.type = 'text';
+        eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+        `;
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        `;
+    }
+}
+
+// Handle form submission
+function handleFormSubmission(event) {
+    event.preventDefault();
+    
+    // Get form data
+    let siteName = document.getElementById('siteName').value;
+    let username = document.getElementById('username').value;
+    let password = document.getElementById('password').value;
+    let url = document.getElementById('website').value;
+    let category = document.getElementById('category').value;
+    let notes = document.getElementById('notes').value;
+
+    const formData = {
+        siteName,
+        username,
+        password,
+        website,
+        category,
+        notes,
+        tags
+    };
+    let datetime = new Date().toISOString(); // Format: 2025-07-20T12:00:00Z
+    
+    handleAddPassword(siteName, url, username, password, notes, category, datetime);
+    alert('Password added successfully!');
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
     // Category buttons
@@ -401,6 +485,37 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data) {
             data.isFavorite = !data.isFavorite;
             this.classList.toggle('active');
+        }
+    });
+
+    // Modal event listeners
+    document.getElementById('addPasswordBtn').addEventListener('click', openModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('cancelBtn').addEventListener('click', closeModal);
+    
+    // Close modal when clicking outside
+    document.getElementById('addPasswordModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+
+    // Form submission
+    document.getElementById('addPasswordForm').addEventListener('submit', handleFormSubmission);
+
+    // Password visibility toggle
+    document.getElementById('toggleNewPassword').addEventListener('click', toggleNewPasswordVisibility);
+
+    // Generate password button
+    document.getElementById('generatePasswordBtn').addEventListener('click', function() {
+        const generatedPassword = generatePassword();
+        document.getElementById('password').value = generatedPassword;
+    });
+
+    // ESC key to close modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !document.getElementById('addPasswordModal').classList.contains('hidden')) {
+            closeModal();
         }
     });
 
