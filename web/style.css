@@ -236,6 +236,12 @@ body {
     font-weight: 500;
 }
 
+.password-favicon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+}
+
 .password-info {
     flex: 1;
     min-width: 0;

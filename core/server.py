@@ -109,8 +109,7 @@ def handlePassword(data):
         payload = data.get("payload", {})
         return password.add_password(username, payload)
     elif action == "get":
-        pass
-        #return password.get_password(token, credentialName)
+        return password.get_password(username)
     elif action == "delete":
         pass
         #return password.delete_password(token, credentialName)
@@ -132,5 +131,10 @@ def handleUtils(data):
             case "fetchSalt":
                 username = data.get("username", "")
                 return utils.fetchSalt(username, dbConnection), 200
+            case "setBreached":
+                username = data.get("username", "")
+                passwordId = data.get("passwordId", "")
+                value = data.get("value", "")
+                return utils.setBreached(username, passwordId, value, dbConnection), 200
     except:
         return "Internal server error", 500

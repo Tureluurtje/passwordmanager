@@ -1,6 +1,8 @@
 import mysql.connector
 from mysql.connector import CMySQLConnection, MySQLConnection
 import json
+import base64
+import datetime
 
 class PasswordManager:
     def __init__(self, dbConnection):
@@ -27,6 +29,7 @@ class PasswordManager:
             
             passwords.append(payload)
             
+            # use helper to ensure any bytes or datetimes in the payload are encoded
             updated_blob = json.dumps(passwords)
             if row:
                 mycursor.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
@@ -39,17 +42,17 @@ class PasswordManager:
         
     def get_password(self, username):
         try:
-            db = self.connectToDatabase()
+            db = self.dbConnection
             mycursor = db.cursor()
-            query = "SELECT * FROM passwords WHERE username = %s"
+            query = "SELECT vault FROM passwords WHERE username = %s LIMIT 1"
             values = (username,)
             mycursor.execute(query, values)
-            results = mycursor.fetchall()
-            return results, 200
+            (vault_blob, ) = mycursor.fetchone()
+            vault_decoded = bytes(vault_blob).decode('utf-8')
+            return vault_decoded, 200
         except mysql.connector.Error as err:
             return "Database connection error", 500
 
-    #TODO add function
     def delete_password(self, user, master_password, account_name):
         # Implement the logic to delete the password
         pass
