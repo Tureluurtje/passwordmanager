@@ -332,7 +332,7 @@ function renderPasswordDetails() {
   document.getElementById("passwordValue").textContent = showPassword
     ? data.password
     : "••••••••••••••••";
-  document.getElementById("websiteValue").textContent = data.metadata.website;
+  document.getElementById("websiteValue").textContent = data.metadata.url;
   document.getElementById("categoryValue").textContent = data.metadata.category;
   document.getElementById("notesValue").textContent = data.metadata.notes;
 
