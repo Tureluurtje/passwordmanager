@@ -3,6 +3,7 @@ from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 import requests
 import logging
+import hashlib
 
 import config.config as config
 
@@ -32,13 +33,14 @@ def set_csp(response):
     return response
 '''
 
-class NoSVGFilter(logging.Filter):
+class FilterLogs(logging.Filter):
     def filter(self, record):
         msg = record.getMessage()
-        return '.svg' not in msg
+        # Filter out log messages containing '.svg' or '/favicon'
+        return '.svg' not in msg and '/favicon' not in msg
 
 log = logging.getLogger('werkzeug')
-log.addFilter(NoSVGFilter())
+log.addFilter(FilterLogs())
 
 @app.route('/')
 def index():
@@ -46,15 +48,9 @@ def index():
         return redirect(url_for('login'))  # Redirect to /login
     return render_template('index.html', username=session.get('username'), token = session.get('auth_token'))
 
-@app.route('/login', methods=['GET'])
-def login():
-    if session.get('logged_in'):
-        return redirect(url_for('index'))
-    return render_template('login.html')  # Serve the login page
-
 # Note: The following endpoints are POST requests to handle login and logout actions.
 @app.route('/login', methods=['POST', 'GET'])
-def login_post():
+def login():
     if request.method == 'GET':
         if session.get('logged_in'):
             return redirect(url_for('index'))
@@ -87,14 +83,27 @@ def login_post():
 
 @app.route('/password', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def password():
-    if request.method == 'GET':
-        # Handle GET request
-        pass
-    elif request.method == 'POST':
+    try:
         data = request.get_json()
-        username = data.get('username')
-        payload = data.get('payload')
-        try:
+        method = data.get('method')
+        if method == "getVault":
+            username = data.get("username")
+            api_res = requests.post(
+                f'{config.HOST}:{config.PORT_API}/',
+                json={
+                    'token': session.get('auth_token'),
+                    'requestMethod': 'password',
+                    'action': 'get', 
+                    'username': username
+                }
+            )
+            if api_res.ok:
+                return jsonify({'success': True, 'data': api_res.json()}), 200
+            else:
+                return jsonify({'success': False}), 500
+        elif method == "addPassword":
+            username = data.get('username')
+            payload = data.get('payload')
             api_res = requests.post(
                 f'{config.HOST}:{config.PORT_API}/',
                 json={
@@ -109,15 +118,16 @@ def password():
                 return jsonify({'success': True}), 200
             else:
                 return jsonify({'success': False}), 500
-        except Exception as e:
-            return jsonify({'success': False, 'error': str(e)}), 500
-    elif request.method == 'PUT':
-        # Handle PUT request
-        pass
-    elif request.method == 'DELETE':
-        # Handle DELETE request
-        pass
-
+        elif request.method == 'PUT':
+            # Handle PUT request
+            pass
+        elif request.method == 'DELETE':
+            # Handle DELETE request
+            pass
+        else:
+            raise Exception("Invalid method or request type")
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 def authenticate(token):
     try:
         api_res = requests.post(
@@ -132,8 +142,7 @@ def authenticate(token):
         else:
             False
     except:
-        pass
-        
+        pass   
 
 @app.route('/salt', methods=['POST'])
 def salt():
@@ -160,6 +169,84 @@ def valideSession():
     if session.get("logged_in"):
         return "", 200
     return "", 401
+
+@app.route("/favicon")
+def get_favicon():
+    domain = request.args.get("domain")
+    if not domain:
+        return jsonify({"error": "Missing domain"}), 400
+
+    # Google Favicon API URLs
+    favicon_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=64"
+    placeholder_url = "https://www.google.com/s2/favicons?domain=none&sz=64"
+
+    try:
+        # Fetch favicon and placeholder
+        fav_resp = requests.get(favicon_url, timeout=10)
+        place_resp = requests.get(placeholder_url, timeout=10)
+
+        # Hash both images
+        fav_hash = hashlib.sha256(fav_resp.content).hexdigest()
+        place_hash = hashlib.sha256(place_resp.content).hexdigest()
+
+        # Compare
+        if fav_hash == place_hash:
+            return jsonify({"favicon": None, "message": "No favicon found"})
+        else:
+            return jsonify({"favicon": favicon_url})
+    except Exception as e:
+        return jsonify({"favicon": None, "error": str(e)}), 500
+
+@app.route("/check-password", methods=["POST"])
+def check_password():
+    data = request.get_json()
+    prefix = data.get("prefix")
+    suffix = data.get("suffix")
+
+    if not prefix or not suffix:
+        return jsonify({"error": "prefix and suffix required"}), 400
+
+    url = f"https://api.pwnedpasswords.com/range/{prefix}"
+    resp = requests.get(url)
+    if resp.status_code != 200:
+        return jsonify({"error": "HIBP request failed"}), 502
+
+    for line in resp.text.splitlines():
+        hash_suffix, count = line.split(":")
+        if hash_suffix == suffix:
+            return jsonify({"breached": True, "count": int(count)})
+
+    return jsonify({"breached": False, "count": 0})
+
+@app.route("/set-status", methods=["POST"])
+def set_status():
+    data = request.get_json()
+    username = data.get("username")
+    passwordId = data.get("passwordId")
+    key = data.get("key")
+    value = data.get("value")
+    if key == "isBreached":
+        try:
+            api_res = requests.post(
+                f'{config.HOST}:{config.PORT_API}/',
+                json={
+                'requestMethod': 'utils',
+                'action': 'setBreached',
+                'username': username,
+                'passwordId': passwordId,
+                'value': value
+                }
+            )
+            if api_res.ok:
+                return jsonify({'success': True}), 200
+            else:
+                return jsonify({'success': False}), 500
+        except Exception as e:
+            return jsonify({'succes': False, 'error': str(e)}), 500
+    elif key == "isFavorite":
+        pass
+    else:
+        return jsonify({"error": "Key doesn't match an appropriate value"}), 400
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
