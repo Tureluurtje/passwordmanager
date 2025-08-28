@@ -1,30 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="/img/favicon.png">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="/img/favicon.png" />
+  </head>
+  <body>
     <div class="login-wrapper">
-        <div class="login">
-            <p class="login__title">Welcome to your Passafe</p>
-            <form class="login__form" action="" novalidate>
-                <div class="input-group">
-                    <input type="text" name="username" placeholder="username" required>
-                    <p class="invalid-message" id="username-input">&nbsp;</p>
-                </div>
-                <div class="input-group">
-                    <input type="password" name="password" placeholder="password" required>
-                    <p class="invalid-message" id="password-input">&nbsp;</p>
-                </div>
-                <input type="submit">
-            </form>
-        </div>
+      <div class="login">
+        <p class="login__title">Welcome to your Passafe</p>
+        <form class="login__form" action="" novalidate>
+          <div class="input-group">
+            <input
+              type="text"
+              name="username"
+              placeholder="username"
+              required
+            />
+            <p class="invalid-message" id="username-input">&nbsp;</p>
+          </div>
+          <div class="input-group">
+            <input
+              type="password"
+              name="password"
+              placeholder="password"
+              required
+            />
+            <p class="invalid-message" id="password-input">&nbsp;</p>
+          </div>
+          <input type="submit" />
+        </form>
+      </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
     <script src="js/login.js"></script>
-</body>
+  </body>
 </html>

@@ -58,7 +58,7 @@ class AddPassword {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        method: 'addPassword',
+        method: "addPassword",
         username: username,
         payload: payload,
       }),
@@ -79,14 +79,14 @@ class GetPassword {
       },
       body: JSON.stringify({
         method: "getVault",
-        username: user
+        username: user,
       }),
     });
     if (!res.ok) {
       throw new Error(`Failed to download vault: ${res.statusText}`);
     }
     return res.json();
-  };
+  }
 
   async decryptPassword(encKeyBytes, ciphertext, nonce) {
     const cryptoKey = await crypto.subtle.importKey(
@@ -102,7 +102,7 @@ class GetPassword {
       ciphertext
     );
     return new TextDecoder().decode(plaintextBuffer);
-  };
+  }
 }
 
 function uint8ArrayToBase64(bytes) {
@@ -209,10 +209,8 @@ export async function handleAddPassword(
       metadata_notes = typeof notes !== "undefined" && notes ? notes : null;
       metadata_category =
         typeof category !== "undefined" && category ? category : null;
-      metadata_isFavorite = 
-        isFavorite ?? false;
-      metadata_isBreached = 
-        isBreached ?? false;
+      metadata_isFavorite = isFavorite ?? false;
+      metadata_isBreached = isBreached ?? false;
       metadata_datetime =
         typeof datetime !== "undefined" && datetime ? datetime : null;
     } catch (err) {
@@ -258,9 +256,7 @@ export async function handleAddPassword(
   }
 }
 
-export async function handleGetPassword(
-  { user, encKey }
-) {
+export async function handleGetPassword({ user, encKey }) {
   try {
     const obj = new GetPassword();
     const jsonVault = await obj.downloadVault(user);
@@ -270,13 +266,17 @@ export async function handleGetPassword(
     for (const entry of vaultData) {
       const hashedPassword = base64ToUint8Array(entry.password);
       const nonce = base64ToUint8Array(entry.nonce);
-      const decryptedPassword = await obj.decryptPassword(encKey, hashedPassword, nonce);
-      delete entry.nonce
+      const decryptedPassword = await obj.decryptPassword(
+        encKey,
+        hashedPassword,
+        nonce
+      );
+      delete entry.nonce;
       entry.password = decryptedPassword;
       formattedVault[entry.id] = entry;
     }
     return formattedVault;
   } catch (e) {
-    return e
+    return e;
   }
 }
