@@ -56,12 +56,15 @@ function getIconColor(name) {
 }
 
 async function checkPassword(password) {
-  try{
+  try {
     // SHA-1 hash in browser
     const enc = new TextEncoder().encode(password);
     const buffer = await crypto.subtle.digest("SHA-1", enc);
     const hashArray = Array.from(new Uint8Array(buffer));
-    const sha1 = hashArray.map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+    const sha1 = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+      .toUpperCase();
 
     const prefix = sha1.substring(0, 5);
     const suffix = sha1.substring(5);
@@ -77,7 +80,7 @@ async function checkPassword(password) {
     const result = await response.json();
     return result.breached;
   } catch (e) {
-    return e
+    return e;
   }
 }
 
@@ -264,11 +267,15 @@ function renderPasswordList() {
             <div class="password-icon" style="background-color: ${getIconColor(
               entry.name
             )};">
-                <span class="icon-default">${getFirstLetter(entry.metadata.name)}</span>
+                <span class="icon-default">${getFirstLetter(
+                  entry.metadata.name
+                )}</span>
             </div>
             <div class="password-details">
                 <span class="password-name">${entry.metadata.name}</span>
-                <span class="password-username">${entry.metadata.username}</span>
+                <span class="password-username">${
+                  entry.metadata.username
+                }</span>
             </div>
             `;
       }
@@ -338,8 +345,10 @@ function renderPasswordDetails() {
 
   // Update activity
   document.getElementById("lastUsedValue").textContent = data.metadata.lastUsed;
-  document.getElementById("lastModifiedValue").textContent = data.metadata.lastModified;
-  document.getElementById("createdValue").textContent = data.metadata.createdDate;
+  document.getElementById("lastModifiedValue").textContent =
+    data.metadata.lastModified;
+  document.getElementById("createdValue").textContent =
+    data.metadata.createdDate;
 
   // Update security alert
   const securityAlert = document.getElementById("securityAlert");

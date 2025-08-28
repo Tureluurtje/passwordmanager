@@ -39,10 +39,10 @@ class FilterLogs(logging.Filter):
         # Filter out log messages containing '.svg' or '/favicon'
         return '.svg' not in msg and '/favicon' not in msg
 
-log = logging.getLogger('werkzeug')
+log = logging.getLogger("werkzeug")
 log.addFilter(FilterLogs())
 
-@app.route('/')
+@app.route("/")
 def index():
     if not session.get('logged_in'):
         return redirect(url_for('login'))  # Redirect to /login
