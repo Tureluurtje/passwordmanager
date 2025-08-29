@@ -86,22 +86,7 @@ def password():
     try:
         data = request.get_json()
         method = data.get('method')
-        if method == "getVault":
-            username = data.get("username")
-            api_res = requests.post(
-                f'{config.HOST}:{config.PORT_API}/',
-                json={
-                    'token': session.get('auth_token'),
-                    'requestMethod': 'password',
-                    'action': 'get', 
-                    'username': username
-                }
-            )
-            if api_res.ok:
-                return jsonify({'success': True, 'data': api_res.json()}), 200
-            else:
-                return jsonify({'success': False}), 500
-        elif method == "addPassword":
+        if method == "ADD":
             username = data.get('username')
             payload = data.get('payload')
             api_res = requests.post(
@@ -118,16 +103,62 @@ def password():
                 return jsonify({'success': True}), 200
             else:
                 return jsonify({'success': False}), 500
+        elif method == "GET":
+            username = data.get("username")
+            api_res = requests.post(
+                f'{config.HOST}:{config.PORT_API}/',
+                json={
+                    'token': session.get('auth_token'),
+                    'requestMethod': 'password',
+                    'action': 'get', 
+                    'username': username
+                }
+            )
+            if api_res.ok:
+                return jsonify({'success': True, 'data': api_res.json()}), 200
+            else:
+                return jsonify({'success': False}), 500
         elif request.method == 'PUT':
-            # Handle PUT request
-            pass
+            username = data.get("username")
+            passwordId = data.get("passwordId")
+            replacements = data.get("replacements")
+            api_res = requests.post(
+                f'{config.HOST}:{config.PORT_API}/',
+                json={
+                    'token': session.get('auth_token'),
+                    'requestMethod': 'password',
+                    'action': 'update', 
+                    'username': username,
+                    'passwordId': passwordId,
+                    'replacements': replacements
+                }
+            )
+            if api_res.ok:
+                return jsonify({'success': True, 'data': api_res.json()}), 200
+            else:
+                return jsonify({'success': False}), 500
         elif request.method == 'DELETE':
-            # Handle DELETE request
-            pass
+            username = data.get("username")
+            passwordId = data.get("passwordId")
+            api_res = requests.post(
+                f'{config.HOST}:{config.PORT_API}/',
+                json={
+                    'token': session.get('auth_token'),
+                    'requestMethod': 'password',
+                    'action': 'delete', 
+                    'username': username,
+                    'passwordId': passwordId
+                }
+            )
+            if api_res.ok:
+                return jsonify({'success': True, 'data': api_res.json()}), 200
+            else:
+                return jsonify({'success': False}), 500
         else:
             raise Exception("Invalid method or request type")
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
 def authenticate(token):
     try:
         api_res = requests.post(
