@@ -58,7 +58,7 @@ class AddPassword {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        method: "addPassword",
+        method: "ADD",
         username: username,
         payload: payload,
       }),
@@ -78,7 +78,7 @@ class GetPassword {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        method: "getVault",
+        method: "GET",
         username: user,
       }),
     });
@@ -102,6 +102,58 @@ class GetPassword {
       ciphertext
     );
     return new TextDecoder().decode(plaintextBuffer);
+  }
+}
+
+class UpdatePassword {
+  constructor (user, passwordId, replacements) {
+    this.user = user;
+    this.passwordId = passwordId;
+    this.replacements = replacements;
+     return this.sendRequest();
+  }
+  async sendRequest() {
+    const res = await fetch("/password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        method: "UPDATE",
+        username: this.user,
+        passwordId: this.passwordId,
+        replacements: this.replacements
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to update password: ${res.statusText}`);
+    }
+    return res.json();
+  }
+}
+
+class RemovePassword {
+  constructor (user, passwordId) {
+    this.user = user;
+    this.passwordId = passwordId;
+     return this.sendRequest();
+  }
+  async sendRequest() {
+    const res = await fetch("/password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        method: "DELETE",
+        username: this.user,
+        passwordId: this.passwordId
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to remove password: ${res.statusText}`);
+    }
+    return res.json();
   }
 }
 
@@ -281,4 +333,8 @@ export async function handleGetPassword({ user, encKey }) {
   } catch (e) {
     return e;
   }
+}
+
+export async function handleDeletePassword(username, passwordId) {
+  const resp = new RemovePassword(username, passwordId);
 }

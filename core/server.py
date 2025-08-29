@@ -110,12 +110,12 @@ def handlePassword(data):
         return password.add_password(username, payload)
     elif action == "get":
         return password.get_password(username)
-    elif action == "delete":
-        pass
-        #return password.delete_password(token, credentialName)
     elif action == "update":
         pass
         #return password.update_password(token, credentialName, credentialPassword)
+    elif action == "delete":
+        passwordId = data.get("passwordId", "")
+        return password.delete_password(token, username, passwordId)
     else:
         return f"Invalid action: {action}", 400
         

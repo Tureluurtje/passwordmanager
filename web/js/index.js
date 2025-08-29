@@ -1,5 +1,5 @@
-import { handleAddPassword, handleGetPassword } from "./password.js";
-import { setEncContext, retrieveEncKey } from "./password.js";
+import { handleAddPassword, handleGetPassword, handleDeletePassword } from "./password.js";
+import { setEncContext, retrieveEncKey, getCachedUser } from "./password.js";
 
 // Validate user session on page load
 // Validate session (used before initial render to avoid starting work
@@ -32,7 +32,7 @@ async function retrieveVault() {
 
 // State
 let selectedCategory = "vaults";
-let selectedPassword = "";
+let selectedPassword = "d3d72b45-6a2a-4ebd-a78a-bba9d2e307d5";
 let searchTerm = "";
 let showPassword = false;
 
@@ -606,6 +606,13 @@ async function init() {
     }
   });
 
+  document.getElementById("removePassword").addEventListener("click", async function() {
+    const username = getCachedUser();
+    const passwordId = selectedPassword;
+    const resp = await handleDeletePassword(username, passwordId);
+    console.log(resp)
+  })
+
   // Modal event listeners
   document
     .getElementById("addPasswordBtn")
@@ -666,3 +673,5 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
+window.handleDeletePassword = handleDeletePassword;
