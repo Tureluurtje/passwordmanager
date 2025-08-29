@@ -1,40 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="icon" type="image/png" href="/img/favicon.png" />
+    <title>Passafe - Password Manager Login</title>
+    <link rel="stylesheet" href="login.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- CryptoJS fallback for older browsers -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"
+      defer
+    ></script>
   </head>
-  <body>
-    <div class="login-wrapper">
-      <div class="login">
-        <p class="login__title">Welcome to your Passafe</p>
-        <form class="login__form" action="" novalidate>
-          <div class="input-group">
+  <body class="dark">
+    <div id="loader">Loading...</div>
+    <div id="app">
+      <div class="login-wrapper">
+        <div class="login">
+          <p class="login__title">Welcome to your Passafe</p>
+          <form id="loginForm" class="login__form" novalidate>
+            <div class="input-group">
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Username"
+                required
+                class="transition-all duration-300 ease-out"
+              />
+              <div id="usernameError" class="invalid-message">&nbsp;</div>
+            </div>
+            <div class="input-group">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                required
+                class="transition-all duration-300 ease-out"
+              />
+              <div id="passwordError" class="invalid-message">&nbsp;</div>
+            </div>
             <input
-              type="text"
-              name="username"
-              placeholder="username"
-              required
+              type="submit"
+              id="submitBtn"
+              value="Sign In"
+              class="transition-all duration-300 ease-out transform hover:scale-[1.02] active:scale-[0.98]"
             />
-            <p class="invalid-message" id="username-input">&nbsp;</p>
+            <div
+              id="loadingIndicator"
+              class="loading-indicator"
+              style="display: none"
+            >
+              <div class="spinner"></div>
+              <span class="loading-text"> Deriving encryption keys... </span>
+            </div>
+          </form>
+
+          <div class="forgot-password-container">
+            <button
+              id="forgotPasswordBtn"
+              type="button"
+              class="forgot-password-btn"
+            >
+              Forgot Password?
+            </button>
           </div>
-          <div class="input-group">
-            <input
-              type="password"
-              name="password"
-              placeholder="password"
-              required
-            />
-            <p class="invalid-message" id="password-input">&nbsp;</p>
-          </div>
-          <input type="submit" />
-        </form>
+        </div>
       </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+
     <script src="js/login.js"></script>
   </body>
 </html>
