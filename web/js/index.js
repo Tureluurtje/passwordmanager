@@ -552,8 +552,11 @@ async function handleFormSubmission(event) {
   }
 }
 
-// Event listeners
-document.addEventListener("DOMContentLoaded", async function () {
+async function init() {
+  document.body.classList.add('app-ready');
+  const loader = document.getElementById('loading-wrapper');
+  loader.classList.add('app-ready')
+
   // Ensure session is valid before doing expensive/async rendering.
   const ok = await validateSession();
   if (!ok) {
@@ -656,6 +659,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   window.addEventListener("pagehide", (event) => {
     navigator.sendBeacon("/logout");
   });
-});
+};
 
-window.showPopup = showPopup;
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => init());
+} else {
+  init();
+}
