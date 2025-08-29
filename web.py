@@ -118,7 +118,7 @@ def password():
                 return jsonify({'success': True, 'data': api_res.json()}), 200
             else:
                 return jsonify({'success': False}), 500
-        elif request.method == 'PUT':
+        elif method == 'UPDATE':
             username = data.get("username")
             passwordId = data.get("passwordId")
             replacements = data.get("replacements")
@@ -137,7 +137,7 @@ def password():
                 return jsonify({'success': True, 'data': api_res.json()}), 200
             else:
                 return jsonify({'success': False}), 500
-        elif request.method == 'DELETE':
+        elif method == 'DELETE':
             username = data.get("username")
             passwordId = data.get("passwordId")
             api_res = requests.post(

@@ -111,11 +111,12 @@ def handlePassword(data):
     elif action == "get":
         return password.get_password(username)
     elif action == "update":
-        pass
-        #return password.update_password(token, credentialName, credentialPassword)
+        passwordId = data.get("passwordId", "")
+        replacements = data.get("replacements", "")
+        return password.update_password(username, passwordId, replacements)
     elif action == "delete":
         passwordId = data.get("passwordId", "")
-        return password.delete_password(token, username, passwordId)
+        return password.delete_password(username, passwordId)
     else:
         return f"Invalid action: {action}", 400
         

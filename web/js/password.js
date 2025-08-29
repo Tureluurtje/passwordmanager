@@ -335,6 +335,10 @@ export async function handleGetPassword({ user, encKey }) {
   }
 }
 
+export async function handleUpdatePassword(username, passwordId, replacements) {
+  return new UpdatePassword(username, passwordId, replacements);
+}
+
 export async function handleDeletePassword(username, passwordId) {
-  const resp = new RemovePassword(username, passwordId);
+  return new RemovePassword(username, passwordId);
 }

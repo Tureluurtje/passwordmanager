@@ -53,40 +53,6 @@ class PasswordManager:
         except mysql.connector.Error as err:
             return "Database connection error", 500
 
-    def delete_password(self, username, passwordId):
-        db = self.dbConnection
-        mycursor = db.cursor()
-        
-        mycursor.execute("SELECT vault FROM passwords WHERE username=%s", (username,))
-        row = mycursor.fetchone()
-        
-        if row:
-            existing_blob = row[0]
-            try:
-                passwords = json.loads(existing_blob)
-            except json.JSONDecodeError:
-                passwords = []
-        else:
-            passwords = []
-
-        # Update the isBreached field for the matching password entry
-        updated = False
-        for entry in passwords:
-            if entry.get("id") == passwordId:
-                passwords.remove(entry)
-                updated = True
-                break
-        
-        if not updated:
-            return f"No password entry found with id {passwordId}", 404
-
-        # Save updated vault back to the database
-        updated_blob = json.dumps(passwords)
-        mycursor.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
-        db.commit()
-
-        return "Password breach status updated successfully", 200
-
     def update_password(self, username, passwordId, replacements: dict):
         db = self.dbConnection
         mycursor = db.cursor()
@@ -125,3 +91,38 @@ class PasswordManager:
         updated_blob = json.dumps(passwords)
         mycursor.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
         db.commit()
+        return "Password updated successfully", 200
+
+    def delete_password(self, username, passwordId):
+        db = self.dbConnection
+        mycursor = db.cursor()
+        
+        mycursor.execute("SELECT vault FROM passwords WHERE username=%s", (username,))
+        row = mycursor.fetchone()
+        
+        if row:
+            existing_blob = row[0]
+            try:
+                passwords = json.loads(existing_blob)
+            except json.JSONDecodeError:
+                passwords = []
+        else:
+            passwords = []
+
+        # Update the isBreached field for the matching password entry
+        updated = False
+        for entry in passwords:
+            if entry.get("id") == passwordId:
+                passwords.remove(entry)
+                updated = True
+                break
+        
+        if not updated:
+            return f"No password entry found with id {passwordId}", 404
+
+        # Save updated vault back to the database
+        updated_blob = json.dumps(passwords)
+        mycursor.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
+        db.commit()
+
+        return "Password removed successfully", 200

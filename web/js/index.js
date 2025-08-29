@@ -32,7 +32,7 @@ async function retrieveVault() {
 
 // State
 let selectedCategory = "vaults";
-let selectedPassword = "d3d72b45-6a2a-4ebd-a78a-bba9d2e307d5";
+let selectedPassword = "";
 let searchTerm = "";
 let showPassword = false;
 
@@ -609,8 +609,11 @@ async function init() {
   document.getElementById("removePassword").addEventListener("click", async function() {
     const username = getCachedUser();
     const passwordId = selectedPassword;
-    const resp = await handleDeletePassword(username, passwordId);
-    console.log(resp)
+    await handleDeletePassword(username, passwordId);
+    passwordData = await retrieveVault();
+    selectedPassword = "";
+    renderPasswordDetails();
+    renderPasswordList();
   })
 
   // Modal event listeners
