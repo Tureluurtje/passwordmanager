@@ -17,9 +17,17 @@ async function validateSession() {
 let passwordData = "";
 
 async function retrieveVault() {
-  const { user, encKey } = retrieveEncKey();
-  const vaultData = await handleGetPassword({ user, encKey });
-  return vaultData;
+  try {
+    const { user, encKey } = retrieveEncKey();
+    if (user === "sendBeacon") {
+      navigator.sendBeacon("/logout");
+    }
+    const vaultData = await handleGetPassword({ user, encKey });
+    return vaultData;
+  } catch(e) {
+    console.log("Error with routing, resetting...")
+    navigator.sendBeacon("/logout");
+  }
 }
 
 // State
@@ -130,6 +138,25 @@ async function getFavicon(domain) {
   }
 }
 
+// Show popup
+function showPopup(message, isSuccess = true) {
+  const popup = document.getElementById('popup');
+
+  // Set message
+  popup.textContent = message;
+
+  // Apply style
+  popup.classList.remove('success', 'error');
+  popup.classList.add(isSuccess ? 'success' : 'error');
+
+  // Slide down
+  popup.style.top = '20px';
+
+  // Hide after 3 seconds
+  setTimeout(() => {
+    popup.style.top = '-80px';
+  }, 3000);
+}
 function getStrengthClass(score) {
   if (score < 40) return "weak";
   if (score < 70) return "medium";
@@ -214,7 +241,7 @@ function getFilteredPasswords() {
     if (selectedCategory === "weak")
       return matchesSearch && entry.strength === "weak";
     */
-    return matchesSearch && entry.category.toLowerCase() === selectedCategory;
+    return matchesSearch && entry.metadata.category.toLowerCase() === selectedCategory;
   });
 
   return filtered;
@@ -306,7 +333,7 @@ function renderPasswordDetails() {
   document.getElementById("passwordDetails").classList.remove("hidden");
 
   // Update header
-  document.getElementById("passwordTitle").textContent = data.name;
+  document.getElementById("passwordTitle").textContent = data.metadata.name;
 
   const starButton = document.getElementById("starButton");
   starButton.className = `star-button ${data.isFavorite ? "active" : ""}`;
@@ -515,11 +542,13 @@ async function handleFormSubmission(event) {
       isBreached,
       datetime
     );
-    alert("Password added successfully!");
+    showPopup("Password added succesfully!", true);
+    passwordData = await retrieveVault();
+    renderPasswordList();
     closeModal();
   } catch (err) {
     console.error("Failed to add password:", err);
-    alert("Failed to add password. See console for details.");
+    showPopup("Failed to add password.", false);
   }
 }
 
@@ -621,7 +650,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   passwordData = await retrieveVault();
-  console.log(passwordData);
   renderPasswordList();
   renderPasswordDetails();
 
@@ -629,3 +657,5 @@ document.addEventListener("DOMContentLoaded", async function () {
     navigator.sendBeacon("/logout");
   });
 });
+
+window.showPopup = showPopup;

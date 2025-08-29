@@ -1,0 +1,472 @@
+/* Custom CSS Variables */
+:root {
+  --font-size: 14px;
+  --background: #ffffff;
+  --foreground: #1f2937;
+  --card: #ffffff;
+  --card-foreground: #1f2937;
+  --popover: #ffffff;
+  --popover-foreground: #1f2937;
+  --primary: #030213;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #6b7280;
+  --radius: 0.625rem;
+  
+  /* Purple accent colors */
+  --purple-primary: #8b5cf6;
+  --purple-primary-hover: #7c3aed;
+  --purple-secondary: #a78bfa;
+  --purple-muted: #6d28d9;
+  --purple-subtle: rgba(139, 92, 246, 0.1);
+  --purple-glow: rgba(139, 92, 246, 0.3);
+}
+
+.dark {
+  --background: #111827;
+  --foreground: #ffffff;
+  --card: #111117;
+  --card-foreground: #ffffff;
+  --popover: #111117;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #0a0a0f;
+  --secondary: #1f1f2e;
+  --secondary-foreground: #ffffff;
+  --muted: #1f1f2e;
+  --muted-foreground: #a1a1aa;
+  --accent: #1f1f2e;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #27272a;
+  --input: #18181b;
+  --input-background: #18181b;
+  --switch-background: #27272a;
+  --ring: #71717a;
+  
+  /* Dark mode purple accent colors */
+  --purple-primary: #a78bfa;
+  --purple-primary-hover: #8b5cf6;
+  --purple-secondary: #c4b5fd;
+  --purple-muted: #6d28d9;
+  --purple-subtle: rgba(167, 139, 250, 0.15);
+  --purple-glow: rgba(167, 139, 250, 0.4);
+}
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  font-size: var(--font-size);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  visibility: visible;
+  background: radial-gradient(ellipse at top, var(--purple-subtle), var(--background));
+  min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
+  font-size: var(--font-size);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+/* Keyframes for animations */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px var(--purple-glow); }
+  50% { box-shadow: 0 0 20px var(--purple-glow), 0 0 30px var(--purple-glow); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInScale {
+  from { 
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes smoothSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* App container */
+#app {
+  min-height: 100vh;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+/* Show app when ready */
+body.app-ready #app {
+  opacity: 1;
+}
+
+/* Login wrapper and container */
+.login-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  will-change: transform;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.login {
+  background-color: var(--card);
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  width: 100%;
+  max-width: 28rem;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 1px var(--purple-subtle);
+  backdrop-filter: blur(10px);
+  will-change: transform, opacity;
+  animation: fadeInScale 0.6s ease-out;
+}
+
+.login::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--purple-primary), transparent);
+  animation: shimmer 3s infinite ease-in-out;
+}
+
+.login__title {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  font-size: 1.875rem;
+  font-weight: var(--font-weight-medium);
+  background: linear-gradient(135deg, var(--purple-primary), var(--purple-secondary));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s ease-in-out infinite;
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--input-background);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  color: var(--foreground);
+  font-size: var(--font-size);
+  font-weight: var(--font-weight-normal);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, border-color, box-shadow;
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.input-group input:focus {
+  border-color: var(--purple-primary);
+  box-shadow: 0 0 0 3px var(--purple-subtle), 0 0 20px var(--purple-glow);
+  transform: translateY(-1px);
+}
+
+.input-group input:hover:not(:focus):not(:disabled) {
+  border-color: var(--purple-secondary);
+  transform: translateY(-0.5px);
+}
+
+.input-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.invalid-message {
+  color: var(--destructive);
+  font-size: 0.875rem;
+  display: block;
+  min-height: 1.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+  margin-top: 0.25rem;
+}
+
+.invalid-message.show {
+  animation: smoothSlideIn 0.4s ease-out;
+}
+
+.invalid-message.hide {
+  opacity: 0;
+  transform: translateY(-2px);
+}
+
+#submitBtn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 0;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--purple-primary), var(--purple-muted));
+  color: white;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size);
+  box-shadow: 0 4px 15px var(--purple-subtle);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, background, box-shadow;
+}
+
+#submitBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--purple-primary-hover), var(--purple-primary));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--purple-glow);
+  animation: pulse-glow 2s infinite;
+}
+
+#submitBtn:active:not(:disabled) {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 4px 15px var(--purple-subtle);
+}
+
+#submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  animation: none;
+}
+
+#submitBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s ease-out;
+}
+
+#submitBtn:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+/* Loading indicator */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  animation: slideInDown 0.3s ease-out;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  margin-left: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Forgot password container */
+.forgot-password-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.forgot-password-btn {
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+  transform: scale(1);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  outline: none;
+}
+
+.forgot-password-btn:hover:not(:disabled) {
+  color: var(--purple-primary);
+  text-decoration: underline;
+  transform: scale(1.05);
+}
+
+.forgot-password-btn:focus-visible {
+  outline: 2px solid var(--purple-primary);
+  outline-offset: 2px;
+}
+
+.forgot-password-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Form validation states */
+.login__form.was-validated .input-group input:invalid {
+  border-color: var(--destructive);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.login__form.auth-error {
+  animation: shake 0.6s ease-in-out;
+}
+
+.login__form.auth-error .input-group input {
+  border-color: var(--destructive);
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+}
+
+/* Enhanced micro-interactions */
+@media (prefers-reduced-motion: no-preference) {
+  .input-group input {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .invalid-message {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .login,
+  .login-wrapper,
+  .login::before,
+  .login__title,
+  .input-group input,
+  .invalid-message,
+  #submitBtn,
+  .spinner,
+  .loading-indicator {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  #submitBtn:hover:not(:disabled) {
+    transform: none;
+  }
+  
+  .input-group input:focus,
+  .input-group input:hover:not(:focus):not(:disabled) {
+    transform: none;
+  }
+  
+  /* Still allow opacity transitions for loading state */
+  #app {
+    transition: opacity 0.2s ease-out !important;
+  }
+}

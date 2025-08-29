@@ -170,6 +170,8 @@ export function retrieveEncKey() {
 
   if (!encKeyBase64) {
     if (!cachedEncKey) console.error("No token received");
+    console.log("Error with routing, resetting...")
+    return "sendBeacon", null;
   } else {
     cachedEncKey = base64ToUint8Array(encKeyBase64);
   }
