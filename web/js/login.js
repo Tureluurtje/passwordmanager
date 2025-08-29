@@ -29,15 +29,17 @@ class PassafeLogin {
     
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
-      //document.addEventListener('DOMContentLoaded', () => this.init());
+      document.addEventListener('DOMContentLoaded', () => this.init());
     } else {
-      //this.init();
+      this.init();
     }
   }
 
   init() {
     // Ensure dark mode is applied immediately
     document.body.classList.add('dark', 'app-ready');
+    const loader = document.getElementById('loading-wrapper');
+    loader.classList.add('app-ready')
     document.documentElement.classList.add('dark');
     
     // Get DOM elements
