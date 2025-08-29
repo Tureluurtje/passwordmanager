@@ -278,11 +278,11 @@ function renderPasswordList() {
       }
     });
 
-    getFavicon(entry.website).then((faviconUrl) => {
+    getFavicon(entry.metadata.url).then((faviconUrl) => {
       if (faviconUrl) {
         item.innerHTML = `
             <div class="password-icon">
-                <img class="password-favicon" src="${faviconUrl}" alt="${entry.metdata.name} favicon" />
+                <img class="password-favicon" src="${faviconUrl}" alt="${entry.metadata.name} favicon" />
             </div>
             <div class="password-details">
                 <span class="password-name">${entry.name}</span>
