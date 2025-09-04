@@ -37,7 +37,7 @@ class AuthenticationManager:
             if token:
                 return f"Login successful, {token}", 200
             else:
-                raise Exception('Token failed to generate')
+                raise Exception("Token failed to generate")
         except Exception as e:
             return "There was an error while trying to login", 500  # Return error if there was an error while trying to login
             
@@ -45,7 +45,7 @@ class AuthenticationManager:
     def register(self, username, password) -> bool:
         try:
             myCursor = self.dbConnection.cursor() # creates cursor object
-            myCursor.execute(f"INSERT INTO users(username, password) VALUES('{username}', '{password}')") # inserts username, password and totp secret into database
+            myCursor.execute(f"INSERT INTO users(username, password) VALUES({username}, {password})") # inserts username, password and totp secret into database
             self.dbConnection.commit()  # Commit on the same connection
             myCursor.close()  # Close cursor
             return "Registration successful", 200  # Return success message

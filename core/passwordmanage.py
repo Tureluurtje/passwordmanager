@@ -48,7 +48,7 @@ class PasswordManager:
             values = (username,)
             mycursor.execute(query, values)
             (vault_blob, ) = mycursor.fetchone()
-            vault_decoded = bytes(vault_blob).decode('utf-8')
+            vault_decoded = bytes(vault_blob).decode("utf-8")
             return vault_decoded, 200
         except mysql.connector.Error as err:
             return "Database connection error", 500

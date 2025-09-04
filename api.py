@@ -25,12 +25,12 @@ class JSONEncoder(json.JSONEncoder):
 app.json_provider_class = None  # disables new provider in Flask 2.2+
 app.json_encoder = JSONEncoder
 
-@app.route('/ping/')
+@app.route("/ping/")
 def ping():
-    return jsonify({'message': 'pong'})
+    return jsonify({"message": "pong"})
 
 # NOTE: This route handles API requests
-@app.route('/', methods=['POST'])
+@app.route("/", methods=["POST"])
 def requestReceiver():
     try:
         result, code = requestHandler(request)
@@ -42,11 +42,11 @@ def requestReceiver():
             "error": str(e)
         }), 500
         
-@app.route('/', methods=['GET'])
+@app.route("/", methods=["GET"])
 def test_get():
     return jsonify({"message": "Hello World!"}), 200
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=config.DEBUG, host=config.FLASK_HOST, port=config.PORT_API)  # Run the Flask app on localhost:5000
 # Note: In production, use a proper WSGI server like Gunicorn or uWSGI.

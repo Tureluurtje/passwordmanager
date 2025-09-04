@@ -5,13 +5,13 @@ class PassafeLogin {
   constructor() {
     // State management
     this.formData = {
-      username: '',
-      password: ''
+      username: "",
+      password: ""
     };
     
     this.errors = {
-      username: '',
-      password: ''
+      username: "",
+      password: ""
     };
     
     this.isLoading = false;
@@ -28,8 +28,8 @@ class PassafeLogin {
     this.forgotPasswordBtn = null;
     
     // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => this.init());
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => this.init());
     } else {
       this.init();
     }
@@ -37,46 +37,46 @@ class PassafeLogin {
 
   init() {
     // Ensure dark mode is applied immediately
-    document.body.classList.add('dark', 'app-ready');
-    const loader = document.getElementById('loading-wrapper');
-    loader.classList.add('app-ready')
-    document.documentElement.classList.add('dark');
+    document.body.classList.add("dark", "app-ready");
+    const loader = document.getElementById("loading-wrapper");
+    loader.classList.add("app-ready")
+    document.documentElement.classList.add("dark");
     
     // Get DOM elements
-    this.formElement = document.getElementById('loginForm');
-    this.usernameInput = document.getElementById('username');
-    this.passwordInput = document.getElementById('password');
-    this.usernameError = document.getElementById('usernameError');
-    this.passwordError = document.getElementById('passwordError');
-    this.submitBtn = document.getElementById('submitBtn');
-    this.loadingIndicator = document.getElementById('loadingIndicator');
-    this.forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+    this.formElement = document.getElementById("loginForm");
+    this.usernameInput = document.getElementById("username");
+    this.passwordInput = document.getElementById("password");
+    this.usernameError = document.getElementById("usernameError");
+    this.passwordError = document.getElementById("passwordError");
+    this.submitBtn = document.getElementById("submitBtn");
+    this.loadingIndicator = document.getElementById("loadingIndicator");
+    this.forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
     
     // Bind event listeners
     this.bindEvents();
     
-    this.letterGlitch(document.getElementById('app'), {
+    this.letterGlitch(document.getElementById("app"), {
       glitchColors: this.getRandomColors(),
-      glitchSpeed: 70,
+      glitchSpeed: 80,
       centerVignette: true,
       outerVignette: true,
       smooth: true
     })
 
     // Log initialization
-    console.log('Passafe Login initialized');
+    console.log("Passafe Login initialized");
   }
 
   bindEvents() {
     // Form submission
-    this.formElement.addEventListener('submit', (e) => this.handleSubmit(e));
+    this.formElement.addEventListener("submit", (e) => this.handleSubmit(e));
     
     // Input changes
-    this.usernameInput.addEventListener('input', (e) => this.handleInputChange(e));
-    this.passwordInput.addEventListener('input', (e) => this.handleInputChange(e));
+    this.usernameInput.addEventListener("input", (e) => this.handleInputChange(e));
+    this.passwordInput.addEventListener("input", (e) => this.handleInputChange(e));
     
     // Forgot password
-    this.forgotPasswordBtn.addEventListener('click', (e) => this.handleForgotPassword(e));
+    this.forgotPasswordBtn.addEventListener("click", (e) => this.handleForgotPassword(e));
   }
 
   getRandomColors() {
@@ -100,29 +100,29 @@ class PassafeLogin {
     
     // Clear error when user starts typing
     if (this.errors[name]) {
-      this.errors[name] = '';
-      this.updateErrorDisplay(name, '');
+      this.errors[name] = "";
+      this.updateErrorDisplay(name, "");
     }
 
     // Remove form error classes
-    this.formElement.classList.remove('was-validated', 'auth-error');
+    this.formElement.classList.remove("was-validated", "auth-error");
   }
 
   updateErrorDisplay(fieldName, message) {
-    const errorElement = fieldName === 'username' ? this.usernameError : this.passwordError;
+    const errorElement = fieldName === "username" ? this.usernameError : this.passwordError;
     
     if (message) {
       errorElement.textContent = message;
-      errorElement.classList.remove('hide');
-      errorElement.classList.add('show');
-      errorElement.style.opacity = '1';
-      errorElement.style.transform = 'translateY(0)';
+      errorElement.classList.remove("hide");
+      errorElement.classList.add("show");
+      errorElement.style.opacity = "1";
+      errorElement.style.transform = "translateY(0)";
     } else {
-      errorElement.textContent = '\u00A0';
-      errorElement.classList.remove('show');
-      errorElement.classList.add('hide');
-      errorElement.style.opacity = '0';
-      errorElement.style.transform = 'translateY(-2px)';
+      errorElement.textContent = "\u00A0";
+      errorElement.classList.remove("show");
+      errorElement.classList.add("hide");
+      errorElement.style.opacity = "0";
+      errorElement.style.transform = "translateY(-2px)";
     }
   }
 
@@ -130,86 +130,86 @@ class PassafeLogin {
     this.isLoading = loading;
     
     if (loading) {
-      this.submitBtn.value = 'Signing In...';
+      this.submitBtn.value = "Signing In...";
       this.submitBtn.disabled = true;
       this.usernameInput.disabled = true;
       this.passwordInput.disabled = true;
       this.forgotPasswordBtn.disabled = true;
-      this.loadingIndicator.style.display = 'flex';
+      this.loadingIndicator.style.display = "flex";
     } else {
-      this.submitBtn.value = 'Sign In';
+      this.submitBtn.value = "Sign In";
       this.submitBtn.disabled = false;
       this.usernameInput.disabled = false;
       this.passwordInput.disabled = false;
       this.forgotPasswordBtn.disabled = false;
-      this.loadingIndicator.style.display = 'none';
+      this.loadingIndicator.style.display = "none";
     }
   }
 
   async handleSubmit(e) {
     e.preventDefault();
     
-    this.formElement.classList.remove('auth-error');
+    this.formElement.classList.remove("auth-error");
 
     let formValid = true;
-    const newErrors = { username: '', password: '' };
+    const newErrors = { username: "", password: "" };
 
     if (!this.formData.username.trim()) {
-      newErrors.username = 'This field cannot be left blank';
+      newErrors.username = "This field cannot be left blank";
       formValid = false;
     }
 
     if (!this.formData.password.trim()) {
-      newErrors.password = 'This field cannot be left blank';
+      newErrors.password = "This field cannot be left blank";
       formValid = false;
     }
 
     // Update errors
     this.errors = newErrors;
-    this.updateErrorDisplay('username', newErrors.username);
-    this.updateErrorDisplay('password', newErrors.password);
+    this.updateErrorDisplay("username", newErrors.username);
+    this.updateErrorDisplay("password", newErrors.password);
 
     if (!formValid) {
-      this.formElement.classList.add('was-validated');
+      this.formElement.classList.add("was-validated");
       return;
     }
 
-    this.formElement.classList.remove('was-validated');
+    this.formElement.classList.remove("was-validated");
     this.setLoading(true);
 
     try {
       const username = this.formData.username;
       const [loginResponse, encKey] = await this.login(username, this.formData.password);
 
-      if (!loginResponse.ok) throw new Error('Login response not OK');
+      if (!loginResponse.ok) throw new Error("Login response not OK");
 
       const data = await loginResponse.json();
-      if (!data.success) throw new Error('Username or password incorrect');
+      if (!data.success) throw new Error("Username or password incorrect");
 
       const encKeyBase64 = this.uint8ArrayToBase64(encKey);
 
       // Store credentials securely and redirect
       window.name = JSON.stringify({ username: username, encKey: encKeyBase64 });
       // Redirect to main application
-      window.location.href = '/';
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
-      let errorMessage = 'An error occurred during login';
+      let errorMessage = "An error occurred during login";
       
       // Handle specific error types
-      if (err.message.includes('Salt fetch failed')) {
-        errorMessage = 'Unable to connect to server';
-      } else if (err.message.includes('username') || err.message.includes('password')) {
-        errorMessage = 'Username or password incorrect';
-      } else if (err.message.includes('Login response not OK')) {
-        errorMessage = 'Authentication failed';
-      } else if (err.message.includes('Key derivation failed')) {
-        errorMessage = 'Cryptographic error occurred';
+      if (err.message.includes("Salt fetch failed")) {
+        errorMessage = "Unable to connect to server";
+      } else if (err.message.includes("username") || err.message.includes("password")) {
+        errorMessage = "Username or password incorrect";
+      } else if (err.message.includes("Login response not OK")) {
+        errorMessage = "Authentication failed";
+      } else if (err.message.includes("Key derivation failed")) {
+        errorMessage = "Cryptographic error occurred";
       }
       
       this.errors.password = errorMessage;
-      this.updateErrorDisplay('password', errorMessage);
-      this.formElement.classList.add('auth-error');
+      this.updateErrorDisplay("password", errorMessage);
+      this.formElement.classList.add("auth-error");
     } finally {
       this.setLoading(false);
     }
@@ -218,41 +218,41 @@ class PassafeLogin {
   handleForgotPassword(e) {
     e.preventDefault();
     this.showForgotPassword = true;
-    this.forgotPasswordBtn.textContent = 'Processing...';
+    this.forgotPasswordBtn.textContent = "Processing...";
     this.forgotPasswordBtn.disabled = true;
     
     setTimeout(() => {
-      alert('Password recovery functionality would be implemented here. This would typically send a recovery email or redirect to a password reset page.');
+      alert("Password recovery functionality would be implemented here. This would typically send a recovery email or redirect to a password reset page.");
       this.showForgotPassword = false;
-      this.forgotPasswordBtn.textContent = 'Forgot Password?';
+      this.forgotPasswordBtn.textContent = "Forgot Password?";
       this.forgotPasswordBtn.disabled = false;
     }, 100);
   }
 
   letterGlitch(container, {
-  glitchColors = ['#2b4539', '#61dca3', '#61b3dc'],
+  glitchColors = ["#2b4539", "#61dca3", "#61b3dc"],
   glitchSpeed = 50,
   centerVignette = false,
   outerVignette = true,
   smooth = true,
 } = {}) {
-  const canvas = document.createElement('canvas');
-  canvas.classList.add('glitch-canvas');
+  const canvas = document.createElement("canvas");
+  canvas.classList.add("glitch-canvas");
   container.appendChild(canvas);
 
   if (outerVignette) {
-    const outer = document.createElement('div');
-    outer.className = 'vignette-outer';
+    const outer = document.createElement("div");
+    outer.className = "vignette-outer";
     container.appendChild(outer);
   }
 
   if (centerVignette) {
-    const center = document.createElement('div');
-    center.className = 'vignette-center';
+    const center = document.createElement("div");
+    center.className = "vignette-center";
     container.appendChild(center);
   }
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   const fontSize = 16;
   const charWidth = 10;
   const charHeight = 20;
@@ -263,10 +263,10 @@ class PassafeLogin {
   let animationFrameId;
 
   const lettersAndSymbols = [
-    'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-    '!','@','#','$','&','*','(',')','-','_','+','=','/',
-    '[',']','{','}',';',':','<','>',',',
-    '0','1','2','3','4','5','6','7','8','9'
+    "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+    "!","@","#","$","&","*","(",")","-","_","+","=","/",
+    "[","]","{","}",";",":","<",">",",",
+    "0","1","2","3","4","5","6","7","8","9"
   ];
 
   function getRandomChar() {
@@ -331,7 +331,7 @@ class PassafeLogin {
     const { width, height } = canvas.getBoundingClientRect();
     ctx.clearRect(0, 0, width, height);
     ctx.font = `${fontSize}px monospace`;
-    ctx.textBaseline = 'top';
+    ctx.textBaseline = "top";
 
     letters.forEach((letter, index) => {
       const x = (index % grid.columns) * charWidth;
@@ -388,7 +388,7 @@ class PassafeLogin {
     animationFrameId = requestAnimationFrame(animate);
   }
 
-  window.addEventListener('resize', () => {
+  window.addEventListener("resize", () => {
     cancelAnimationFrame(animationFrameId);
     resizeCanvas();
     animate();
@@ -400,15 +400,15 @@ class PassafeLogin {
 
   // Real API functions
   async fetchSalt(username) {
-    const response = await fetch('/salt', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/salt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         username: username,
       }),
     });
 
-    if (!response.ok) throw new Error('Salt fetch failed');
+    if (!response.ok) throw new Error("Salt fetch failed");
 
     const {
       salt: { message: salt_hex },
@@ -418,9 +418,9 @@ class PassafeLogin {
   }
 
   async sendAuthReq(username, authKey) {
-    const res = await fetch('/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         username: username,
         password: authKey,
@@ -439,31 +439,31 @@ class PassafeLogin {
 
     try {
       const keyMaterial = await crypto.subtle.importKey(
-        'raw',
+        "raw",
         encoder.encode(password),
-        { name: 'PBKDF2' },
+        { name: "PBKDF2" },
         false,
-        ['deriveBits']
+        ["deriveBits"]
       );
 
       const derivedBits = await crypto.subtle.deriveBits(
         {
-          name: 'PBKDF2',
+          name: "PBKDF2",
           salt: salt,
           iterations: 100_000,
-          hash: 'SHA-256',
+          hash: "SHA-256",
         },
         keyMaterial,
         256
       );
 
       const derivedKeyArray = Array.from(new Uint8Array(derivedBits));
-      return derivedKeyArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+      return derivedKeyArray.map((b) => b.toString(16).padStart(2, "0")).join("");
     } catch (error) {
-      console.warn('WebCrypto API failed, falling back to CryptoJS PBKDF2.', error);
+      console.warn("WebCrypto API failed, falling back to CryptoJS PBKDF2.", error);
       
       // Fallback using CryptoJS if available
-      if (typeof window !== 'undefined' && window.CryptoJS) {
+      if (typeof window !== "undefined" && window.CryptoJS) {
         const saltWordArray = window.CryptoJS.enc.Hex.parse(saltHex);
         const derivedKey = window.CryptoJS.PBKDF2(password, saltWordArray, {
           keySize: 256 / 32,
@@ -473,23 +473,23 @@ class PassafeLogin {
         return derivedKey.toString(window.CryptoJS.enc.Hex);
       }
       
-      throw new Error('Key derivation failed');
+      throw new Error("Key derivation failed");
     }
   }
 
   async hkdf(inputKeyMaterial, infoString, length = 32) {
     const cryptoKey = await crypto.subtle.importKey(
-      'raw',
+      "raw",
       inputKeyMaterial,
-      'HKDF',
+      "HKDF",
       false,
-      ['deriveBits']
+      ["deriveBits"]
     );
 
     const derivedBits = await crypto.subtle.deriveBits(
       {
-        name: 'HKDF',
-        hash: 'SHA-256',
+        name: "HKDF",
+        hash: "SHA-256",
         salt: new Uint8Array([]),
         info: new TextEncoder().encode(infoString),
       },
@@ -501,7 +501,7 @@ class PassafeLogin {
   }
 
   hexToBytes(hex) {
-    if (hex.length % 2 !== 0) throw new Error('Invalid hex string');
+    if (hex.length % 2 !== 0) throw new Error("Invalid hex string");
     const arr = new Uint8Array(hex.length / 2);
     for (let i = 0; i < arr.length; i++) {
       arr[i] = parseInt(hex.substr(i * 2, 2), 16);
@@ -512,8 +512,8 @@ class PassafeLogin {
   toHex(buffer) {
     const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
     return Array.from(bytes)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   async login(username, masterPassword) {
@@ -521,16 +521,16 @@ class PassafeLogin {
     const rootKeyMaterial = await this.deriveRootKey(masterPassword, saltHex);
     const rootKeyMaterialBytes = this.hexToBytes(rootKeyMaterial);
 
-    const authKey = await this.hkdf(rootKeyMaterialBytes, 'authentication');
+    const authKey = await this.hkdf(rootKeyMaterialBytes, "authentication");
     const authKeyHex = this.toHex(authKey);
 
-    const encKey = await this.hkdf(rootKeyMaterialBytes, 'encryption');
+    const encKey = await this.hkdf(rootKeyMaterialBytes, "encryption");
 
     return [await this.sendAuthReq(username, authKeyHex), encKey];
   }
 
   uint8ArrayToBase64(bytes) {
-    let binary = '';
+    let binary = "";
     bytes.forEach((b) => (binary += String.fromCharCode(b)));
     return btoa(binary);
   }

@@ -172,7 +172,7 @@ function base64ToUint8Array(base64) {
   return bytes;
 }
 
-// Module-level cache so callers don't need to rely on `window.name` order.
+// Module-level cache so callers don"t need to rely on `window.name` order.
 let cachedUser = null;
 let cachedEncKey = null; // Uint8Array
 

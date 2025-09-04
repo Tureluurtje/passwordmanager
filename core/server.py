@@ -9,14 +9,14 @@ import core.utils as utils
 def connectToDatabase() -> object:
     try:
         root_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(root_dir, '..', 'config/config.ini')
+        config_path = os.path.join(root_dir, "..", "config/config.ini")
         config = configparser.ConfigParser()
         config.read(config_path)
         mydb = mysql.connector.connect(
-            host=config['database']['host'],
-            user=config['database']['user'],
-            password=config['database']['password'],
-            database=config['database']['db']
+            host=config["database"]["host"],
+            user=config["database"]["user"],
+            password=config["database"]["password"],
+            database=config["database"]["db"]
         ) # creates connection to database using a config file
         return mydb 
     except mysql.connector.Error:
@@ -25,10 +25,10 @@ def connectToDatabase() -> object:
 def requestHandler(req):    
     data = req.get_json(silent=True) or {} #Parse json data
     
-    requestMethod = data.get('requestMethod')
+    requestMethod = data.get("requestMethod")
 
     if not requestMethod:
-        return "Missing 'requestMethod' parameter", 400
+        return "Missing \"requestMethod\" parameter", 400
 
     match requestMethod:
         case "authenticate":
@@ -68,7 +68,7 @@ def handleAuthentication(data):
     missing = [param for param in required_params if not data.get(param)]
     
     if missing:
-        return f"Missing arguments: {', '.join(missing)}", 400
+        return f"Missing arguments: {", ".join(missing)}", 400
     
     username = data.get("username")
     password = data.get("password")
@@ -88,7 +88,7 @@ def handlePassword(data):
 
     missing = [name for name, value in [("token", token), ("action", action)] if not value]
     if missing:
-        return f"Missing arguments: {', '.join(missing)}", 400
+        return f"Missing arguments: {", ".join(missing)}", 400
 
     dbConnection = connectToDatabase()
     if not dbConnection:

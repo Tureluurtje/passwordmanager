@@ -131,7 +131,7 @@ async function getFavicon(domain) {
 
     return faviconUrl;
   } catch (e) {
-    // Ignore aborts (happen during navigation) and don't spam the console.
+    // Ignore aborts (happen during navigation) and don"t spam the console.
     if (e && e.name === "AbortError") return null;
     console.error("Error fetching favicon:", e);
     return null;
@@ -140,21 +140,21 @@ async function getFavicon(domain) {
 
 // Show popup
 function showPopup(message, isSuccess = true) {
-  const popup = document.getElementById('popup');
+  const popup = document.getElementById("popup");
 
   // Set message
   popup.textContent = message;
 
   // Apply style
-  popup.classList.remove('success', 'error');
-  popup.classList.add(isSuccess ? 'success' : 'error');
+  popup.classList.remove("success", "error");
+  popup.classList.add(isSuccess ? "success" : "error");
 
   // Slide down
-  popup.style.top = '20px';
+  popup.style.top = "20px";
 
   // Hide after 3 seconds
   setTimeout(() => {
-    popup.style.top = '-80px';
+    popup.style.top = "-80px";
   }, 3000);
 }
 function getStrengthClass(score) {
@@ -285,7 +285,7 @@ function renderPasswordList() {
                 <img class="password-favicon" src="${faviconUrl}" alt="${entry.metadata.name} favicon" />
             </div>
             <div class="password-details">
-                <span class="password-name">${entry.name}</span>
+                <span class="password-name">${entry.metadata.name}</span>
                 <span class="password-username">${entry.metadata.username}</span>
             </div>
             `;
@@ -421,7 +421,7 @@ function copyToClipboard(elementId, isPassword = false) {
 }
 
 // Expose legacy/global handlers for inline `onclick` attributes in HTML.
-// Modules don't export to the global scope, so attach these explicitly.
+// Modules don"t export to the global scope, so attach these explicitly.
 if (typeof window !== "undefined") {
   window.copyToClipboard = copyToClipboard;
   window.togglePasswordVisibility = togglePasswordVisibility;
@@ -528,7 +528,7 @@ async function handleFormSubmission(event) {
   let isBreached = await checkPassword(password);
 
   try {
-    // retrieveEncKey returns { user, encKey } which matches handleAddPassword's first param
+    // retrieveEncKey returns { user, encKey } which matches handleAddPassword"s first param
     const ctx = retrieveEncKey();
     await handleAddPassword(
       ctx,
@@ -553,9 +553,9 @@ async function handleFormSubmission(event) {
 }
 
 async function init() {
-  document.body.classList.add('app-ready');
-  const loader = document.getElementById('loading-wrapper');
-  loader.classList.add('app-ready')
+  document.body.classList.add("app-ready");
+  const loader = document.getElementById("loading-wrapper");
+  loader.classList.add("app-ready")
 
   // Ensure session is valid before doing expensive/async rendering.
   const ok = await validateSession();
@@ -671,8 +671,8 @@ async function init() {
   });
 };
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => init());
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => init());
 } else {
   init();
 }
