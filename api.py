@@ -27,16 +27,23 @@ app.json_encoder = JSONEncoder
 
 @app.route("/ping/")
 def ping():
-    return jsonify({"message": "pong"})
+    return jsonify({
+        "success": True,
+        "data": "pong"
+    }), 200
 
 # NOTE: This route handles API requests
 @app.route("/")
 def requestReceiver() -> dict:
     try:
         #result, code = requestHandler(request)
-        return jsonify({"message": "Hello World!"}), 200
+        return jsonify({
+            "success": True,
+            "data": "Hello World!"
+        }), 200
     except Exception as e:
         return jsonify({
+            "success": False,
             "error": str(e)
         }), 500
         
@@ -52,12 +59,18 @@ def authenticate(subpath: str) -> dict:
         allowed_subpaths = ["login", "register", "refresh", "logout", "check"]
 
         if subpath not in allowed_subpaths:
-            return jsonify({"success": False, "error": f"Invalid auth route: {subpath}"}), 404
-
+            return jsonify({
+                "success": False,
+                "error": f"Invalid auth route: {subpath}"
+            }), 404
+            
         return handleAuth(subpath, data, auth_token)
 
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 if __name__ == "__main__":
     app.run(debug=config.DEBUG, host=config.FLASK_HOST, port=config.PORT_API)  # Run the Flask app on localhost:5000

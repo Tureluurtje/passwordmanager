@@ -15,14 +15,13 @@ class AuthenticationManager:
         
     def login(self, username, password) -> bool:
         try:
-            cur = self.conn.cursor()
-            cur.execute("SELECT password FROM users WHERE username = %s", (username.lower(),))
-            result = cur.fetchone()
-            cur.close()  # Close cursor
-            if not result:
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT password FROM users WHERE username = %s", (username.lower(),))
+                row = cur.fetchone()
+            if row is None:
                 return "Login failed, username or password is incorrect", 401
 
-            stored_hash = result[0]
+            stored_hash = row[0]
             
             ph = PasswordHasher()
             try:
@@ -34,7 +33,7 @@ class AuthenticationManager:
 
             token = self.refreshAuthToken(username)
             if token:
-                return f"Login successful, {token}", 200
+                return f"Login successfull, token: {token}", 200
             else:
                 raise Exception("Token failed to generate")
         except Exception as e:
@@ -43,10 +42,10 @@ class AuthenticationManager:
 
     def register(self, username, password) -> bool:
         try:
-            cur = self.conn.cursor() # creates cursor object
-            cur.execute(f"INSERT INTO users(username, password) VALUES({username}, {password})") # inserts username, password and totp secret into database
-            self.conn.commit()  # Commit on the same connection
-            cur.close()  # Close cursor
+            with self.conn.cursor() as cur:
+                cur.execute(f"INSERT INTO users(username, password) VALUES({username}, {password})") # inserts username, password and totp secret into database
+                self.conn.commit()  # Commit on the same connection
+
             return "Registration successful", 200  # Return success message
         except:
             return "There was an error while trying to register", 500  # Return error if there was an error while trying to register
@@ -68,30 +67,17 @@ class AuthenticationManager:
         First, checks if a valid token exists. If so, returns that.
         """
         try:
-            cur = self.conn.cursor()
+            with self.conn.cursor() as cur:
+                # Check for existing valid token
+                cur.execute("SELECT token FROM auth_tokens WHERE username = %s AND token_type = %s", (username, type))
+                row = cur.fetchone()
 
-            # Check for existing valid token
-            cur.execute(
-                "SELECT token FROM auth_tokens WHERE username = %s AND token_type = %s",
-                (username, type)
-            )
-            existing = cur.fetchone()
-            cur.close()
-
-            if existing:
-                token = existing[0]
+            if row:
+                token = row[0]
                 # Use verifyAuthToken to see if it's still valid
                 is_valid, _ = self.verifyAuthToken(token, type=type)
                 if is_valid:
                     return token, 200  # Return existing valid token
-
-            # Remove old tokens of this type
-            cur = self.conn.cursor()
-            cur.execute(
-                "DELETE FROM auth_tokens WHERE username = %s AND token_type = %s",
-                (username, type)
-            )
-            self.conn.commit()
 
             # Generate new token
             token = secrets.token_urlsafe(32)
@@ -101,14 +87,20 @@ class AuthenticationManager:
                 expiresAt = int(time.time()) + 7 * 24 * 3600  # 7 days
             else:
                 raise ValueError("Invalid token type. Must be 'access' or 'refresh'.")
+            
+            # Remove old tokens of this type
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM auth_tokens WHERE username = %s AND token_type = %s",
+                    (username, type)
+                )
 
-            # Insert new token
-            cur.execute(
-                "INSERT INTO auth_tokens(username, token, token_type, expires_at) VALUES(%s, %s, %s, %s)",
-                (username, token, type, expiresAt)
-            )
-            self.conn.commit()
-            cur.close()
+                # Insert new token
+                cur.execute(
+                    "INSERT INTO auth_tokens(username, token, token_type, expires_at) VALUES(%s, %s, %s, %s)",
+                    (username, token, type, expiresAt)
+                )
+                self.conn.commit()
 
             return token, 200
 
@@ -124,18 +116,17 @@ class AuthenticationManager:
         - Refresh tokens: validity check only (fixed lifetime).
         """
         try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT expires_at, username FROM auth_tokens WHERE token = %s AND token_type = %s",
-                (token, type)
-            )
-            result = cur.fetchone()
-            cur.close()
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "SELECT expires_at, username FROM auth_tokens WHERE token = %s AND token_type = %s",
+                    (token, type)
+                )
+                row = cur.fetchone()
 
-            if not result:
+            if row is None:
                 return False, None
 
-            expires_at, username = int(result[0]), result[1]
+            expires_at, username = int(row[0]), row[1]
             now = int(time.time())
 
             if now < expires_at:
@@ -158,11 +149,11 @@ class AuthenticationManager:
         except Exception:
             return False, None
 
-
-        
+''' 
 def log(conn, username, verify, logReason) -> None:
     myCursor = conn.cursor() #creates cursor object
     myCursor.execute(f"INSERT INTO log(user, action, date, verify) VALUES(%s, %s, %s, %s)", (username, logReason, datetime.now(), verify,)) # inserts log of the users action into the database
     conn.commit()  # Commit on the same connection
     myCursor.close()  # Close cursor
     return
+'''
