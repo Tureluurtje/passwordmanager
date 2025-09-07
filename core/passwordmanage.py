@@ -1,22 +1,22 @@
 import mysql.connector
-from mysql.connector import CMySQLConnection, MySQLConnection
+from mysql.connector import CMySQLConnection
 import json
 import base64
 import datetime
 
 class PasswordManager:
-    def __init__(self, dbConnection):
-        if isinstance(dbConnection, (CMySQLConnection, MySQLConnection)):
-            self.dbConnection = dbConnection
+    def __init__(self, conn):
+        if isinstance(conn, CMySQLConnection):
+            self.conn = conn
         else:
             return "Database connection error", 500 
         
     def add_password(self, username, payload):
         try:
-            db = self.dbConnection
-            mycursor = db.cursor()
-            mycursor.execute("SELECT vault FROM passwords WHERE username=%s", (username, ))
-            row = mycursor.fetchone()
+            conn = self.conn
+            cur = conn.cursor()
+            cur.execute("SELECT vault FROM passwords WHERE username=%s", (username, ))
+            row = cur.fetchone()
             if row:
                 existing_blob = row[0]
                 try:
@@ -32,33 +32,33 @@ class PasswordManager:
             # use helper to ensure any bytes or datetimes in the payload are encoded
             updated_blob = json.dumps(passwords)
             if row:
-                mycursor.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
+                cur.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
             else:
-                mycursor.execute("INSERT INTO passwords (username, vault) VALUES (%s, %s)", (username, updated_blob))
-            db.commit()
+                cur.execute("INSERT INTO passwords (username, vault) VALUES (%s, %s)", (username, updated_blob))
+            conn.commit()
             return "Password added successfully", 200
         except Exception as err:
             return f"Database connection error: {err}", 500
         
     def get_password(self, username):
         try:
-            db = self.dbConnection
-            mycursor = db.cursor()
+            db = self.conn
+            cur = db.cursor()
             query = "SELECT vault FROM passwords WHERE username = %s LIMIT 1"
             values = (username,)
-            mycursor.execute(query, values)
-            (vault_blob, ) = mycursor.fetchone()
+            cur.execute(query, values)
+            (vault_blob, ) = cur.fetchone()
             vault_decoded = bytes(vault_blob).decode("utf-8")
             return vault_decoded, 200
         except mysql.connector.Error as err:
             return "Database connection error", 500
 
     def update_password(self, username, passwordId, replacements: dict):
-        db = self.dbConnection
-        mycursor = db.cursor()
+        db = self.conn
+        cur = db.cursor()
 
-        mycursor.execute("SELECT vault FROM passwords WHERE username=%s", (username,))
-        row = mycursor.fetchone()
+        cur.execute("SELECT vault FROM passwords WHERE username=%s", (username,))
+        row = cur.fetchone()
 
         if row:
             existing_blob = row[0]
@@ -89,16 +89,16 @@ class PasswordManager:
 
         # Save updated vault back to the database
         updated_blob = json.dumps(passwords)
-        mycursor.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
+        cur.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
         db.commit()
         return "Password updated successfully", 200
 
     def delete_password(self, username, passwordId):
-        db = self.dbConnection
-        mycursor = db.cursor()
+        db = self.conn
+        cur = db.cursor()
         
-        mycursor.execute("SELECT vault FROM passwords WHERE username=%s", (username,))
-        row = mycursor.fetchone()
+        cur.execute("SELECT vault FROM passwords WHERE username=%s", (username,))
+        row = cur.fetchone()
         
         if row:
             existing_blob = row[0]
@@ -122,7 +122,7 @@ class PasswordManager:
 
         # Save updated vault back to the database
         updated_blob = json.dumps(passwords)
-        mycursor.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
+        cur.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
         db.commit()
 
         return "Password removed successfully", 200
