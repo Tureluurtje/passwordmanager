@@ -31,9 +31,10 @@ class AuthenticationManager:
                 return "Login failed, username or password is incorrect", 401
         
 
-            token = self.refreshAuthToken(username)
-            if token:
-                return f"Login successfull, token: {token}", 200
+            refresh_token = self.refreshAuthToken(username, "refresh")
+            access_token = self.refreshAuthToken(username)
+            if refresh_token and access_token:
+                return f"Login successfull, refresh_token: {refresh_token}, access_token: {access_token}", 200
             else:
                 raise Exception("Token failed to generate")
         except Exception as e:

@@ -1,12 +1,11 @@
 import hashlib
 import json
 
-def fetchSalt(username, conn):
-    cur = conn.cursor()
-    cur.execute("SELECT salt FROM users WHERE username = %s", (username,))
-    result = cur.fetchone()
-    cur.close()
-    
+def fetchSalt(conn, username):
+    with conn.cursor() as cur:
+        cur.execute("SELECT salt FROM users WHERE username = %s", (username,))
+        result = cur.fetchone()
+        
     if result:
         return result[0]
     else:

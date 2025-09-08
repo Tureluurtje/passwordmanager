@@ -56,7 +56,7 @@ def authenticate(subpath: str) -> dict:
             auth_token = auth_header.split(" ", 1)[1]
 
         data = request.get_json(silent=True) or {}
-        allowed_subpaths = ["login", "register", "refresh", "logout", "check"]
+        allowed_subpaths = ["login", "register", "refresh", "logout", "check", "salt"]
 
         if subpath not in allowed_subpaths:
             return jsonify({
@@ -64,7 +64,10 @@ def authenticate(subpath: str) -> dict:
                 "error": f"Invalid auth route: {subpath}"
             }), 404
             
-        return handleAuth(subpath, data, auth_token)
+        return jsonify({
+            "success": True,
+            "data": str(handleAuth(subpath, data, auth_token))
+        })
 
     except Exception as e:
         return jsonify({

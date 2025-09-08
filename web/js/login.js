@@ -411,7 +411,7 @@ class PassafeLogin {
     if (!response.ok) throw new Error("Salt fetch failed");
 
     const {
-      salt: { message: salt_hex },
+      salt: { data: salt_hex },
     } = await response.json();
     
     return salt_hex;

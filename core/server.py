@@ -39,6 +39,7 @@ def handleAuth(subpath: str, data: dict, auth_token: str=None) -> dict:
         return str(e), 500
     
     if subpath == "login":
+        username = data.get("username")
         password = data.get("password")
         return auth.login(username, password)
     elif subpath == "register":
@@ -49,6 +50,9 @@ def handleAuth(subpath: str, data: dict, auth_token: str=None) -> dict:
     elif subpath == "refresh":
         username = data.get("username")
         return auth.refreshAuthToken(username, "access")
+    elif subpath == "salt":
+        username = data.get("username")
+        return utils.fetchSalt(conn, username)
      
 def handlePassword(data: dict) -> dict:
     token = data.get("token", "")
