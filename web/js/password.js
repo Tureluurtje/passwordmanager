@@ -73,14 +73,10 @@ class AddPassword {
 class GetPassword {
   async downloadVault(user) {
     const res = await fetch("/password", {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        method: "GET",
-        username: user,
-      }),
     });
     if (!res.ok) {
       throw new Error(`Failed to download vault: ${res.statusText}`);
@@ -313,7 +309,7 @@ export async function handleAddPassword(
 export async function handleGetPassword({ user, encKey }) {
   try {
     const obj = new GetPassword();
-    const jsonVault = await obj.downloadVault(user);
+    const jsonVault = await obj.downloadVault();
     const vaultData = JSON.parse(jsonVault.data.message);
 
     let formattedVault = {};

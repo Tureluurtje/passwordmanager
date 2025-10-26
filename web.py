@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, request, session, redirect, url_for, render_template, make_response
-from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 import requests
 import logging
 import hashlib
+import json
+import re
 
 import config.config as config
 
@@ -49,109 +50,127 @@ def index():
     return render_template('index.html', username=session.get('username'), token = session.get('auth_token'))
 
 # Note: The following endpoints are POST requests to handle login and logout actions.
-@app.route('/login', methods=['POST', 'GET'])
+from flask import Flask, request, session, redirect, url_for, render_template, make_response, jsonify
+import requests
+
+@app.route("/login", methods=["POST", "GET"])
 def login():
-    if request.method == 'GET':
-        if session.get('logged_in'):
-            return redirect(url_for('index'))
-        return render_template('login.html')
-    else:
-        data = request.get_json()
-        username = data.get('username')
-        password = data.get('password')
+    if request.method == "GET":
+        if session.get("logged_in"):
+            return redirect(url_for("index"))
+        return render_template("login.html")
+
+    # POST request
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    try:
+        api_res = requests.post(
+            f"{config.HOST}:{config.PORT_API}/auth/login",
+            json={"username": username, "password": password}
+        )
+
+        if not api_res.ok:
+            return jsonify({"success": False, "error": "Invalid credentials"}), 401
+
+        # Expect structured JSON from API
         try:
-            api_res = requests.post(
-                f'{config.HOST}:{config.PORT_API}/',
-                json={
-                'requestMethod': 'authenticate',
-                'action': 'login',
-                'username': username,
-                'password': password
-                }
-            )
-            if api_res.ok:
-                session['username'] = username
-                session['logged_in'] = True
-                message = api_res.json().get('message', '')
-                token = message.split(", ('")[1].split("'")[0]  # You might want to improve this parsing later
-                session['auth_token'] = token  # Store token securely in session (Flask will handle the cookie)
-                return jsonify({'success': True}), 200
-            else:
-                return jsonify({'success': False}), 401
-        except Exception as e:
-            return jsonify({'success': False, 'error': str(e)}), 500
+            res = api_res.json()  # Try to parse JSON
+            data = res.get("data")
+        except ValueError:
+            # If it's not valid JSON, parse manually
+            data = json.loads(api_res.text)
+
+        match = re.search(r'refresh_token:\s*([\w\-_]+),\s*access_token:\s*([\w\-_]+)', data)
+        if match:
+            refresh_token = match.group(1)
+            access_token = match.group(2)
+
+
+        if not access_token or not refresh_token:
+            return jsonify({"success": False, "error": "Invalid token response"}), 500
+
+        # Store short-lived access token in session
+        session["username"] = username
+        session["logged_in"] = True
+        session["access_token"] = access_token
+
+        # Store refresh token in secure HttpOnly cookie
+        resp = make_response(jsonify({"success": True}), 200)
+        resp.set_cookie(
+            "refresh_token",
+            refresh_token,
+            httponly=True,
+            secure=True,
+            samesite="Strict",
+            max_age=7*24*60*60
+        )
+
+        return resp
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/password', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def password():
     try:
-        data = request.get_json()
-        method = data.get('method')
-        if method == "ADD":
-            username = data.get('username')
-            payload = data.get('payload')
-            api_res = requests.post(
-                f'{config.HOST}:{config.PORT_API}/',
-                json={
-                'token': session.get('auth_token'),
-                'requestMethod': 'password',
-                'action': 'add',
-                'username': username,
-                'payload': payload
-                }
-            )
-            if api_res.ok:
-                return jsonify({'success': True}), 200
+        method = request.method
+        access_token = session.get("access_token")
+
+        def do_request():
+            if method == "POST":
+                data = request.get_json()
+                payload = data.get("payload")
+                return requests.post(
+                    f"{config.HOST}:{config.PORT_API}/password",
+                    headers={"Authorization": f"Bearer {access_token}"},
+                    json={"payload": payload}
+                )
+
+            elif method == "GET":
+                return requests.get(
+                    f"{config.HOST}:{config.PORT_API}/password",
+                    headers={"Authorization": f"Bearer {access_token}"}
+                )
+
+            elif method == "UPDATE":
+                data = request.get_json()
+                passwordId = data.get("passwordId")
+                replacements = data.get("replacements")
+                return requests.patch(
+                    f"{config.HOST}:{config.PORT_API}/password",
+                    headers={"Authorization": f"Bearer {access_token}"},
+                    json={"passwordId": passwordId, "replacements": replacements}
+                )
+
+            elif method == "DELETE":
+                data = request.get_json()
+                passwordId = data.get("passwordId")
+                return requests.delete(
+                    f"{config.HOST}:{config.PORT_API}/password",
+                    headers={"Authorization": f"Bearer {access_token}"},
+                    json={"passwordId": passwordId}
+                )
+
             else:
-                return jsonify({'success': False}), 500
-        elif method == "GET":
-            username = data.get("username")
-            api_res = requests.post(
-                f'{config.HOST}:{config.PORT_API}/',
-                json={
-                    'token': session.get('auth_token'),
-                    'requestMethod': 'password',
-                    'action': 'get', 
-                    'username': username
-                }
+                raise Exception("Invalid method or request type")
+
+        # First attempt
+        api_res = do_request()
+
+        # If expired, try refresh
+        if api_res.status_code == 401:
+            refresh_token = session.get("refresh_token")
+            refresh_res = requests.post(
+                f"{config.HOST}:{config.PORT_API}/auth/refresh",
+                json={"refresh_token": refresh_token}
             )
-            if api_res.ok:
-                return jsonify({'success': True, 'data': api_res.json()}), 200
-            else:
-                return jsonify({'success': False}), 500
-        elif method == 'UPDATE':
-            username = data.get("username")
-            passwordId = data.get("passwordId")
-            replacements = data.get("replacements")
-            api_res = requests.post(
-                f'{config.HOST}:{config.PORT_API}/',
-                json={
-                    'token': session.get('auth_token'),
-                    'requestMethod': 'password',
-                    'action': 'update', 
-                    'username': username,
-                    'passwordId': passwordId,
-                    'replacements': replacements
-                }
-            )
-            if api_res.ok:
-                return jsonify({'success': True, 'data': api_res.json()}), 200
-            else:
-                return jsonify({'success': False}), 500
-        elif method == 'DELETE':
-            username = data.get("username")
-            passwordId = data.get("passwordId")
-            api_res = requests.post(
-                f'{config.HOST}:{config.PORT_API}/',
-                json={
-                    'token': session.get('auth_token'),
-                    'requestMethod': 'password',
-                    'action': 'delete', 
-                    'username': username,
-                    'passwordId': passwordId
-                }
-            )
-            if api_res.ok:
-                return jsonify({'success': True, 'data': api_res.json()}), 200
+            if refresh_res.ok:
+                access_token = refresh_res.json()["access_token"]
+                session["access_token"] = access_token
+                # Retry once with new token
+                api_res = do_request()
             else:
                 return jsonify({'success': False}), 500
         else:
@@ -173,7 +192,7 @@ def authenticate(token):
         else:
             False
     except:
-        pass   
+        pass
 
 @app.route('/salt', methods=['POST'])
 def salt():

@@ -9,48 +9,48 @@ class PasswordManager:
         if isinstance(dbConnection, (CMySQLConnection, MySQLConnection)):
             self.dbConnection = dbConnection
         else:
-            return "Database connection error", 500 
-        
+            return "Database connection error", 500
+
     def add_password(self, username, payload):
         try:
-            db = self.dbConnection
-            mycursor = db.cursor()
-            mycursor.execute("SELECT vault FROM passwords WHERE username=%s", (username, ))
-            row = mycursor.fetchone()
-            if row:
-                existing_blob = row[0]
-                try:
-                    passwords = json.loads(existing_blob)
-                except json.JSONDecodeError:
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT vault FROM passwords WHERE username=%s", (username, ))
+                row = cur.fetchone()
+                if row:
+                    existing_blob = row[0]
+                    try:
+                        passwords = json.loads(existing_blob)
+                    except json.JSONDecodeError:
+                        passwords = []
+                else:
                     passwords = []
 
-            else:
-                passwords = []
-            
-            passwords.append(payload)
-            
-            # use helper to ensure any bytes or datetimes in the payload are encoded
-            updated_blob = json.dumps(passwords)
-            if row:
-                mycursor.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
-            else:
-                mycursor.execute("INSERT INTO passwords (username, vault) VALUES (%s, %s)", (username, updated_blob))
-            db.commit()
-            return "Password added successfully", 200
+                passwords.append(payload)
+
+                # use helper to ensure any bytes or datetimes in the payload are encoded
+                updated_blob = json.dumps(passwords)
+                if row:
+                    cur.execute("UPDATE passwords SET vault=%s WHERE username=%s", (updated_blob, username))
+                else:
+                    cur.execute("INSERT INTO passwords (username, vault) VALUES (%s, %s)", (username, updated_blob))
+                self.conn.commit()
+                return "Password added successfully", 200
         except Exception as err:
             return f"Database connection error: {err}", 500
-        
+
     def get_password(self, username):
         try:
-            db = self.dbConnection
-            mycursor = db.cursor()
-            query = "SELECT vault FROM passwords WHERE username = %s LIMIT 1"
-            values = (username,)
-            mycursor.execute(query, values)
-            (vault_blob, ) = mycursor.fetchone()
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT vault FROM passwords WHERE username = %s LIMIT 1", (username,))
+                result = cur.fetchone()
+                if result:
+                    (vault_blob, ) = result
+                else:
+                    vault_blob = None
             vault_decoded = bytes(vault_blob).decode("utf-8")
             return vault_decoded, 200
         except mysql.connector.Error as err:
+            err = err
             return "Database connection error", 500
 
     def update_password(self, username, passwordId, replacements: dict):
@@ -69,20 +69,20 @@ class PasswordManager:
         else:
             passwords = []
 
-        updated = False
-        for entry in passwords:
-            if entry.get("id") == passwordId:
-                # Update metadata fields
-                for key, value in replacements.items():
-                    if "metadata" in entry and key in entry["metadata"]:
-                        entry["metadata"][key] = value
-                    else:
-                        # Optionally allow adding new keys
-                        entry["metadata"][key] = value  
-                # Also bump modified timestamp automatically
-                entry["metadata"]["modified"] = datetime.utcnow().isoformat() + "Z"
-                updated = True
-                break
+                updated = False
+                for entry in passwords:
+                    if entry.get("id") == passwordId:
+                        # Update metadata fields
+                        for key, value in replacements.items():
+                            if "metadata" in entry and key in entry["metadata"]:
+                                entry["metadata"][key] = value
+                            else:
+                                # Optionally allow adding new keys
+                                entry["metadata"][key] = value
+                        # Also bump modified timestamp automatically
+                        entry["metadata"]["modified"] = datetime.utcnow().isoformat() + "Z"
+                        updated = True
+                        break
 
         if not updated:
             return f"No password entry found with id {passwordId}", 404
@@ -94,31 +94,30 @@ class PasswordManager:
         return "Password updated successfully", 200
 
     def delete_password(self, username, passwordId):
-        db = self.dbConnection
-        mycursor = db.cursor()
-        
-        mycursor.execute("SELECT vault FROM passwords WHERE username=%s", (username,))
-        row = mycursor.fetchone()
-        
-        if row:
-            existing_blob = row[0]
-            try:
-                passwords = json.loads(existing_blob)
-            except json.JSONDecodeError:
-                passwords = []
-        else:
-            passwords = []
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT vault FROM passwords WHERE username=%s", (username,))
+                row = cur.fetchone()
 
-        # Update the isBreached field for the matching password entry
-        updated = False
-        for entry in passwords:
-            if entry.get("id") == passwordId:
-                passwords.remove(entry)
-                updated = True
-                break
-        
-        if not updated:
-            return f"No password entry found with id {passwordId}", 404
+                if row:
+                    existing_blob = row[0]
+                    try:
+                        passwords = json.loads(existing_blob)
+                    except json.JSONDecodeError:
+                        passwords = []
+                else:
+                    passwords = []
+
+                # Update the isBreached field for the matching password entry
+                updated = False
+                for entry in passwords:
+                    if entry.get("id") == passwordId:
+                        passwords.remove(entry)
+                        updated = True
+                        break
+
+                if not updated:
+                    return f"No password entry found with id {passwordId}", 404
 
         # Save updated vault back to the database
         updated_blob = json.dumps(passwords)

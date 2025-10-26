@@ -13,7 +13,7 @@ class AuthenticationManager:
         else:
             return "Database connection error", 500
 
-        
+
     def login(self, username, password) -> bool:
         try:
             myCursor = self.dbConnection.cursor()
@@ -24,14 +24,14 @@ class AuthenticationManager:
                 return "Login failed, username or password is incorrect", 401
 
             stored_hash = result[0]
-            
+
             ph = PasswordHasher()
             try:
                 # Verify password (password is the raw authKey client sends)
                 ph.verify(stored_hash, password)
             except exceptions.VerifyMismatchError:
                 return "Login failed, username or password is incorrect", 401
-        
+
 
             token = self.generateAuthToken(username)
             if token:
@@ -40,7 +40,7 @@ class AuthenticationManager:
                 raise Exception("Token failed to generate")
         except Exception as e:
             return "There was an error while trying to login", 500  # Return error if there was an error while trying to login
-            
+
 
     def register(self, username, password) -> bool:
         try:
@@ -51,7 +51,7 @@ class AuthenticationManager:
             return "Registration successful", 200  # Return success message
         except:
             return "There was an error while trying to register", 500  # Return error if there was an error while trying to register
-    
+
     def cleanExpiredTokens(self):
         try:
             myCursor = self.dbConnection.cursor()
@@ -61,55 +61,100 @@ class AuthenticationManager:
         except Exception as e:
             return f"Failed to clean expired tokens: {e}", 500
 
-    def generateAuthToken(self, username) -> bool:
+    def refreshAuthToken(self, username, type="access"):
+        """
+        Generate a new auth token (access or refresh) for a given username.
+        - access: expires in 5 minutes
+        - refresh: expires in 7 days
+        Checks for an existing valid token and reuses it if valid.
+        """
         try:
-            # Remove all old tokens linked to the username
-            myCursor = self.dbConnection.cursor()
-            myCursor.execute("DELETE FROM auth_tokens WHERE username = %s", (username,))
-            self.dbConnection.commit()
-            # Generate a new auth token
-            token = secrets.token_urlsafe(32)  # Generate a random token
-            expiresAt = int(time.time()) + 300  # Token expires in 5 minutes
-            myCursor.execute(
-                "INSERT INTO auth_tokens(username, token, expires_at) VALUES(%s, %s, %s)",
-                (username, token, expiresAt)
-            )
-            self.dbConnection.commit()
-            myCursor.close()
-            return token, 200  # Return success message and token
-        except Exception as e:
-            return False, f"Failed to generate auth token: {e}", 500  # Return error if there was an error while trying to generate the token
-        
-    def verifyAuthToken(self, token) -> bool:
-        dbConnection = self.dbConnection
-        mycursor = dbConnection.cursor()
-        mycursor.execute("SELECT expires_at FROM auth_tokens WHERE token = %s", (token,))
-        result = mycursor.fetchone()
-        mycursor.close()
+            with self.conn.cursor() as cur:
+                # Check for existing token
+                cur.execute(
+                    "SELECT token, expires_at FROM auth_tokens WHERE username = %s AND token_type = %s",
+                    (username, type)
+                )
+                row = cur.fetchone()
 
-        if result:
-            expires_at = result[0]
-            # Always treat expires_at as a Unix timestamp (int)
-            try:
-                expires_at_ts = int(expires_at)
-            except Exception:
-                return False
-            if time.time() < expires_at_ts:
-                return True
-            # Update expires_at to current time + 5 minutes
-            new_expires_at = int(time.time()) + 300
-            update_cursor = dbConnection.cursor()
-            update_cursor.execute(
-                "UPDATE auth_tokens SET expires_at = %s WHERE token = %s",
-                (new_expires_at, token)
-            )
-            self.dbConnection.commit()
-            update_cursor.close()
-            return True
-        return False
-        
-def log(dbConnection, username, verify, logReason) -> None:
-    myCursor = dbConnection.cursor() #creates cursor object
+            if row:
+                token, expires_at = row
+                # Verify token validity
+                is_valid, _ = self.verifyAuthToken(token, type=type)
+                if is_valid:
+                    return token  # Return existing valid token
+
+            # Generate a new token
+            token = secrets.token_urlsafe(32)
+            if type == "access":
+                expiresAt = int(time.time()) + 300  # 5 minutes
+            elif type == "refresh":
+                expiresAt = int(time.time()) + 7 * 24 * 3600  # 7 days
+            else:
+                raise ValueError("Invalid token type. Must be 'access' or 'refresh'.")
+
+            with self.conn.cursor() as cur:
+                # Use UPSERT with composite primary key
+                cur.execute(
+                    """
+                    INSERT INTO auth_tokens (username, token, token_type, expires_at)
+                    VALUES (%s, %s, %s, %s)
+                    ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)
+                    """,
+                    (username, token, type, expiresAt)
+                )
+                self.conn.commit()
+
+            return token  # Return the new token
+
+        except Exception as e:
+            return None
+
+    def verifyAuthToken(self, token, type="access"):
+        """
+        Verify a token (access or refresh).
+        Returns (True, username) if valid, else (False, None).
+
+        - Access tokens: validity check + sliding expiration (extend 5 minutes).
+        - Refresh tokens: validity check only (fixed lifetime).
+        """
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "SELECT expires_at, username FROM auth_tokens WHERE token = %s AND token_type = %s",
+                    (token, type)
+                )
+                row = cur.fetchone()
+
+            if row is None:
+                return False, None
+
+            expires_at, username = int(row[0]), row[1]
+            now = int(time.time())
+
+            if now < expires_at:
+                if type == "access":
+                    # Sliding expiration: extend expiry 5 minutes
+                    new_expires_at = now + 300
+                    cur = self.conn.cursor()
+                    cur.execute(
+                        "UPDATE auth_tokens SET expires_at = %s WHERE token = %s",
+                        (new_expires_at, token)
+                    )
+                    self.conn.commit()
+                    cur.close()
+
+                # Refresh tokens don’t get extended
+                return True, username
+
+            return False, None  # token expired
+
+        except Exception:
+            return False, None
+
+'''
+def log(conn, username, verify, logReason) -> None:
+    myCursor = conn.cursor() #creates cursor object
     myCursor.execute(f"INSERT INTO log(user, action, date, verify) VALUES(%s, %s, %s, %s)", (username, logReason, datetime.now(), verify,)) # inserts log of the users action into the database
     dbConnection.commit()  # Commit on the same connection
     myCursor.close()  # Close cursor
